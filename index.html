@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Pulse - Live Formula 1 Stats & Schedules</title>
+    <meta name="description" content="Real-time Formula 1 standings, race schedules, driver stats, and live timing. Free F1 data for fans.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23ff1801'/><stop offset='100%25' stop-color='%23e10600'/></linearGradient></defs><rect fill='url(%23g)' rx='16' width='100' height='100'/><text x='50' y='70' font-size='54' font-weight='900' fill='white' text-anchor='middle' font-family='sans-serif'>F1</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://flagcdn.com">
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav id="main-nav"></nav>
+
+    <main class="page-content">
+        <!-- Hero: Next Race Countdown -->
+        <section class="hero" id="hero-section">
+            <div class="hero-stripe"></div>
+            <div class="hero-racing-stripe"></div>
+            <div class="container hero-content">
+                <div class="hero-label" id="hero-label">Next Race</div>
+                <h1 class="hero-title" id="hero-title">Loading...</h1>
+                <p class="hero-subtitle" id="hero-subtitle"></p>
+                <div class="countdown" id="countdown"></div>
+            </div>
+        </section>
+
+        <div class="container">
+            <!-- Quick Stats -->
+            <section class="section" id="quick-stats-section" style="display:none">
+                <div class="quick-stats" id="quick-stats"></div>
+            </section>
+
+            <!-- Season Progress -->
+            <section class="section" id="season-progress-section" style="display:none">
+                <div id="season-progress"></div>
+            </section>
+
+            <!-- Last Race Podium -->
+            <section class="section" id="last-podium-section" style="display:none">
+                <div class="section-header">
+                    <h2>Last Race <span class="text-red">Podium</span></h2>
+                    <a href="#" class="section-link" id="last-podium-link">Race Details</a>
+                </div>
+                <div id="last-podium"></div>
+            </section>
+
+            <!-- Latest Race Results -->
+            <section class="section" id="latest-results-section" style="display:none">
+                <div class="section-header">
+                    <h2>Latest Results</h2>
+                    <a href="#" class="section-link" id="latest-results-link">Full Results</a>
+                </div>
+                <div id="latest-results"></div>
+            </section>
+
+            <!-- Championship Battle -->
+            <section class="section" id="championship-battle-section" style="display:none">
+                <div class="section-header">
+                    <h2>Championship <span class="text-red">Battle</span></h2>
+                    <a href="drivers.html" class="section-link">Full Standings</a>
+                </div>
+                <div id="championship-battle"></div>
+            </section>
+
+            <!-- Driver Standings Preview -->
+            <section class="section" id="standings-section" style="display:none">
+                <div class="section-header">
+                    <h2>Driver Standings</h2>
+                    <a href="drivers.html" class="section-link">View All</a>
+                </div>
+                <div class="grid-5" id="top-drivers"></div>
+            </section>
+
+            <!-- Constructor Battle -->
+            <section class="section" id="constructor-battle-section" style="display:none">
+                <div class="section-header">
+                    <h2>Constructor <span class="text-red">Championship</span></h2>
+                    <a href="teams.html" class="section-link">View All</a>
+                </div>
+                <div id="constructor-battle"></div>
+            </section>
+
+            <!-- Constructor Standings Preview -->
+            <section class="section" id="constructors-section" style="display:none">
+                <div class="section-header">
+                    <h2>Constructor Standings</h2>
+                    <a href="teams.html" class="section-link">View All</a>
+                </div>
+                <div class="grid-3" id="top-constructors"></div>
+            </section>
+
+            <!-- Upcoming Races -->
+            <section class="section" id="upcoming-section" style="display:none">
+                <div class="section-header">
+                    <h2>Upcoming Races</h2>
+                    <a href="schedule.html" class="section-link">Full Calendar</a>
+                </div>
+                <div class="grid-3" id="upcoming-races"></div>
+            </section>
+
+            <!-- Fastest Lap Leaderboard -->
+            <section class="section" id="fastest-laps-section" style="display:none">
+                <div class="section-header">
+                    <h2>Fastest <span class="text-red">Laps</span></h2>
+                </div>
+                <div id="fastest-laps"></div>
+            </section>
+
+            <!-- Teammate Head-to-Head -->
+            <section class="section" id="teammate-h2h-section" style="display:none">
+                <div class="section-header">
+                    <h2>Teammate <span class="text-red">Battles</span></h2>
+                    <a href="drivers.html" class="section-link">Full Standings</a>
+                </div>
+                <div id="teammate-h2h"></div>
+            </section>
+        </div>
+    </main>
+
+    <footer id="main-footer"></footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>
