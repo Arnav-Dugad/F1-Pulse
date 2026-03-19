@@ -2,6 +2,7 @@
 <h1></h1>
 arnav-dugad.github.io/F1-Pulse/
 <h1></h1>
+<h2>Screenshots</h2>
 <img width="1906" height="942" alt="image" src="https://github.com/user-attachments/assets/9b1148dc-8c1b-441d-8ee0-aba2c134fa60" />
 <h1></h1>
 <img width="1907" height="946" alt="image" src="https://github.com/user-attachments/assets/953c57d7-5753-4c20-940c-90f19fbff8b0" />
