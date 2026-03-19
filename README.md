@@ -1,4 +1,4 @@
-<img width="140" height="49" alt="image" src="https://github.com/user-attachments/assets/02cd3c6d-151f-429c-9ff3-e8050457a56b" />
+# <img width="140" height="49" alt="image" src="https://github.com/user-attachments/assets/02cd3c6d-151f-429c-9ff3-e8050457a56b" />
 arnav-dugad.github.io/F1-Pulse/
 <h1></h1>
 <h2>Screenshots</h2>
