@@ -19,3 +19,6 @@ arnav-dugad.github.io/F1-Pulse/
 <img width="1905" height="943" alt="image" src="https://github.com/user-attachments/assets/6483de96-ab68-41d0-9983-71ccca1562bf" />
 <h1></h1>
 <img width="1907" height="944" alt="image" src="https://github.com/user-attachments/assets/03cf3d7e-857e-40d2-950a-6a1b43cfe772" />
+<h1></h1>
+<h1>F1 Pulse. For fans, by fans.
+Arnav Dugad © 2026</h1>
