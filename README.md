@@ -1,4 +1,4 @@
-# F1-Pulse
+# F1 Pulse
 arnav-dugad.github.io/F1-Pulse/
 <h1></h1>
 <h2>Screenshots</h2>
