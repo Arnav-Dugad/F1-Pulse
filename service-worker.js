@@ -12,7 +12,7 @@ const APP_SHELL = [
     './404.html',
     './css/styles.css',
     './css/premium.css',
-    './public/og.png',
+    './og.png',
     './js/api.js',
     './js/components.js',
     './js/home.js',

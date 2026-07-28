@@ -48,8 +48,12 @@ for (const file of fs.readdirSync(root).filter((name) => name.endsWith('.html'))
     }
 }
 
-for (const required of ['css/premium.css', 'manifest.webmanifest', 'service-worker.js', 'vercel.json', 'robots.txt', 'public/og.png']) {
+for (const required of ['css/premium.css', 'manifest.webmanifest', 'service-worker.js', 'vercel.json', 'robots.txt', 'og.png']) {
     if (!fs.existsSync(path.join(root, required))) fail(`missing required file "${required}"`);
+}
+
+if (fs.existsSync(path.join(root, 'public'))) {
+    fail('the root public directory must not exist because Vercel would publish only that directory');
 }
 
 async function testStaleNextRaceFallback() {
