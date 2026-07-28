@@ -4,8 +4,9 @@
 
 let enriched = {};
 let telemetryRefreshTimer = null;
+let liveTimingRefreshTimer = null;
 let raceCountdownTimer = null;
-const ENABLE_LIVE_TELEMETRY = false;
+const ENABLE_LIVE_TELEMETRY = true;
 const ALL_TABS = ['race', 'qualifying', 'sprint', 'pitstops', 'tires', 'laptimes', 'teamradio', 'racecontrol'];
 
 const TRACK_INTEL_BY_ID = {
@@ -448,6 +449,10 @@ function switchTab(tab) {
             clearInterval(telemetryRefreshTimer);
             telemetryRefreshTimer = null;
         }
+        if (liveTimingRefreshTimer) {
+            clearInterval(liveTimingRefreshTimer);
+            liveTimingRefreshTimer = null;
+        }
         if (raceCountdownTimer) {
             clearInterval(raceCountdownTimer);
             raceCountdownTimer = null;
@@ -515,7 +520,7 @@ function switchTab(tab) {
         const isUpcomingRace = !hasRaceResults && Number.isFinite(raceStartMs) && raceStartMs > Date.now();
 
         renderRaceHeader(raceInfo);
-        renderRaceActions();
+        renderRaceActions(raceInfo);
         renderRaceCountdown(raceInfo, {
             includeWeekendSchedule: isUpcomingRace,
             includeUpcomingNotice: isUpcomingRace,
@@ -562,6 +567,7 @@ function switchTab(tab) {
         } else {
             raceResultsEl.innerHTML = '';
             renderUpcomingInfo(raceInfo, { compact: isUpcomingRace });
+            loadOpenF1Data(raceInfo, false, race, pitStops);
         }
     } catch (err) {
         showError(raceResultsEl, 'Failed to load race data.', 'location.reload()');
@@ -616,19 +622,31 @@ function switchTab(tab) {
                 : Number.isFinite(endMs) ? nowMs <= endMs : false;
 
             // Fetch weather, stints, race control, team radio in parallel
-            const [weather, stints, raceControl, teamRadio] = await Promise.allSettled([
+            const [weather, stints, raceControl, teamRadio, drivers, positions, intervals] = await Promise.allSettled([
                 F1API.getOpenF1Weather(sk),
                 F1API.getOpenF1Stints(sk),
                 F1API.getOpenF1RaceControl(sk),
                 F1API.getOpenF1TeamRadio(sk),
+                F1API.getOpenF1Drivers(sk),
+                F1API.getOpenF1Position(sk),
+                F1API.getOpenF1Intervals(sk),
             ]);
 
             if (weather.value?.length) renderWeather(weather.value);
-            if (stints.value?.length && hasResults) {
+            if (stints.value?.length) {
                 renderTireStrategy(stints.value);
                 const tiresTab = document.querySelector('[data-tab="tires"]');
                 if (tiresTab) tiresTab.style.display = '';
             }
+            renderLiveRaceHub({
+                drivers: drivers.value || [],
+                positions: positions.value || [],
+                intervals: intervals.value || [],
+                stints: stints.value || [],
+                weather: weather.value || [],
+                raceControl: raceControl.value || [],
+                isLive: sessionIsLive,
+            });
             if (hasResults && race?.Results?.length) {
                 renderConstructorStrategyAnalyzer(pitStops, stints.value || [], race.Results);
                 if (ENABLE_LIVE_TELEMETRY) {
@@ -663,6 +681,36 @@ function switchTab(tab) {
                 }
             }
 
+            if (liveTimingRefreshTimer) {
+                clearInterval(liveTimingRefreshTimer);
+                liveTimingRefreshTimer = null;
+            }
+
+            if (sessionIsLive) {
+                const driverSnapshot = drivers.value || [];
+                liveTimingRefreshTimer = setInterval(async () => {
+                    const [nextWeather, nextStints, nextControl, nextPositions, nextIntervals] = await Promise.allSettled([
+                        F1API.getOpenF1Weather(sk),
+                        F1API.getOpenF1Stints(sk),
+                        F1API.getOpenF1RaceControl(sk),
+                        F1API.getOpenF1Position(sk),
+                        F1API.getOpenF1Intervals(sk),
+                    ]);
+                    if (nextWeather.value?.length) renderWeather(nextWeather.value);
+                    if (nextStints.value?.length) renderTireStrategy(nextStints.value);
+                    if (nextControl.value?.length) renderRaceControl(nextControl.value);
+                    renderLiveRaceHub({
+                        drivers: driverSnapshot,
+                        positions: nextPositions.value || [],
+                        intervals: nextIntervals.value || [],
+                        stints: nextStints.value || [],
+                        weather: nextWeather.value || [],
+                        raceControl: nextControl.value || [],
+                        isLive: true,
+                    });
+                }, 12_000);
+            }
+
             // Load lap times from Jolpica (separate call, can be slow)
             if (hasResults) {
                 try {
@@ -688,9 +736,36 @@ function switchTab(tab) {
         document.getElementById('race-subtitle').textContent = `Round ${race.round} — ${race.Circuit?.circuitName || ''} — ${race.Circuit?.Location?.locality || ''}, ${race.Circuit?.Location?.country || ''}`;
     }
 
-    function renderRaceActions() {
-        const bar = document.getElementById('race-action-bar');
-        if (bar) bar.remove();
+    function renderRaceActions(race) {
+        let bar = document.getElementById('race-action-bar');
+        if (!bar) {
+            bar = document.createElement('div');
+            bar.id = 'race-action-bar';
+            bar.className = 'race-action-bar';
+            document.getElementById('race-header')?.insertAdjacentElement('afterend', bar);
+        }
+
+        bar.innerHTML = `
+            <div class="race-action-context">
+                <span aria-hidden="true">${UI_ICONS.clock}</span>
+                <span><small>All sessions shown automatically in</small><strong>${getLocalTimeZoneLabel()}</strong></span>
+            </div>
+            <div class="race-action-buttons">
+                <button class="ui-btn ui-btn-primary" id="export-race-weekend" type="button">Add weekend to calendar</button>
+                <button class="ui-btn ui-btn-secondary" id="open-live-hub" type="button">Open live timing</button>
+            </div>`;
+
+        bar.querySelector('#export-race-weekend')?.addEventListener('click', () => {
+            downloadRaceCalendar([race], `f1-pulse-${race.season || 'season'}-round-${race.round || 'race'}.ics`);
+        });
+        bar.querySelector('#open-live-hub')?.addEventListener('click', () => {
+            const liveHub = document.getElementById('live-race-hub');
+            if (liveHub && liveHub.style.display !== 'none') {
+                liveHub.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                showActionToast('Live timing appears when OpenF1 session data is available.');
+            }
+        });
     }
 
     function keepSingleSectionById(container, id) {
@@ -707,9 +782,11 @@ function switchTab(tab) {
 
         const orderedIds = [
             'race-header',
+            'race-action-bar',
             'race-countdown-section',
             'race-info',
             'weather-section',
+            'live-race-hub',
             'race-circuit-showcase',
             'track-intel-section',
             'gp-dashboard-section',
@@ -1289,6 +1366,188 @@ function switchTab(tab) {
         reorderRaceDetailSections();
     }
 
+    function latestDriverRows(rows, orderField = 'date') {
+        const byDriver = new Map();
+        (Array.isArray(rows) ? rows : []).forEach((row) => {
+            const driverNumber = Number(row?.driver_number);
+            if (!Number.isFinite(driverNumber)) return;
+            const current = byDriver.get(driverNumber);
+            const currentOrder = orderField === 'date'
+                ? Date.parse(current?.date || '') || 0
+                : Number(current?.[orderField]) || 0;
+            const nextOrder = orderField === 'date'
+                ? Date.parse(row?.date || '') || 0
+                : Number(row?.[orderField]) || 0;
+            if (!current || nextOrder >= currentOrder) byDriver.set(driverNumber, row);
+        });
+        return byDriver;
+    }
+
+    function formatLiveGap(value, isLeader = false) {
+        if (isLeader) return 'LEADER';
+        if (value === null || value === undefined || value === '') return '—';
+        const numeric = Number(value);
+        if (Number.isFinite(numeric)) return `+${numeric.toFixed(numeric < 10 ? 3 : 1)}s`;
+        const text = String(value);
+        return /^\+/.test(text) ? text : `+${text}`;
+    }
+
+    function renderLiveRaceHub({ drivers, positions, intervals, stints, weather, raceControl, isLive }) {
+        let section = document.getElementById('live-race-hub');
+        if (!section) {
+            section = document.createElement('section');
+            section.id = 'live-race-hub';
+            section.className = 'section live-race-hub';
+            section.setAttribute('aria-live', 'polite');
+            const weatherSection = document.getElementById('weather-section');
+            weatherSection?.insertAdjacentElement('afterend', section);
+        }
+
+        const driverMap = latestDriverRows(drivers);
+        const positionMap = latestDriverRows(positions);
+        const intervalMap = latestDriverRows(intervals);
+        const stintMap = latestDriverRows(stints, 'stint_number');
+        const orderedPositions = [...positionMap.values()]
+            .filter((row) => Number.isFinite(Number(row.position)))
+            .sort((a, b) => Number(a.position) - Number(b.position))
+            .slice(0, 20);
+
+        if (!orderedPositions.length) {
+            section.style.display = 'none';
+            return;
+        }
+
+        const latestWeather = Array.isArray(weather) && weather.length ? weather[weather.length - 1] : null;
+        const latestControl = (Array.isArray(raceControl) ? raceControl : [])
+            .filter((message) => message?.message || message?.category)
+            .slice(-5)
+            .reverse();
+        const timestamp = orderedPositions
+            .map((row) => row.date)
+            .filter(Boolean)
+            .sort()
+            .pop();
+
+        const compoundCounts = {};
+        stintMap.forEach((stint) => {
+            const compound = String(stint?.compound || 'UNKNOWN').toUpperCase();
+            compoundCounts[compound] = (compoundCounts[compound] || 0) + 1;
+        });
+        const tyreTotal = Math.max(1, Object.values(compoundCounts).reduce((sum, count) => sum + count, 0));
+        let tyreOffset = 0;
+        const tyreStops = Object.entries(compoundCounts).map(([compound, count]) => {
+            const tire = getTireCompound(compound);
+            const start = tyreOffset;
+            tyreOffset += (count / tyreTotal) * 100;
+            return `${tire.color} ${start.toFixed(1)}% ${tyreOffset.toFixed(1)}%`;
+        });
+
+        const orderRows = orderedPositions.map((positionRow) => {
+            const number = Number(positionRow.driver_number);
+            const driver = driverMap.get(number) || {};
+            const interval = intervalMap.get(number) || {};
+            const stint = stintMap.get(number) || {};
+            const position = Number(positionRow.position);
+            const compound = String(stint.compound || 'UNKNOWN').toUpperCase();
+            const tire = getTireCompound(compound);
+            const rawColor = String(driver.team_colour || '').replace('#', '');
+            const teamColor = /^[0-9a-f]{6}$/i.test(rawColor) ? `#${rawColor}` : '#8e8ea3';
+            const familyName = driver.last_name || driver.broadcast_name || driver.full_name || `Driver ${number}`;
+            const acronym = driver.name_acronym || String(familyName).slice(0, 3).toUpperCase();
+            const gap = interval.gap_to_leader ?? interval.interval;
+            const numericGap = Number(gap);
+            const gapWidth = position === 1
+                ? 100
+                : Number.isFinite(numericGap) ? Math.max(8, 100 - Math.min(88, numericGap * 4)) : 12;
+
+            return `<div class="live-order-row" style="--driver-color:${teamColor}">
+                <span class="live-order-position">P${position}</span>
+                <span class="live-order-driver">
+                    <strong>${escapeHTML(acronym)}</strong>
+                    <span>${escapeHTML(familyName)}</span>
+                </span>
+                <span class="live-gap">
+                    <span class="live-gap-track"><i style="width:${gapWidth.toFixed(1)}%"></i></span>
+                    <strong>${escapeHTML(formatLiveGap(gap, position === 1))}</strong>
+                </span>
+                <span class="live-tyre" title="${escapeHTML(compound)} tyre">
+                    <i style="--tyre:${tire.color}"></i>${escapeHTML(tire.label || compound.slice(0, 1))}
+                </span>
+            </div>`;
+        }).join('');
+
+        const weatherMetrics = latestWeather
+            ? [
+                ['Air', latestWeather.air_temperature, '°C'],
+                ['Track', latestWeather.track_temperature, '°C'],
+                ['Humidity', latestWeather.humidity, '%'],
+                ['Wind', latestWeather.wind_speed, 'm/s'],
+            ].map(([label, raw, unit]) => {
+                const value = Number(raw);
+                const width = Number.isFinite(value)
+                    ? label === 'Humidity' ? value : Math.max(8, Math.min(100, value * (label === 'Wind' ? 6 : 2.5)))
+                    : 0;
+                return `<div class="live-weather-row">
+                    <span>${label}</span>
+                    <div><i style="width:${width.toFixed(1)}%"></i></div>
+                    <strong>${Number.isFinite(value) ? `${value.toFixed(label === 'Humidity' ? 0 : 1)}${unit}` : '—'}</strong>
+                </div>`;
+            }).join('')
+            : '<p class="live-empty">Weather stream is waiting for its first sample.</p>';
+
+        const controlRows = latestControl.length
+            ? latestControl.map((message) => {
+                const time = message.date
+                    ? new Date(message.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' })
+                    : '';
+                return `<div class="live-control-row">
+                    <time>${escapeHTML(time)}</time>
+                    <span>${message.flag ? raceControlFlagHTML(message.flag) : ''}${escapeHTML(message.message || message.category)}</span>
+                </div>`;
+            }).join('')
+            : '<p class="live-empty">No race-control messages have been issued.</p>';
+
+        section.style.display = '';
+        section.innerHTML = `
+            <div class="live-race-hub-header">
+                <div>
+                    <p class="live-race-kicker">${isLive ? 'Now on track' : 'Session replay'}</p>
+                    <h2>${isLive ? 'Live Race Pulse' : 'Race Data Pulse'}</h2>
+                </div>
+                <span class="telemetry-status ${isLive ? 'live' : 'static'}">${isLive ? 'LIVE · 12s refresh' : 'Latest complete snapshot'}</span>
+            </div>
+            <div class="live-race-grid">
+                <article class="live-race-panel live-order-panel">
+                    <div class="live-panel-title"><h3>Position & Gap</h3><span>${orderedPositions.length} cars</span></div>
+                    <div class="live-order-list">${orderRows}</div>
+                </article>
+                <div class="live-race-side">
+                    <article class="live-race-panel">
+                        <div class="live-panel-title"><h3>Tyre Window</h3><span>${tyreTotal} tracked</span></div>
+                        <div class="live-tyre-summary">
+                            <div class="live-tyre-ring" style="background:conic-gradient(${tyreStops.length ? tyreStops.join(',') : '#30303f 0 100%'})"><span>${Object.keys(compoundCounts).length}</span></div>
+                            <div class="live-tyre-legend">
+                                ${Object.entries(compoundCounts).map(([compound, count]) => {
+                                    const tire = getTireCompound(compound);
+                                    return `<span><i style="--tyre:${tire.color}"></i>${escapeHTML(compound)} <strong>${count}</strong></span>`;
+                                }).join('') || '<span>Awaiting stint data</span>'}
+                            </div>
+                        </div>
+                    </article>
+                    <article class="live-race-panel">
+                        <div class="live-panel-title"><h3>Weather Stream</h3><span>${Number(latestWeather?.rainfall) > 0 ? 'Wet' : 'Dry'}</span></div>
+                        <div class="live-weather-list">${weatherMetrics}</div>
+                    </article>
+                    <article class="live-race-panel live-control-panel">
+                        <div class="live-panel-title"><h3>Race Control</h3><span>Latest</span></div>
+                        <div class="live-control-list">${controlRows}</div>
+                    </article>
+                </div>
+            </div>
+            <p class="live-race-updated">Updated ${timestamp ? formatLocalSessionDateTime(new Date(timestamp), { compact: true }) : 'from the latest available session sample'} · Delivered through the F1 Pulse edge cache</p>`;
+        reorderRaceDetailSections();
+    }
+
     function renderConstructorStrategyAnalyzer(pitStops, stints, raceResults) {
         const results = Array.isArray(raceResults) ? raceResults : [];
 
@@ -1444,18 +1703,6 @@ function switchTab(tab) {
         reorderRaceDetailSections();
     }
 
-    function getWeekendSessions(race) {
-        const sessions = [];
-        if (race?.FirstPractice) sessions.push({ name: 'Practice 1', ...race.FirstPractice });
-        if (race?.SecondPractice) sessions.push({ name: 'Practice 2', ...race.SecondPractice });
-        if (race?.ThirdPractice) sessions.push({ name: 'Practice 3', ...race.ThirdPractice });
-        if (race?.SprintShootout) sessions.push({ name: 'Sprint Shootout', ...race.SprintShootout });
-        if (race?.SprintQualifying) sessions.push({ name: 'Sprint Qualifying', ...race.SprintQualifying });
-        if (race?.Sprint) sessions.push({ name: 'Sprint', ...race.Sprint });
-        if (race?.Qualifying) sessions.push({ name: 'Qualifying', ...race.Qualifying });
-        return sessions;
-    }
-
     function renderRaceCountdown(race, options = {}) {
         const includeWeekendSchedule = !!options.includeWeekendSchedule;
         const includeUpcomingNotice = !!options.includeUpcomingNotice;
@@ -1468,12 +1715,12 @@ function switchTab(tab) {
             container?.appendChild(section);
         }
 
-        const sessions = includeWeekendSchedule ? getWeekendSessions(race) : [];
+        const sessions = includeWeekendSchedule ? getRaceWeekendSessions(race) : [];
         const weekendScheduleHTML = sessions.length
             ? `<div class="race-weekend-schedule"><h4>Weekend Schedule</h4>${sessions.map((s) => `
                 <div class="race-weekend-row">
                     <span class="race-weekend-title">${s.name}</span>
-                    <span class="race-weekend-time">${formatDate(s.date)}${s.time ? ` · ${formatTimeOnly(s.time)} UTC` : ''}</span>
+                    <span class="race-weekend-time">${formatLocalSessionDateTime(s.start)}</span>
                 </div>
             `).join('')}</div>`
             : '';
@@ -1571,8 +1818,8 @@ function switchTab(tab) {
                 <div class="value">${formatDate(race.date)}</div>
             </div>
             <div class="race-info-item">
-                <div class="label">Race Start</div>
-                <div class="value">${race.time ? formatTimeOnly(race.time) + ' UTC' : 'TBA'}</div>
+                <div class="label">Race Start · Local</div>
+                <div class="value">${race.time ? formatLocalSessionDateTime(new Date(`${race.date}T${race.time}`), { compact: true }) : 'TBA'}</div>
             </div>
             ${lapsHTML}
             ${fastestHTML}

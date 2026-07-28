@@ -440,6 +440,15 @@ function getCountryFlag(country) {
     return countryFlagHTML(country, 14);
 }
 
+function escapeHTML(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // --- Date Formatting ---
 function formatDate(dateStr) {
     if (!dateStr) return '';
@@ -477,6 +486,153 @@ function formatLocalTime(dateLike, withSeconds = false) {
         second: withSeconds ? '2-digit' : undefined,
         hour12: true,
     });
+}
+
+function getLocalTimeZoneLabel() {
+    try {
+        const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const shortName = new Intl.DateTimeFormat('en-US', { timeZoneName: 'short' })
+            .formatToParts(new Date())
+            .find((part) => part.type === 'timeZoneName')?.value;
+        return [zone, shortName].filter(Boolean).join(' · ');
+    } catch (error) {
+        return 'Your local time';
+    }
+}
+
+function getRaceWeekendSessions(race) {
+    if (!race) return [];
+    const candidates = [
+        ['Practice 1', race.FirstPractice, 60],
+        ['Practice 2', race.SecondPractice, 60],
+        ['Practice 3', race.ThirdPractice, 60],
+        ['Sprint Shootout', race.SprintShootout, 45],
+        ['Sprint Qualifying', race.SprintQualifying, 45],
+        ['Sprint', race.Sprint, 60],
+        ['Qualifying', race.Qualifying, 75],
+        ['Race', { date: race.date, time: race.time }, 120],
+    ];
+
+    return candidates
+        .filter(([, session]) => session?.date && session?.time)
+        .map(([name, session, durationMinutes]) => {
+            const start = new Date(`${session.date}T${session.time}`);
+            return {
+                name,
+                start,
+                end: new Date(start.getTime() + durationMinutes * 60 * 1000),
+            };
+        })
+        .filter((session) => Number.isFinite(session.start.getTime()))
+        .sort((a, b) => a.start - b.start);
+}
+
+function formatLocalSessionDateTime(date, options = {}) {
+    const value = date instanceof Date ? date : new Date(date);
+    if (!Number.isFinite(value.getTime())) return 'Time TBA';
+    return value.toLocaleString('en-US', {
+        weekday: options.compact ? undefined : 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZoneName: options.withZone === false ? undefined : 'short',
+    });
+}
+
+function escapeICSValue(value) {
+    return String(value || '')
+        .replace(/\\/g, '\\\\')
+        .replace(/\r?\n/g, '\\n')
+        .replace(/,/g, '\\,')
+        .replace(/;/g, '\\;');
+}
+
+function formatICSDate(date) {
+    return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+}
+
+function showActionToast(message) {
+    let toast = document.getElementById('action-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'action-toast';
+        toast.className = 'connection-toast action-toast';
+        toast.setAttribute('role', 'status');
+        toast.setAttribute('aria-live', 'polite');
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('show', 'is-online');
+    clearTimeout(window.__f1ActionToastTimer);
+    window.__f1ActionToastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+function downloadRaceCalendar(races, filename = 'f1-pulse-calendar.ics') {
+    const raceList = (Array.isArray(races) ? races : [races]).filter(Boolean);
+    const stamp = formatICSDate(new Date());
+    const events = [];
+
+    raceList.forEach((race) => {
+        const location = [
+            race.Circuit?.circuitName,
+            race.Circuit?.Location?.locality,
+            race.Circuit?.Location?.country,
+        ].filter(Boolean).join(', ');
+        const raceName = race.raceName || 'Formula 1 Grand Prix';
+
+        getRaceWeekendSessions(race).forEach((session) => {
+            const uidParts = [
+                race.season || new Date(session.start).getUTCFullYear(),
+                race.round || 'round',
+                session.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            ];
+            const detailURL = typeof window !== 'undefined'
+                ? new URL(`race-detail.html?season=${encodeURIComponent(race.season || 'current')}&round=${encodeURIComponent(race.round || '')}`, window.location.href).href
+                : '';
+            events.push([
+                'BEGIN:VEVENT',
+                `UID:f1pulse-${uidParts.join('-')}@f1-pulse`,
+                `DTSTAMP:${stamp}`,
+                `DTSTART:${formatICSDate(session.start)}`,
+                `DTEND:${formatICSDate(session.end)}`,
+                `SUMMARY:${escapeICSValue(`${raceName} — ${session.name}`)}`,
+                `DESCRIPTION:${escapeICSValue(`F1 Pulse local calendar event for Round ${race.round || '?'}.${detailURL ? `\n${detailURL}` : ''}`)}`,
+                `LOCATION:${escapeICSValue(location)}`,
+                detailURL ? `URL:${detailURL}` : '',
+                'END:VEVENT',
+            ].filter(Boolean).join('\r\n'));
+        });
+    });
+
+    if (!events.length) {
+        showActionToast('No confirmed session times are available yet.');
+        return 0;
+    }
+
+    const content = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//F1 Pulse//Race Calendar//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'X-WR-CALNAME:F1 Pulse',
+        ...events,
+        'END:VCALENDAR',
+        '',
+    ].join('\r\n');
+
+    const blobURL = URL.createObjectURL(new Blob([content], { type: 'text/calendar;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = blobURL;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(blobURL), 1500);
+    showActionToast(`${events.length} session${events.length === 1 ? '' : 's'} exported in your local calendar.`);
+    return events.length;
 }
 
 function getTimeDiff(targetDate) {

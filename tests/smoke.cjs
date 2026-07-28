@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
+const { pathToFileURL } = require('url');
 
 const root = path.resolve(__dirname, '..');
 const failures = [];
@@ -46,14 +47,53 @@ for (const file of fs.readdirSync(root).filter((name) => name.endsWith('.html'))
         if (!html.includes('css/premium.css')) fail(`${file}: premium stylesheet is not linked`);
         if (!html.includes('manifest.webmanifest')) fail(`${file}: web app manifest is not linked`);
     }
+    if (!html.includes('css/core.css')) fail(`${file}: shared core stylesheet is not linked`);
+    if (html.includes('css/styles.css')) fail(`${file}: legacy monolithic stylesheet is still linked`);
 }
 
-for (const required of ['css/premium.css', 'manifest.webmanifest', 'service-worker.js', 'vercel.json', 'robots.txt', 'og.png', 'favicon.svg', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png']) {
+const expectedPageBundles = {
+    'about.html': 'css/pages/about.css',
+    'driver-profile.html': 'css/pages/about.css',
+    'team-profile.html': 'css/pages/about.css',
+    'drivers.html': 'css/pages/standings.css',
+    'teams.html': 'css/pages/standings.css',
+    'schedule.html': 'css/pages/schedule.css',
+    'race-detail.html': 'css/pages/race.css',
+};
+for (const [file, bundle] of Object.entries(expectedPageBundles)) {
+    if (!read(file).includes(bundle)) fail(`${file}: expected page bundle "${bundle}" is not linked`);
+}
+
+for (const required of ['api/f1.mjs', 'css/core.css', 'css/premium.css', 'css/pages/about.css', 'css/pages/standings.css', 'css/pages/race.css', 'css/pages/schedule.css', 'manifest.webmanifest', 'service-worker.js', 'vercel.json', 'robots.txt', 'og.png', 'favicon.svg', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png']) {
     if (!fs.existsSync(path.join(root, required))) fail(`missing required file "${required}"`);
+}
+
+if (fs.existsSync(path.join(root, 'css', 'styles.css'))) {
+    fail('legacy css/styles.css should be removed after the page-bundle split');
 }
 
 if (fs.existsSync(path.join(root, 'public'))) {
     fail('the root public directory must not exist because Vercel would publish only that directory');
+}
+
+for (const file of [
+    'css/core.css',
+    'css/premium.css',
+    'css/pages/about.css',
+    'css/pages/standings.css',
+    'css/pages/race.css',
+    'css/pages/schedule.css',
+]) {
+    const css = read(file)
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g, '');
+    let depth = 0;
+    for (const char of css) {
+        if (char === '{') depth += 1;
+        if (char === '}') depth -= 1;
+        if (depth < 0) break;
+    }
+    if (depth !== 0) fail(`${file}: unbalanced CSS blocks`);
 }
 
 try {
@@ -142,7 +182,123 @@ async function testStaleNextRaceFallback() {
     }
 }
 
-testStaleNextRaceFallback()
+async function testBrowserProxyRouting() {
+    let requestedURL = '';
+    const context = {
+        AbortController,
+        URL,
+        URLSearchParams,
+        Date,
+        Map,
+        console,
+        setTimeout,
+        clearTimeout,
+        window: {
+            location: {
+                protocol: 'https:',
+                hostname: 'f1-pulse-iota.vercel.app',
+                origin: 'https://f1-pulse-iota.vercel.app',
+            },
+        },
+        localStorage: {
+            getItem: () => null,
+            setItem: () => {},
+        },
+        fetch: async (url) => {
+            requestedURL = String(url);
+            return {
+                ok: true,
+                json: async () => ({ MRData: { RaceTable: { Races: [] } } }),
+            };
+        },
+    };
+    context.globalThis = context;
+    vm.createContext(context);
+    vm.runInContext(`${read('js/api.js')}\nglobalThis.__F1API = F1API;`, context);
+    await context.__F1API.getSchedule('2099');
+    if (!requestedURL.startsWith('https://f1-pulse-iota.vercel.app/api/f1?')) {
+        fail('API: browser requests are not routed through the same-origin edge cache');
+    }
+    if (!requestedURL.includes('provider=jolpica') || !requestedURL.includes('path=2099.json')) {
+        fail('API: edge proxy URL did not preserve the provider and endpoint');
+    }
+}
+
+function testScheduleRendering() {
+    const container = {
+        innerHTML: '',
+        classList: { add: () => {} },
+    };
+    const context = {
+        Date,
+        console,
+        localStorage: { getItem: () => null, setItem: () => {} },
+        document: {
+            getElementById: (id) => id === 'races-container' ? container : null,
+        },
+        SVG_ICONS: { calendar: '<span></span>' },
+        countryFlagLargeHTML: () => '',
+        circuitImageHTML: () => '',
+        formatLocalSessionDateTime: () => 'Local race time',
+        formatDate: () => 'Race date',
+    };
+    context.globalThis = context;
+    vm.createContext(context);
+    const scheduleSource = read('js/schedule.js');
+    const bootIndex = scheduleSource.lastIndexOf('(async function ()');
+    if (bootIndex < 0) {
+        fail('Schedule: initialization boundary was not found');
+        return;
+    }
+    vm.runInContext(`${scheduleSource.slice(0, bootIndex)}
+        allRaces = [{
+            season: '2099',
+            round: '1',
+            raceName: 'Test Grand Prix',
+            date: '2099-06-10',
+            time: '12:00:00Z',
+            Circuit: { circuitName: 'Test Circuit', Location: { country: 'Test' } }
+        }];
+        renderRaces();`, context);
+    if (!container.innerHTML.includes('Local race time') || !container.innerHTML.includes('Your local time')) {
+        fail('Schedule: localized race-card rendering failed');
+    }
+}
+
+async function testEdgeProxy() {
+    const originalFetch = global.fetch;
+    let upstreamURL = '';
+    try {
+        global.fetch = async (url) => {
+            upstreamURL = String(url);
+            return new Response(JSON.stringify({ ok: true }), {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        };
+        const moduleURL = `${pathToFileURL(path.join(root, 'api', 'f1.mjs')).href}?smoke=${Date.now()}`;
+        const edge = await import(moduleURL);
+        const valid = await edge.default(new Request('https://example.com/api/f1?provider=jolpica&path=current.json&limit=30'));
+        if (valid.status !== 200) fail(`Edge API: expected 200, got ${valid.status}`);
+        if (upstreamURL !== 'https://api.jolpi.ca/ergast/f1/current.json?limit=30') {
+            fail(`Edge API: unexpected upstream URL "${upstreamURL}"`);
+        }
+        if (!valid.headers.get('Vercel-CDN-Cache-Control')?.includes('s-maxage=')) {
+            fail('Edge API: Vercel CDN cache header is missing');
+        }
+        const rejected = await edge.default(new Request('https://example.com/api/f1?provider=openf1&path=../secrets'));
+        if (rejected.status !== 400) fail('Edge API: unsafe paths are not rejected');
+    } finally {
+        global.fetch = originalFetch;
+    }
+}
+
+Promise.all([
+    testStaleNextRaceFallback(),
+    testBrowserProxyRouting(),
+    testEdgeProxy(),
+    Promise.resolve().then(testScheduleRendering),
+])
     .then(() => {
         if (failures.length) {
             console.error(failures.join('\n'));

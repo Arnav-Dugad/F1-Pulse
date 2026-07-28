@@ -1075,3 +1075,73 @@ body::before {
     flex-wrap: wrap;
     margin-top: 30px;
 }
+
+.action-toast {
+    z-index: 1600;
+}
+
+@media (max-width: 760px) {
+    main,
+    main > .container,
+    .section,
+    .section > *,
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+        min-width: 0;
+    }
+
+    .ui-btn,
+    .season-selector select,
+    .modal-close,
+    .nav-toggle {
+        min-height: 44px;
+    }
+
+    .section {
+        margin-bottom: 38px;
+    }
+
+    .section-header {
+        align-items: flex-start;
+    }
+
+    .section-header > * {
+        min-width: 0;
+    }
+
+    .page-header .flex-between {
+        align-items: flex-start !important;
+    }
+
+    .page-header .subtitle {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .country-flag,
+    .country-flag-lg {
+        flex: 0 0 auto;
+    }
+}
+
+@media (max-width: 420px) {
+    .container {
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+
+    .page-header {
+        padding-right: 2px;
+        padding-left: 2px;
+    }
+
+    .page-header h1 {
+        overflow-wrap: anywhere;
+    }
+
+    .connection-toast {
+        width: calc(100vw - 28px);
+        justify-content: center;
+    }
+}

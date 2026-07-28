@@ -1,0 +1,181 @@
+/* Driver and constructor standings bundle */
+/* Drivers compare tool */
+.drivers-compare-controls {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+.drivers-compare-output {
+    border: 1px solid var(--f1-border);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.02);
+    padding: var(--space-md);
+}
+.drivers-compare-head {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+.drivers-compare-driver {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+}
+.drivers-compare-driver span {
+    color: var(--f1-gray);
+}
+.drivers-compare-row {
+    display: grid;
+    grid-template-columns: 70px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 9px;
+    font-size: 0.82rem;
+}
+.drivers-compare-track {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+.drivers-compare-track span {
+    display: block;
+    height: 9px;
+    border-radius: 999px;
+    min-width: 2px;
+}
+
+.drivers-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-md);
+}
+.form-trend-card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+    padding: var(--space-md);
+    display: grid;
+    gap: 10px;
+}
+.form-trend-head {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+}
+.form-trend-head small {
+    display: block;
+    color: var(--f1-gray);
+    font-size: 0.74rem;
+}
+.form-trend-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 0.8rem;
+}
+.form-chips {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+.form-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    padding: 3px 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 0.68rem;
+    font-weight: var(--fw-bold);
+    background: rgba(255, 255, 255, 0.05);
+}
+.form-chip.p1 { background: rgba(255, 215, 0, 0.15); border-color: rgba(255, 215, 0, 0.45); color: #ffe27a; }
+.form-chip.p2 { background: rgba(180, 185, 196, 0.16); border-color: rgba(180, 185, 196, 0.45); color: #dfe5ff; }
+.form-chip.p3 { background: rgba(205, 127, 50, 0.18); border-color: rgba(205, 127, 50, 0.5); color: #ffd1aa; }
+.form-chip.dnf { background: rgba(225, 6, 0, 0.16); border-color: rgba(225, 6, 0, 0.45); color: #ff8d8d; }
+.form-consistency-track {
+    height: 8px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.08);
+}
+.form-consistency-track span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+}
+.trend-up { color: var(--f1-success); }
+.trend-down { color: var(--f1-red); }
+.trend-flat { color: var(--f1-light-gray); }
+.form-trend-footnote {
+    color: var(--f1-gray);
+    font-size: 0.73rem;
+}
+
+.team-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-md);
+}
+.team-form-card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+    padding: var(--space-md);
+    display: grid;
+    gap: 10px;
+}
+.team-form-head {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.team-form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 0.8rem;
+}
+.team-form-chips {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+.team-form-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 3px 6px;
+    font-size: 0.68rem;
+    font-weight: var(--fw-bold);
+    background: rgba(255, 255, 255, 0.05);
+}
+.team-form-chip.elite { background: rgba(0, 210, 122, 0.2); border-color: rgba(0, 210, 122, 0.5); color: #a6ffd5; }
+.team-form-chip.strong { background: rgba(255, 215, 0, 0.18); border-color: rgba(255, 215, 0, 0.46); color: #ffe58f; }
+.team-form-chip.scored { background: rgba(56, 140, 255, 0.18); border-color: rgba(56, 140, 255, 0.42); color: #beddff; }
+.team-form-chip.zero { background: rgba(225, 6, 0, 0.16); border-color: rgba(225, 6, 0, 0.45); color: #ff9a9a; }
+.team-form-rounds {
+    color: var(--f1-gray);
+    font-size: 0.73rem;
+}
+
+@media (max-width: 900px) {
+    .drivers-compare-controls,
+    .drivers-compare-head {
+        grid-template-columns: 1fr;
+    }
+}
+

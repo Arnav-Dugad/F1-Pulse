@@ -9,10 +9,47 @@ const F1API = (() => {
 
     const CACHE_DURATION = 5 * 60 * 1000;      // 5 minutes for live data
     const CACHE_DURATION_LONG = 60 * 60 * 1000; // 1 hour for standings/schedule
+    const CACHE_DURATION_LIVE = 8 * 1000;
+    const CACHE_DURATION_SESSION = 30 * 1000;
     const REQUEST_TIMEOUT = 12000;
     const STORAGE_PREFIX = 'f1pulse_api_v2:';
     const cache = new Map();
     const pendingRequests = new Map();
+
+    function getRequestURL(url) {
+        try {
+            if (typeof window === 'undefined' || !window.location || !/^https?:$/.test(window.location.protocol)) {
+                return url;
+            }
+
+            // A plain local static server does not run Vercel Functions.
+            if (['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)) {
+                return url;
+            }
+
+            const upstream = new URL(url);
+            let provider = '';
+            let path = '';
+
+            if (upstream.origin === 'https://api.jolpi.ca' && upstream.pathname.startsWith('/ergast/f1/')) {
+                provider = 'jolpica';
+                path = upstream.pathname.slice('/ergast/f1/'.length);
+            } else if (upstream.origin === 'https://api.openf1.org' && upstream.pathname.startsWith('/v1/')) {
+                provider = 'openf1';
+                path = upstream.pathname.slice('/v1/'.length);
+            } else {
+                return url;
+            }
+
+            const proxy = new URL('/api/f1', window.location.origin);
+            proxy.searchParams.set('provider', provider);
+            proxy.searchParams.set('path', path);
+            upstream.searchParams.forEach((value, key) => proxy.searchParams.append(key, value));
+            return proxy.toString();
+        } catch (error) {
+            return url;
+        }
+    }
 
     function getCached(key) {
         const entry = cache.get(key);
@@ -64,7 +101,7 @@ const F1API = (() => {
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
             try {
-                const res = await fetch(url, {
+                const res = await fetch(getRequestURL(url), {
                     signal: controller.signal,
                     headers: { Accept: 'application/json' },
                 });
@@ -247,7 +284,7 @@ const F1API = (() => {
     async function getOpenF1Drivers(sessionKey = 'latest') {
         const data = await fetchJSON(
             `${OPENF1_BASE}/drivers?session_key=${sessionKey}`,
-            CACHE_DURATION_LONG
+            CACHE_DURATION_SESSION
         );
         return data || [];
     }
@@ -256,7 +293,7 @@ const F1API = (() => {
         const qs = new URLSearchParams(params).toString();
         const data = await fetchJSON(
             `${OPENF1_BASE}/sessions${qs ? '?' + qs : ''}`,
-            CACHE_DURATION
+            CACHE_DURATION_SESSION
         );
         return data || [];
     }
@@ -276,7 +313,7 @@ const F1API = (() => {
         const qs = new URLSearchParams(params).toString();
         const data = await fetchJSON(
             `${OPENF1_BASE}/position?${qs}`,
-            CACHE_DURATION
+            CACHE_DURATION_LIVE
         );
         return data || [];
     }
@@ -284,7 +321,7 @@ const F1API = (() => {
     async function getOpenF1Intervals(sessionKey) {
         const data = await fetchJSON(
             `${OPENF1_BASE}/intervals?session_key=${sessionKey}`,
-            CACHE_DURATION
+            CACHE_DURATION_LIVE
         );
         return data || [];
     }
@@ -295,7 +332,7 @@ const F1API = (() => {
         const qs = new URLSearchParams(params).toString();
         const data = await fetchJSON(
             `${OPENF1_BASE}/laps?${qs}`,
-            CACHE_DURATION
+            CACHE_DURATION_LIVE
         );
         return data || [];
     }
@@ -303,7 +340,7 @@ const F1API = (() => {
     async function getOpenF1Weather(sessionKey) {
         const data = await fetchJSON(
             `${OPENF1_BASE}/weather?session_key=${sessionKey}`,
-            CACHE_DURATION
+            CACHE_DURATION_LIVE
         );
         return data || [];
     }
@@ -314,7 +351,7 @@ const F1API = (() => {
         const qs = new URLSearchParams(params).toString();
         const data = await fetchJSON(
             `${OPENF1_BASE}/stints?${qs}`,
-            CACHE_DURATION
+            CACHE_DURATION_SESSION
         );
         return data || [];
     }
@@ -325,7 +362,7 @@ const F1API = (() => {
         const qs = new URLSearchParams(params).toString();
         const data = await fetchJSON(
             `${OPENF1_BASE}/pit?${qs}`,
-            CACHE_DURATION
+            CACHE_DURATION_SESSION
         );
         return data || [];
     }
@@ -333,7 +370,7 @@ const F1API = (() => {
     async function getOpenF1RaceControl(sessionKey) {
         const data = await fetchJSON(
             `${OPENF1_BASE}/race_control?session_key=${sessionKey}`,
-            CACHE_DURATION
+            CACHE_DURATION_LIVE
         );
         return data || [];
     }
@@ -344,7 +381,7 @@ const F1API = (() => {
         const qs = new URLSearchParams(params).toString();
         const data = await fetchJSON(
             `${OPENF1_BASE}/team_radio?${qs}`,
-            CACHE_DURATION
+            CACHE_DURATION_SESSION
         );
         return data || [];
     }
@@ -355,7 +392,7 @@ const F1API = (() => {
         const qs = new URLSearchParams(params).toString();
         const data = await fetchJSON(
             `${OPENF1_BASE}/location?${qs}`,
-            CACHE_DURATION
+            CACHE_DURATION_LIVE
         );
         return data || [];
     }
@@ -366,7 +403,7 @@ const F1API = (() => {
         const qs = new URLSearchParams(params).toString();
         const data = await fetchJSON(
             `${OPENF1_BASE}/car_data?${qs}`,
-            CACHE_DURATION
+            CACHE_DURATION_LIVE
         );
         return data || [];
     }

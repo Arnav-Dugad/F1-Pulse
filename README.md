@@ -7,12 +7,17 @@ F1 Pulse is a premium, zero-subscription Formula 1 command centre built with pla
 - Live race countdowns and local session times
 - Driver and constructor standings with comparison tools
 - Complete race calendar, circuit intelligence and results
+- One-click `.ics` exports for a race weekend or the full season
+- Automatic session scheduling in each visitor's local time zone
+- Live position, gap, tyre, weather, telemetry and race-control visualizations
 - Driver biographies and team showcase pages
 - Responsive mobile navigation and touch-friendly data tables
 - Installable Progressive Web App with an offline shell
+- Allowlisted Vercel Edge API cache with endpoint-specific freshness windows
+- Shared and page-specific CSS bundles for faster route loading
 - Resilient local data fallback when a live API is temporarily unavailable
 - Keyboard navigation, reduced-motion support and accessible focus states
-- No paid API keys, framework subscription or backend required
+- No paid API keys or framework subscription required
 
 Data comes from the free [Jolpica F1](https://api.jolpi.ca/) and [OpenF1](https://openf1.org/) APIs. F1 Pulse is an independent fan project and is not affiliated with Formula 1.
 
@@ -23,7 +28,7 @@ Data comes from the free [Jolpica F1](https://api.jolpi.ca/) and [OpenF1](https:
 3. Leave the build command empty and use `.` as the output directory.
 4. Deploy.
 
-The included `vercel.json` adds sensible security headers and ensures service-worker updates are never served stale.
+The included `vercel.json` adds sensible security headers and ensures service-worker updates are never served stale. The `/api/f1` Edge Function is deployed automatically and requires no environment variables.
 
 ## Local preview
 

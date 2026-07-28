@@ -42,18 +42,28 @@ function ensureScheduleFeatureControls() {
     let controls = document.getElementById('schedule-controls');
     if (controls) return controls;
 
-    controls = document.createElement('section');
+    controls = document.createElement('div');
     controls.id = 'schedule-controls';
     controls.className = 'section schedule-controls';
     controls.innerHTML = `
         <div class="schedule-controls-grid">
-            <button id="schedule-jump-next" class="schedule-jump-next ui-btn" type="button">Jump to next race</button>
+            <div class="schedule-timezone">
+                <span class="schedule-timezone-icon" aria-hidden="true">${UI_ICONS.clock}</span>
+                <span><small>Session times automatically shown in</small><strong>${getLocalTimeZoneLabel()}</strong></span>
+            </div>
+            <div class="schedule-control-actions">
+                <button id="schedule-jump-next" class="schedule-jump-next ui-btn" type="button">Jump to next race</button>
+                <button id="schedule-export-next" class="ui-btn ui-btn-secondary" type="button">Export next weekend</button>
+                <button id="schedule-export-season" class="ui-btn ui-btn-primary" type="button">Export full season</button>
+            </div>
         </div>`;
 
     const header = document.querySelector('.page-header');
     header?.insertAdjacentElement('afterend', controls);
 
     const jumpBtn = controls.querySelector('#schedule-jump-next');
+    const nextExportBtn = controls.querySelector('#schedule-export-next');
+    const seasonExportBtn = controls.querySelector('#schedule-export-season');
 
     jumpBtn?.addEventListener('click', () => {
         const nextCard = document.getElementById('next-race-card');
@@ -62,6 +72,20 @@ function ensureScheduleFeatureControls() {
             nextCard.classList.add('race-card-spotlight');
             setTimeout(() => nextCard.classList.remove('race-card-spotlight'), 1300);
         }
+    });
+
+    nextExportBtn?.addEventListener('click', () => {
+        const now = Date.now();
+        const nextRace = allRaces.find((race) => {
+            const start = new Date(`${race.date}T${race.time || '14:00:00Z'}`).getTime();
+            return Number.isFinite(start) && start > now - (4 * 60 * 60 * 1000);
+        });
+        downloadRaceCalendar(nextRace ? [nextRace] : [], 'f1-pulse-next-race.ics');
+    });
+
+    seasonExportBtn?.addEventListener('click', () => {
+        const seasonName = currentSeasonLabel === 'current' ? new Date().getFullYear() : currentSeasonLabel;
+        downloadRaceCalendar(allRaces, `f1-pulse-${seasonName}-calendar.ics`);
     });
 
     return controls;
@@ -112,6 +136,7 @@ function renderScheduleAnalytics() {
     if (!grid || !allRaces?.length) return;
 
     const now = new Date();
+    const nowMs = now.getTime();
     const visibleRaces = allRaces;
 
     const byMonth = {};
@@ -161,6 +186,7 @@ function renderRaces() {
     container.classList.add('schedule-races-visual-grid');
 
     const now = new Date();
+    const nowMs = now.getTime();
     const races = allRaces;
 
     if (!races.length) {
@@ -171,7 +197,8 @@ function renderRaces() {
     // Find next race
     let nextRound = null;
     for (const r of allRaces) {
-        if (new Date(r.date) >= now) {
+        const raceStart = new Date(`${r.date}T${r.time || '14:00:00Z'}`).getTime();
+        if (Number.isFinite(raceStart) && raceStart > nowMs - (4 * 60 * 60 * 1000)) {
             nextRound = r.round;
             break;
         }
@@ -179,14 +206,18 @@ function renderRaces() {
 
     container.innerHTML = races.map((r, i) => {
         const flag = countryFlagLargeHTML(r.Circuit?.Location?.country, 48);
-        const isPast = new Date(r.date) < now;
+        const raceStart = r.time ? new Date(`${r.date}T${r.time}`) : null;
+        const raceStartMs = raceStart?.getTime() ?? Number.NaN;
+        const isPast = Number.isFinite(raceStartMs) && raceStartMs < nowMs - (4 * 60 * 60 * 1000);
         const isNext = r.round === nextRound;
-        const raceTime = r.time ? formatTimeOnly(r.time) : '';
+        const localRaceTime = Number.isFinite(raceStartMs)
+            ? formatLocalSessionDateTime(raceStart)
+            : `${formatDate(r.date)} · Time TBA`;
         const hasSprint = !!(r.Sprint || r.SprintQualifying || r.SprintShootout);
         const circuitImg = circuitImageHTML(r.Circuit?.url, 186, r.Circuit?.circuitName);
-        const daysToRace = Math.ceil((new Date(r.date) - now) / 86400000);
+        const daysToRace = Number.isFinite(raceStartMs) ? Math.ceil((raceStartMs - nowMs) / 86400000) : null;
         const countdownBadge = !isPast
-            ? `<span class="race-countdown-pill">${daysToRace <= 0 ? 'Today' : `T-${daysToRace}`}</span>`
+            ? `<span class="race-countdown-pill">${daysToRace === null ? 'Time TBA' : daysToRace <= 0 ? 'Today' : `T-${daysToRace}`}</span>`
             : '';
         const nextIdAttr = isNext ? ' id="next-race-card"' : '';
 
@@ -200,7 +231,7 @@ function renderRaces() {
                 ${circuitImg ? `<div class="race-card-circuit-img race-track-layout">${circuitImg}</div>` : ''}
                 <div class="race-card-date">
                     <span class="date-icon">${SVG_ICONS.calendar}</span>
-                    ${formatDate(r.date)}${raceTime ? ` · ${raceTime}` : ''}
+                    <span><strong>${localRaceTime}</strong><small>Your local time</small></span>
                 </div>
                 ${countdownBadge ? `<div style="margin-top:8px">${countdownBadge}</div>` : ''}
                 ${hasSprint ? '<div style="margin-top:8px"><span class="badge badge-yellow">Sprint Weekend</span></div>' : ''}

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'f1-pulse-shell-v3';
+const CACHE_NAME = 'f1-pulse-shell-v4';
 const APP_SHELL = [
     './',
     './index.html',
@@ -10,8 +10,12 @@ const APP_SHELL = [
     './team-profile.html',
     './race-detail.html',
     './404.html',
-    './css/styles.css',
+    './css/core.css',
     './css/premium.css',
+    './css/pages/about.css',
+    './css/pages/standings.css',
+    './css/pages/race.css',
+    './css/pages/schedule.css',
     './og.png',
     './favicon.svg',
     './icons/icon-180.png',
@@ -47,6 +51,18 @@ self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
     const url = new URL(event.request.url);
     if (url.origin !== self.location.origin) return;
+
+    if (url.pathname.startsWith('/api/')) {
+        event.respondWith(
+            fetch(event.request).catch(() => new Response(JSON.stringify({
+                error: 'Live Formula 1 data is unavailable while offline.',
+            }), {
+                status: 503,
+                headers: { 'Content-Type': 'application/json; charset=utf-8' },
+            }))
+        );
+        return;
+    }
 
     event.respondWith(
         fetch(event.request)
