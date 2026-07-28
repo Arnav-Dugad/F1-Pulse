@@ -426,7 +426,12 @@ function getTrackIntel(race, raceResults) {
 function switchTab(tab) {
     const tabsEl = document.getElementById('result-tabs');
     if (!tabsEl) return;
-    tabsEl.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    tabsEl.querySelectorAll('.tab-btn').forEach((button) => {
+        const active = button.dataset.tab === tab;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-selected', String(active));
+        button.setAttribute('tabindex', active ? '0' : '-1');
+    });
     ALL_TABS.forEach(t => {
         const el = document.getElementById(t + '-results');
         if (el) el.style.display = (t === tab) ? '' : 'none';

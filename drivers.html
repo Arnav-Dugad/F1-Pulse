@@ -8,6 +8,7 @@
     <meta name="theme-color" content="#07080c">
     <meta name="color-scheme" content="dark">
     <meta name="application-name" content="F1 Pulse">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta property="og:type" content="website">
     <meta property="og:title" content="F1 Pulse — Driver Intelligence">
     <meta property="og:description" content="Live Formula 1 driver standings, form, comparisons and detailed profiles.">
@@ -15,7 +16,8 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="/og.png">
     <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23ff1801'/><stop offset='100%25' stop-color='%23e10600'/></linearGradient></defs><rect fill='url(%23g)' rx='16' width='100' height='100'/><text x='50' y='70' font-size='54' font-weight='900' fill='white' text-anchor='middle' font-family='sans-serif'>F1</text></svg>">
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://flagcdn.com">
@@ -34,16 +36,16 @@
             </div>
 
             <!-- View Toggle -->
-            <div class="tabs" id="view-tabs">
-                <button class="tab-btn active" data-view="grid" onclick="switchView('grid')">Grid</button>
-                <button class="tab-btn" data-view="table" onclick="switchView('table')">Table</button>
+            <div class="tabs" id="view-tabs" role="tablist" aria-label="Driver standings view">
+                <button class="tab-btn active" id="drivers-grid-tab" role="tab" aria-selected="true" aria-controls="drivers-grid" data-view="grid" onclick="switchView('grid')">Grid</button>
+                <button class="tab-btn" id="drivers-table-tab" role="tab" aria-selected="false" aria-controls="drivers-table" data-view="table" onclick="switchView('table')">Table</button>
             </div>
 
             <!-- Driver Grid View -->
-            <div id="drivers-grid" class="grid-4"></div>
+            <div id="drivers-grid" class="grid-4" role="tabpanel" aria-labelledby="drivers-grid-tab"></div>
 
             <!-- Driver Table View -->
-            <div id="drivers-table" style="display:none"></div>
+            <div id="drivers-table" role="tabpanel" aria-labelledby="drivers-table-tab" style="display:none"></div>
         </div>
     </main>
 

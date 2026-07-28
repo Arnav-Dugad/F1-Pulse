@@ -1865,10 +1865,12 @@ h4 { font-size: 1.25rem; }
 .scroll-progress-fill {
     display: block;
     height: 100%;
-    width: 0;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: left center;
     background: linear-gradient(90deg, var(--f1-red), #ff8a00, #4dd8ff);
     box-shadow: 0 0 12px rgba(225, 6, 0, 0.45);
-    transition: width 0.08s linear;
+    will-change: transform;
 }
 @media (max-width: 600px) {
     :root {
@@ -1957,6 +1959,7 @@ body > * {
 }
 .driver-card::before,
 .team-card::before {
+    --gradient-angle: 0deg;
     content: '';
     position: absolute;
     inset: -1px;
@@ -1966,7 +1969,6 @@ body > * {
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
     mask-composite: exclude;
     opacity: 0;
     pointer-events: none;
@@ -4217,7 +4219,9 @@ body {
     cursor: pointer;
 }
 .driver-chart-svg circle:hover {
-    r: 5.5;
+    transform: scale(1.18);
+    transform-box: fill-box;
+    transform-origin: center;
     filter: drop-shadow(0 0 6px currentColor);
 }
 .hero::before {

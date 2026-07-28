@@ -48,12 +48,37 @@ for (const file of fs.readdirSync(root).filter((name) => name.endsWith('.html'))
     }
 }
 
-for (const required of ['css/premium.css', 'manifest.webmanifest', 'service-worker.js', 'vercel.json', 'robots.txt', 'og.png']) {
+for (const required of ['css/premium.css', 'manifest.webmanifest', 'service-worker.js', 'vercel.json', 'robots.txt', 'og.png', 'favicon.svg', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png']) {
     if (!fs.existsSync(path.join(root, required))) fail(`missing required file "${required}"`);
 }
 
 if (fs.existsSync(path.join(root, 'public'))) {
     fail('the root public directory must not exist because Vercel would publish only that directory');
+}
+
+try {
+    const manifest = JSON.parse(read('manifest.webmanifest'));
+    if (!manifest.start_url || !manifest.scope) fail('manifest: start_url and scope are required');
+    if (!Array.isArray(manifest.icons) || manifest.icons.length < 2) fail('manifest: installable icons are required');
+} catch (error) {
+    fail(`manifest.webmanifest: ${error.message}`);
+}
+
+function readPngDimensions(relativePath) {
+    const bytes = fs.readFileSync(path.join(root, relativePath));
+    if (bytes.toString('ascii', 1, 4) !== 'PNG') throw new Error('not a PNG file');
+    return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+}
+
+for (const [file, size] of [['icons/icon-180.png', 180], ['icons/icon-192.png', 192], ['icons/icon-512.png', 512]]) {
+    try {
+        const dimensions = readPngDimensions(file);
+        if (dimensions.width !== size || dimensions.height !== size) {
+            fail(`${file}: expected ${size}x${size}, got ${dimensions.width}x${dimensions.height}`);
+        }
+    } catch (error) {
+        fail(`${file}: ${error.message}`);
+    }
 }
 
 async function testStaleNextRaceFallback() {
@@ -105,6 +130,15 @@ async function testStaleNextRaceFallback() {
     }
     if (scheduleRequests < 1) {
         fail('API: stale next-race endpoint did not request the calendar fallback');
+    }
+
+    const requestsBeforeDedupe = scheduleRequests;
+    await Promise.all([
+        context.__F1API.getDriverStandings('2099'),
+        context.__F1API.getDriverStandings('2099'),
+    ]);
+    if (scheduleRequests !== requestsBeforeDedupe + 1) {
+        fail('API: concurrent duplicate requests were not deduplicated');
     }
 }
 

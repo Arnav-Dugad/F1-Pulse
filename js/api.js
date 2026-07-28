@@ -12,6 +12,7 @@ const F1API = (() => {
     const REQUEST_TIMEOUT = 12000;
     const STORAGE_PREFIX = 'f1pulse_api_v2:';
     const cache = new Map();
+    const pendingRequests = new Map();
 
     function getCached(key) {
         const entry = cache.get(key);
@@ -54,23 +55,37 @@ const F1API = (() => {
     async function fetchJSON(url, cacheDuration = CACHE_DURATION) {
         const cached = getCached(url);
         if (cached) return cached;
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
+        if (pendingRequests.has(url)) {
+            return pendingRequests.get(url);
+        }
+
+        const request = (async () => {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+            try {
+                const res = await fetch(url, {
+                    signal: controller.signal,
+                    headers: { Accept: 'application/json' },
+                });
+                if (!res.ok) throw new Error(`API error: ${res.status}`);
+                const data = await res.json();
+                setCache(url, data, cacheDuration);
+                return data;
+            } catch (error) {
+                const stored = getStored(url);
+                if (stored) return stored;
+                throw error;
+            } finally {
+                clearTimeout(timeout);
+            }
+        })();
+
+        pendingRequests.set(url, request);
         try {
-            const res = await fetch(url, {
-                signal: controller.signal,
-                headers: { Accept: 'application/json' },
-            });
-            if (!res.ok) throw new Error(`API error: ${res.status}`);
-            const data = await res.json();
-            setCache(url, data, cacheDuration);
-            return data;
-        } catch (error) {
-            const stored = getStored(url);
-            if (stored) return stored;
-            throw error;
+            return await request;
         } finally {
-            clearTimeout(timeout);
+            pendingRequests.delete(url);
         }
     }
 
@@ -103,10 +118,15 @@ const F1API = (() => {
     }
 
     async function getNextRace() {
-        const data = await fetchJSON(
-            `${JOLPICA_BASE}/current/next.json`,
-            CACHE_DURATION
-        );
+        let data = null;
+        try {
+            data = await fetchJSON(
+                `${JOLPICA_BASE}/current/next.json`,
+                CACHE_DURATION
+            );
+        } catch (error) {
+            // The calendar below remains a complete fallback when /next is unavailable.
+        }
         const nextFromEndpoint = data?.MRData?.RaceTable?.Races?.[0] || null;
         const raceStart = nextFromEndpoint
             ? new Date(`${nextFromEndpoint.date}T${nextFromEndpoint.time || '14:00:00Z'}`).getTime()

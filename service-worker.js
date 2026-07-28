@@ -1,4 +1,4 @@
-const CACHE_NAME = 'f1-pulse-shell-v2';
+const CACHE_NAME = 'f1-pulse-shell-v3';
 const APP_SHELL = [
     './',
     './index.html',
@@ -13,6 +13,10 @@ const APP_SHELL = [
     './css/styles.css',
     './css/premium.css',
     './og.png',
+    './favicon.svg',
+    './icons/icon-180.png',
+    './icons/icon-192.png',
+    './icons/icon-512.png',
     './js/api.js',
     './js/components.js',
     './js/home.js',
@@ -47,12 +51,20 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         fetch(event.request)
             .then((response) => {
-                if (response.ok) {
+                if (response.ok && response.type === 'basic') {
                     const clone = response.clone();
                     caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
                 }
                 return response;
             })
-            .catch(() => caches.match(event.request).then((cached) => cached || caches.match('./index.html')))
+            .catch(async () => {
+                const cached = await caches.match(event.request, { ignoreSearch: true });
+                if (cached) return cached;
+                if (event.request.mode === 'navigate') return caches.match('./index.html');
+                return new Response('This resource is unavailable while offline.', {
+                    status: 503,
+                    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+                });
+            })
     );
 });

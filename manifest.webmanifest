@@ -2,10 +2,44 @@
   "name": "F1 Pulse",
   "short_name": "F1 Pulse",
   "description": "Live Formula 1 schedules, standings, race results and driver intelligence.",
+  "id": "./",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#07080c",
   "theme_color": "#e10600",
   "orientation": "any",
-  "icons": []
+  "lang": "en",
+  "categories": ["sports", "news", "utilities"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Driver Standings",
+      "short_name": "Drivers",
+      "url": "drivers.html"
+    },
+    {
+      "name": "Constructor Standings",
+      "short_name": "Teams",
+      "url": "teams.html"
+    },
+    {
+      "name": "Race Calendar",
+      "short_name": "Calendar",
+      "url": "schedule.html"
+    }
+  ]
 }

@@ -9,7 +9,11 @@ let openedModalFromQuery = false;
 
 function switchView(view) {
     currentView = view;
-    document.querySelectorAll('#view-tabs .tab-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+    document.querySelectorAll('#view-tabs .tab-btn').forEach((button) => {
+        const active = button.dataset.view === view;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-selected', String(active));
+    });
     document.getElementById('drivers-grid').style.display = view === 'grid' ? '' : 'none';
     document.getElementById('drivers-table').style.display = view === 'table' ? '' : 'none';
 }

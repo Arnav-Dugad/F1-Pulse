@@ -776,8 +776,13 @@ function formatLocalSessionStart(ts) {
     }
 }
 
+function resolveActiveNavigationPage(activePage) {
+    return activePage === 'race' ? 'schedule' : activePage;
+}
+
 // --- Navigation ---
 function buildNav(activePage) {
+    const activeNavigationPage = resolveActiveNavigationPage(activePage);
     const main = document.querySelector('main');
     if (main && !main.id) main.id = 'main-content';
     if (!document.querySelector('.skip-link')) {
@@ -813,7 +818,7 @@ function buildNav(activePage) {
                 <span class="logo-text">Pulse</span>
             </a>
             <div class="nav-links" id="nav-links">
-                ${pages.map((p) => `<a href="${p.href}" class="${p.id === activePage ? 'active' : ''}">${iconHTML(p.icon, 'nav-link-icon')}<span>${p.label}</span></a>`).join('')}
+                ${pages.map((p) => `<a href="${p.href}" class="${p.id === activeNavigationPage ? 'active' : ''}" ${p.id === activeNavigationPage ? 'aria-current="page"' : ''}>${iconHTML(p.icon, 'nav-link-icon')}<span>${p.label}</span></a>`).join('')}
             </div>
             <div id="nav-live-indicator" style="display:none"></div>
             <a href="${f1tvHref}" class="nav-f1tv-btn" target="_blank" rel="noopener noreferrer" aria-label="Open F1 TV">
@@ -840,6 +845,7 @@ function toggleNav() {
 
 function createMobileNavigation(activePage) {
     if (document.getElementById('mobile-nav')) return;
+    const activeNavigationPage = resolveActiveNavigationPage(activePage);
     const pages = [
         { id: 'home', label: 'Home', href: 'index.html', icon: UI_ICONS.home },
         { id: 'drivers', label: 'Drivers', href: 'drivers.html', icon: UI_ICONS.drivers },
@@ -852,7 +858,7 @@ function createMobileNavigation(activePage) {
     mobileNav.className = 'mobile-nav';
     mobileNav.setAttribute('aria-label', 'Mobile navigation');
     mobileNav.innerHTML = `<div class="mobile-nav-inner">
-        ${pages.map((page) => `<a href="${page.href}" class="mobile-nav-link ${page.id === activePage ? 'active' : ''}" ${page.id === activePage ? 'aria-current="page"' : ''}>
+        ${pages.map((page) => `<a href="${page.href}" class="mobile-nav-link ${page.id === activeNavigationPage ? 'active' : ''}" ${page.id === activeNavigationPage ? 'aria-current="page"' : ''}>
             ${iconHTML(page.icon, 'mobile-nav-icon')}
             <span>${page.label}</span>
         </a>`).join('')}
@@ -916,6 +922,28 @@ function initInteractiveCardAccessibility() {
         }));
     });
     window.__f1InteractiveCardObserver.observe(document.body, { childList: true, subtree: true });
+}
+
+function initTabKeyboardNavigation() {
+    document.querySelectorAll('[role="tablist"]').forEach((tabList) => {
+        if (tabList.hasAttribute('data-keyboard-ready')) return;
+        tabList.setAttribute('data-keyboard-ready', 'true');
+        tabList.addEventListener('keydown', (event) => {
+            if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+            const tabs = [...tabList.querySelectorAll('[role="tab"]')]
+                .filter((tab) => !tab.hidden && getComputedStyle(tab).display !== 'none' && !tab.disabled);
+            if (!tabs.length) return;
+            const currentIndex = Math.max(0, tabs.indexOf(document.activeElement));
+            let nextIndex = currentIndex;
+            if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length;
+            if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+            if (event.key === 'Home') nextIndex = 0;
+            if (event.key === 'End') nextIndex = tabs.length - 1;
+            event.preventDefault();
+            tabs[nextIndex].focus();
+            tabs[nextIndex].click();
+        });
+    });
 }
 
 function resolveBackFallbackURL(activePage) {
@@ -1400,11 +1428,17 @@ function initScrollProgressRail() {
     const fill = rail.querySelector('#scroll-progress-fill');
     if (!fill) return;
 
+    let framePending = false;
     const update = () => {
-        const doc = document.documentElement;
-        const maxScroll = Math.max(doc.scrollHeight - window.innerHeight, 0);
-        const pct = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
-        fill.style.width = `${Math.max(0, Math.min(100, pct)).toFixed(2)}%`;
+        if (framePending) return;
+        framePending = true;
+        window.requestAnimationFrame(() => {
+            framePending = false;
+            const doc = document.documentElement;
+            const maxScroll = Math.max(doc.scrollHeight - window.innerHeight, 0);
+            const pct = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+            fill.style.transform = `scaleX(${Math.max(0, Math.min(1, pct)).toFixed(4)})`;
+        });
     };
 
     update();
@@ -1418,9 +1452,13 @@ function createDriverModal() {
     const modal = document.createElement('div');
     modal.id = 'driver-modal';
     modal.className = 'modal-overlay';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'driver-modal-title');
+    modal.setAttribute('aria-hidden', 'true');
     modal.innerHTML = `
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeDriverModal()">&times;</button>
+        <div class="modal-content" tabindex="-1">
+            <button class="modal-close" type="button" onclick="closeDriverModal()" aria-label="Close driver details">&times;</button>
             <div id="driver-modal-body">
                 <div class="loading"><div class="spinner"></div></div>
             </div>
@@ -1428,22 +1466,46 @@ function createDriverModal() {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeDriverModal();
     });
+    modal.addEventListener('keydown', (event) => {
+        if (event.key !== 'Tab') return;
+        const focusable = [...modal.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+            .filter((element) => !element.hidden && element.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    });
     document.body.appendChild(modal);
 }
 
 function closeDriverModal() {
     const modal = document.getElementById('driver-modal');
-    if (modal) modal.classList.remove('open');
+    if (modal) {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+    }
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
+    const returnFocus = window.__f1ModalReturnFocus;
+    if (returnFocus?.isConnected) returnFocus.focus();
+    window.__f1ModalReturnFocus = null;
 }
 
 async function openDriverModal(driverId, constructorId, season) {
     const modal = document.getElementById('driver-modal');
     if (!modal) return;
+    window.__f1ModalReturnFocus = document.activeElement;
     modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
+    window.requestAnimationFrame(() => modal.querySelector('.modal-close')?.focus());
 
     const body = document.getElementById('driver-modal-body');
     showLoading(body, 'Loading driver info');
@@ -1824,7 +1886,7 @@ async function openDriverModal(driverId, constructorId, season) {
             <div class="driver-modal-header">
             ${headshot ? `<img src="${headshot}" alt="${info.familyName}" class="driver-modal-img" style="border-color:${teamColor};object-position:${modalObjectPosition}" onerror="this.style.display='none'">` : ''}
                 <div class="driver-modal-info">
-                    <h2>${info.givenName || ''} <span class="text-red">${info.familyName || ''}</span></h2>
+                    <h2 id="driver-modal-title">${info.givenName || ''} <span class="text-red">${info.familyName || ''}</span></h2>
                     <p>${countryFlagHTML(info.nationality, 20)} ${info.nationality || ''}</p>
                     <p>Born: ${info.dateOfBirth ? formatDate(info.dateOfBirth) : 'Unknown'}</p>
                     <p>Number: <strong style="font-size:1.2rem;color:${teamColor}">#${info.permanentNumber || '?'}</strong></p>
@@ -2038,6 +2100,7 @@ function initPage(activePage) {
     initConnectionStatus();
     registerF1PulseServiceWorker();
     initInteractiveCardAccessibility();
+    initTabKeyboardNavigation();
     initGlobalIconDecoration();
     checkLiveSession();
     document.querySelectorAll('.nav-links a').forEach(link => {

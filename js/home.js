@@ -85,7 +85,7 @@
         if (heroFlagISO && heroSection) {
             const flagDiv = document.createElement('div');
             flagDiv.className = 'hero-country-flag';
-            flagDiv.innerHTML = `<img src="https://flagcdn.com/w1280/${heroFlagISO}.png" srcset="https://flagcdn.com/w2560/${heroFlagISO}.png 2x" alt="${country}" loading="eager" onerror="this.parentElement.style.display='none'">`;
+            flagDiv.innerHTML = `<img src="https://flagcdn.com/w640/${heroFlagISO}.png" srcset="https://flagcdn.com/w640/${heroFlagISO}.png 640w, https://flagcdn.com/w1280/${heroFlagISO}.png 1280w, https://flagcdn.com/w2560/${heroFlagISO}.png 2560w" sizes="100vw" alt="${country}" loading="eager" fetchpriority="high" decoding="async" onerror="this.parentElement.style.display='none'">`;
             heroSection.appendChild(flagDiv);
         }
 

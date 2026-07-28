@@ -71,6 +71,18 @@ body::before {
     transform: translateY(0);
 }
 
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
 [role='button'][tabindex='0']:focus-visible {
     outline: 2px solid rgba(255, 30, 18, 0.9);
     outline-offset: 4px;
@@ -598,6 +610,8 @@ body::before {
         min-height: 44px;
         padding: 5px 0;
         animation-duration: 68s;
+        will-change: transform;
+        backface-visibility: hidden;
     }
 
     .driver-bulletin-avatar {
@@ -749,6 +763,19 @@ body::before {
         min-width: 680px;
     }
 
+    .modal-content {
+        height: 100dvh;
+        max-height: 100dvh;
+        padding-top: max(18px, env(safe-area-inset-top));
+        padding-bottom: max(18px, env(safe-area-inset-bottom));
+        overscroll-behavior: contain;
+    }
+
+    .modal-close {
+        top: max(14px, env(safe-area-inset-top));
+        right: 14px;
+    }
+
     .race-control-hub {
         padding: 22px 16px;
         border-radius: 22px;
@@ -898,7 +925,7 @@ body::before {
     }
 
     .section-header h2 {
-        max-width: calc(100% - 96px);
+        max-width: 100%;
         font-size: 1.62rem;
     }
 
@@ -923,6 +950,31 @@ body::before {
         font-size: clamp(2.2rem, 12vw, 3.6rem);
         letter-spacing: -0.035em;
     }
+
+    .driver-card,
+    .team-card,
+    .race-card,
+    .section,
+    .table-wrapper,
+    .stat-box {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
+    .hero-speed-trails {
+        opacity: 0.3;
+    }
+
+    .hero-neon-orb {
+        display: none;
+    }
+
+    .nav-chip-label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 }
 
 @media (max-width: 380px) {
@@ -945,6 +997,14 @@ body::before {
 
     .hero-command-clock {
         display: none;
+    }
+}
+
+@media (max-width: 520px) {
+    .about-driver-grid,
+    .about-team-grid,
+    .profile-gallery-grid {
+        grid-template-columns: 1fr;
     }
 }
 
