@@ -318,9 +318,11 @@ const F1API = (() => {
         return data || [];
     }
 
-    async function getOpenF1Intervals(sessionKey) {
+    async function getOpenF1Intervals(sessionKey, since) {
+        const params = new URLSearchParams({ session_key: sessionKey });
+        if (since) params.set('date>', since);
         const data = await fetchJSON(
-            `${OPENF1_BASE}/intervals?session_key=${sessionKey}`,
+            `${OPENF1_BASE}/intervals?${params.toString()}`,
             CACHE_DURATION_LIVE
         );
         return data || [];
@@ -397,10 +399,12 @@ const F1API = (() => {
         return data || [];
     }
 
-    async function getOpenF1CarData(sessionKey, driverNumber) {
+    async function getOpenF1CarData(sessionKey, driverNumber, since) {
         const params = { session_key: sessionKey };
         if (driverNumber) params.driver_number = driverNumber;
-        const qs = new URLSearchParams(params).toString();
+        const query = new URLSearchParams(params);
+        if (since) query.set('date>', since);
+        const qs = query.toString();
         const data = await fetchJSON(
             `${OPENF1_BASE}/car_data?${qs}`,
             CACHE_DURATION_LIVE

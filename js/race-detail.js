@@ -620,6 +620,13 @@ function switchTab(tab) {
             const sessionIsLive = Number.isFinite(startMs) && Number.isFinite(endMs)
                 ? nowMs >= startMs && nowMs <= endMs
                 : Number.isFinite(endMs) ? nowMs <= endMs : false;
+            const getRecentWindowStart = () => {
+                const reference = sessionIsLive ? Date.now() : (Number.isFinite(endMs) ? endMs : Date.now());
+                const bucketedReference = Math.floor(reference / 30_000) * 30_000;
+                const windowMinutes = sessionIsLive ? 3 : 30;
+                return new Date(bucketedReference - (windowMinutes * 60 * 1000)).toISOString();
+            };
+            const initialWindowStart = getRecentWindowStart();
 
             // Fetch weather, stints, race control, team radio in parallel
             const [weather, stints, raceControl, teamRadio, drivers, positions, intervals] = await Promise.allSettled([
@@ -629,7 +636,7 @@ function switchTab(tab) {
                 F1API.getOpenF1TeamRadio(sk),
                 F1API.getOpenF1Drivers(sk),
                 F1API.getOpenF1Position(sk),
-                F1API.getOpenF1Intervals(sk),
+                F1API.getOpenF1Intervals(sk, initialWindowStart),
             ]);
 
             if (weather.value?.length) renderWeather(weather.value);
@@ -649,8 +656,8 @@ function switchTab(tab) {
             });
             if (hasResults && race?.Results?.length) {
                 renderConstructorStrategyAnalyzer(pitStops, stints.value || [], race.Results);
-                if (ENABLE_LIVE_TELEMETRY) {
-                    setupTelemetryMiniPanel(sk, race.Results, sessionIsLive);
+                if (ENABLE_LIVE_TELEMETRY && sessionIsLive) {
+                    setupTelemetryMiniPanel(sk, race.Results, sessionIsLive, initialWindowStart);
                 } else {
                     hideTelemetryMiniPanel();
                 }
@@ -694,7 +701,7 @@ function switchTab(tab) {
                         F1API.getOpenF1Stints(sk),
                         F1API.getOpenF1RaceControl(sk),
                         F1API.getOpenF1Position(sk),
-                        F1API.getOpenF1Intervals(sk),
+                        F1API.getOpenF1Intervals(sk, getRecentWindowStart()),
                     ]);
                     if (nextWeather.value?.length) renderWeather(nextWeather.value);
                     if (nextStints.value?.length) renderTireStrategy(nextStints.value);
@@ -1235,7 +1242,7 @@ function switchTab(tab) {
         reorderRaceDetailSections();
     }
 
-    function setupTelemetryMiniPanel(sessionKey, raceResults, isLiveSession) {
+    function setupTelemetryMiniPanel(sessionKey, raceResults, isLiveSession, initialWindowStart) {
         const top3 = (raceResults || [])
             .slice(0, 3)
             .filter((r) => Number.isFinite(parseInt(r.Driver?.permanentNumber, 10)));
@@ -1251,8 +1258,15 @@ function switchTab(tab) {
         }
 
         const renderSnapshot = async () => {
+            const snapshotWindowStart = isLiveSession
+                ? new Date((Math.floor(Date.now() / 30_000) * 30_000) - (3 * 60 * 1000)).toISOString()
+                : initialWindowStart;
             const data = await Promise.allSettled(
-                top3.map((r) => F1API.getOpenF1CarData(sessionKey, parseInt(r.Driver?.permanentNumber, 10)))
+                top3.map((r) => F1API.getOpenF1CarData(
+                    sessionKey,
+                    parseInt(r.Driver?.permanentNumber, 10),
+                    snapshotWindowStart
+                ))
             );
 
             const telemetryRows = top3.map((result, index) => {

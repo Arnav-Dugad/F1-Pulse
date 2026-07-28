@@ -286,6 +286,10 @@ async function testEdgeProxy() {
         if (!valid.headers.get('Vercel-CDN-Cache-Control')?.includes('s-maxage=')) {
             fail('Edge API: Vercel CDN cache header is missing');
         }
+        await edge.default(new Request('https://example.com/api/f1?provider=openf1&path=intervals&session_key=123&date%3E=2026-01-01T00%3A00%3A00Z'));
+        if (upstreamURL !== 'https://api.openf1.org/v1/intervals?session_key=123&date%3E=2026-01-01T00%3A00%3A00Z') {
+            fail(`Edge API: comparison filters were not forwarded safely ("${upstreamURL}")`);
+        }
         const rejected = await edge.default(new Request('https://example.com/api/f1?provider=openf1&path=../secrets'));
         if (rejected.status !== 400) fail('Edge API: unsafe paths are not rejected');
     } finally {

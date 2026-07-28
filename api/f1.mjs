@@ -50,7 +50,7 @@ function isValidPath(provider, path) {
 function isValidQuery(params) {
     if ([...params].length > 16) return false;
     return [...params].every(([key, value]) => (
-        /^[a-z_]+(?:[<>])?$/.test(key)
+        /^[a-z_]+(?:[<>]=?)?$/.test(key)
         && value.length <= 160
         && !/[\r\n]/.test(value)
     ));
