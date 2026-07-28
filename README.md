@@ -1,24 +1,35 @@
-# <img width="140" height="49" alt="image" src="https://github.com/user-attachments/assets/02cd3c6d-151f-429c-9ff3-e8050457a56b" />
-arnav-dugad.github.io/F1-Pulse/
-<h1></h1>
-<h2>Screenshots</h2>
-<img width="1906" height="942" alt="image" src="https://github.com/user-attachments/assets/9b1148dc-8c1b-441d-8ee0-aba2c134fa60" />
-<h1></h1>
-<img width="1907" height="946" alt="image" src="https://github.com/user-attachments/assets/953c57d7-5753-4c20-940c-90f19fbff8b0" />
-<h1></h1>
-<img width="1903" height="941" alt="image" src="https://github.com/user-attachments/assets/5ac113f6-b568-441c-bb0f-913511eb380e" />
-<h1></h1>
-<img width="1906" height="943" alt="image" src="https://github.com/user-attachments/assets/42de648c-8da5-4155-a675-a8a748090ee0" />
-<h1></h1>
-<img width="1905" height="945" alt="image" src="https://github.com/user-attachments/assets/7d9b9db3-58e4-49c0-bc3d-dcf1b38983ce" />
-<h1></h1>
-<img width="1906" height="942" alt="image" src="https://github.com/user-attachments/assets/7da7be9f-abb6-45e7-87d4-95d4047669b5" />
-<h1></h1>
-<img width="1901" height="941" alt="image" src="https://github.com/user-attachments/assets/9e2b2c51-6e25-4dd7-91c1-034b236727db" />
-<h1></h1>
-<img width="1905" height="943" alt="image" src="https://github.com/user-attachments/assets/6483de96-ab68-41d0-9983-71ccca1562bf" />
-<h1></h1>
-<img width="1907" height="944" alt="image" src="https://github.com/user-attachments/assets/03cf3d7e-857e-40d2-950a-6a1b43cfe772" />
-<h1></h1>
-<h3>F1 Pulse. For fans, by fans.</h3>
-<h3>Arnav Dugad © 2026</h3>
+# F1 Pulse
+
+F1 Pulse is a premium, zero-subscription Formula 1 command centre built with plain HTML, CSS and JavaScript. It combines live championship data, race schedules, results, driver profiles, constructor analysis and OpenF1 telemetry in a fast, responsive interface.
+
+## Highlights
+
+- Live race countdowns and local session times
+- Driver and constructor standings with comparison tools
+- Complete race calendar, circuit intelligence and results
+- Driver biographies and team showcase pages
+- Responsive mobile navigation and touch-friendly data tables
+- Installable Progressive Web App with an offline shell
+- Resilient local data fallback when a live API is temporarily unavailable
+- Keyboard navigation, reduced-motion support and accessible focus states
+- No paid API keys, framework subscription or backend required
+
+Data comes from the free [Jolpica F1](https://api.jolpi.ca/) and [OpenF1](https://openf1.org/) APIs. F1 Pulse is an independent fan project and is not affiliated with Formula 1.
+
+## Deploy on Vercel
+
+1. Import this repository into Vercel.
+2. Choose **Other** as the framework preset if Vercel asks.
+3. Leave the build command empty and use `.` as the output directory.
+4. Deploy.
+
+The included `vercel.json` adds sensible security headers and ensures service-worker updates are never served stale.
+
+## Local preview
+
+Serve the repository root with any static file server, then open `index.html`. A server is recommended because offline/PWA behavior does not run from `file://` URLs.
+
+---
+
+F1 Pulse. For fans, by fans.<br>
+Arnav Dugad © 2026

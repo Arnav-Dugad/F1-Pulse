@@ -706,7 +706,7 @@ function iconHTML(svg, className = 'ui-inline-icon') {
 // Add your custom logo URL here (or set window.F1TV_BUTTON_CONFIG before initPage runs).
 const F1TV_BUTTON_CONFIG = {
     href: 'https://f1tv.formula1.com/',
-    logoImageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYt8EM8uBxrBMsLyz0pAvxIrAtFirj4WaVoQ&s',
+    logoImageUrl: '',
     logoAlt: 'F1 TV',
     logoText: 'F1 TV',
     buttonText: 'Watch Live',
@@ -778,6 +778,16 @@ function formatLocalSessionStart(ts) {
 
 // --- Navigation ---
 function buildNav(activePage) {
+    const main = document.querySelector('main');
+    if (main && !main.id) main.id = 'main-content';
+    if (!document.querySelector('.skip-link')) {
+        const skipLink = document.createElement('a');
+        skipLink.className = 'skip-link';
+        skipLink.href = '#main-content';
+        skipLink.textContent = 'Skip to main content';
+        document.body.insertAdjacentElement('afterbegin', skipLink);
+    }
+
     const f1tvConfig = getF1TVButtonConfig();
     const f1tvHref = String(f1tvConfig.href || 'https://f1tv.formula1.com/');
     const f1tvHasLogoImage = !!String(f1tvConfig.logoImageUrl || '').trim();
@@ -812,15 +822,100 @@ function buildNav(activePage) {
                 <span class="nav-f1tv-text">${f1tvConfig.buttonText || 'Watch Live'}</span>
                 ${iconHTML(UI_ICONS.f1tv, 'nav-f1tv-icon')}
             </a>
-            <div class="nav-toggle" id="nav-toggle" onclick="toggleNav()">
+            <button class="nav-toggle" id="nav-toggle" type="button" onclick="toggleNav()" aria-label="Open navigation" aria-controls="nav-links" aria-expanded="false">
                 <span></span><span></span><span></span>
-            </div>
+            </button>
         </div>`;
 }
 
 function toggleNav() {
     const navLinks = document.getElementById('nav-links');
-    if (navLinks) navLinks.classList.toggle('open');
+    const toggle = document.getElementById('nav-toggle');
+    if (!navLinks) return;
+    const isOpen = navLinks.classList.toggle('open');
+    toggle?.setAttribute('aria-expanded', String(isOpen));
+    toggle?.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+    document.body.classList.toggle('nav-menu-open', isOpen);
+}
+
+function createMobileNavigation(activePage) {
+    if (document.getElementById('mobile-nav')) return;
+    const pages = [
+        { id: 'home', label: 'Home', href: 'index.html', icon: UI_ICONS.home },
+        { id: 'drivers', label: 'Drivers', href: 'drivers.html', icon: UI_ICONS.drivers },
+        { id: 'schedule', label: 'Races', href: 'schedule.html', icon: UI_ICONS.flag },
+        { id: 'teams', label: 'Teams', href: 'teams.html', icon: UI_ICONS.teams },
+        { id: 'about', label: 'Paddock', href: 'about.html', icon: UI_ICONS.about },
+    ];
+    const mobileNav = document.createElement('nav');
+    mobileNav.id = 'mobile-nav';
+    mobileNav.className = 'mobile-nav';
+    mobileNav.setAttribute('aria-label', 'Mobile navigation');
+    mobileNav.innerHTML = `<div class="mobile-nav-inner">
+        ${pages.map((page) => `<a href="${page.href}" class="mobile-nav-link ${page.id === activePage ? 'active' : ''}" ${page.id === activePage ? 'aria-current="page"' : ''}>
+            ${iconHTML(page.icon, 'mobile-nav-icon')}
+            <span>${page.label}</span>
+        </a>`).join('')}
+    </div>`;
+    document.body.appendChild(mobileNav);
+}
+
+function initConnectionStatus() {
+    if (document.getElementById('connection-toast')) return;
+    const toast = document.createElement('div');
+    toast.id = 'connection-toast';
+    toast.className = 'connection-toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toast);
+
+    let hideTimer = null;
+    const render = () => {
+        const online = navigator.onLine;
+        toast.className = `connection-toast show ${online ? 'is-online' : 'is-offline'}`;
+        toast.innerHTML = `<span class="connection-dot"></span>${online ? 'Live data connection restored' : 'Offline mode · showing cached data where available'}`;
+        window.clearTimeout(hideTimer);
+        hideTimer = window.setTimeout(() => toast.classList.remove('show'), online ? 2800 : 5200);
+    };
+
+    window.addEventListener('online', render);
+    window.addEventListener('offline', render);
+    if (!navigator.onLine) render();
+}
+
+function registerF1PulseServiceWorker() {
+    if (!('serviceWorker' in navigator) || window.location.protocol === 'file:') return;
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(() => {
+            // The site remains fully functional when service workers are unavailable.
+        });
+    }, { once: true });
+}
+
+function initInteractiveCardAccessibility() {
+    const selector = '[onclick*="openDriverModal"]';
+    const decorate = (root = document) => {
+        const nodes = root.matches?.(selector) ? [root] : root.querySelectorAll?.(selector) || [];
+        nodes.forEach((node) => {
+            if (node.hasAttribute('data-keyboard-ready')) return;
+            node.setAttribute('data-keyboard-ready', 'true');
+            node.setAttribute('role', 'button');
+            node.setAttribute('tabindex', '0');
+            node.addEventListener('keydown', (event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                node.click();
+            });
+        });
+    };
+    decorate();
+    if (window.__f1InteractiveCardObserver) return;
+    window.__f1InteractiveCardObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) decorate(node);
+        }));
+    });
+    window.__f1InteractiveCardObserver.observe(document.body, { childList: true, subtree: true });
 }
 
 function resolveBackFallbackURL(activePage) {
@@ -1928,6 +2023,7 @@ function initPage(activePage) {
     document.body.classList.add(pageClass);
     try { localStorage.removeItem('f1pulse_recent_races_v1'); } catch (e) { /* ignore */ }
     buildNav(activePage);
+    createMobileNavigation(activePage);
     createDriverBulletinStrip();
     buildFooter();
     injectGlobalPageVisualLayer(activePage);
@@ -1939,12 +2035,23 @@ function initPage(activePage) {
         createQuickActionsDock(activePage);
     }
     createFloatingStandingsWidget(activePage);
+    initConnectionStatus();
+    registerF1PulseServiceWorker();
+    initInteractiveCardAccessibility();
     initGlobalIconDecoration();
     checkLiveSession();
     document.querySelectorAll('.nav-links a').forEach(link => {
         link.addEventListener('click', () => {
             document.getElementById('nav-links')?.classList.remove('open');
+            document.getElementById('nav-toggle')?.setAttribute('aria-expanded', 'false');
+            document.body.classList.remove('nav-menu-open');
         });
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        document.getElementById('nav-links')?.classList.remove('open');
+        document.getElementById('nav-toggle')?.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('nav-menu-open');
     });
 }
 

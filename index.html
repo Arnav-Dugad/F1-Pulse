@@ -5,12 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>F1 Pulse - Live Formula 1 Stats & Schedules</title>
     <meta name="description" content="Real-time Formula 1 standings, race schedules, driver stats, and live timing. Free F1 data for fans.">
+    <meta name="theme-color" content="#07080c">
+    <meta name="color-scheme" content="dark">
+    <meta name="application-name" content="F1 Pulse">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="F1 Pulse — The Formula 1 Command Centre">
+    <meta property="og:description" content="Live race context, standings, schedules and deep F1 intelligence in one premium dashboard.">
+    <meta property="og:image" content="/public/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="/public/og.png">
+    <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23ff1801'/><stop offset='100%25' stop-color='%23e10600'/></linearGradient></defs><rect fill='url(%23g)' rx='16' width='100' height='100'/><text x='50' y='70' font-size='54' font-weight='900' fill='white' text-anchor='middle' font-family='sans-serif'>F1</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://flagcdn.com">
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/premium.css">
 </head>
 <body>
     <nav id="main-nav"></nav>
@@ -37,6 +48,46 @@
             <!-- Season Progress -->
             <section class="section" id="season-progress-section" style="display:none">
                 <div id="season-progress"></div>
+            </section>
+
+            <section class="section race-control-hub" aria-labelledby="race-control-title">
+                <div class="race-control-heading">
+                    <div>
+                        <p class="race-control-kicker">Your F1 command centre</p>
+                        <h2 id="race-control-title">Everything on the grid. <span class="text-red">One pulse.</span></h2>
+                    </div>
+                    <p>Move from live context to deep championship analysis without losing the rhythm of the race weekend.</p>
+                </div>
+                <div class="race-control-grid">
+                    <a href="schedule.html" class="race-control-card race-control-card-featured">
+                        <span class="race-control-index">01</span>
+                        <span class="race-control-icon" aria-hidden="true">◉</span>
+                        <strong>Race weekends</strong>
+                        <span>Session times, circuit intelligence and complete results.</span>
+                        <em>Open calendar →</em>
+                    </a>
+                    <a href="drivers.html" class="race-control-card">
+                        <span class="race-control-index">02</span>
+                        <span class="race-control-icon" aria-hidden="true">∆</span>
+                        <strong>Driver intelligence</strong>
+                        <span>Standings, form, head-to-head comparisons and profiles.</span>
+                        <em>View drivers →</em>
+                    </a>
+                    <a href="teams.html" class="race-control-card">
+                        <span class="race-control-index">03</span>
+                        <span class="race-control-icon" aria-hidden="true">◇</span>
+                        <strong>Constructor battle</strong>
+                        <span>Team momentum, points progress and teammate line-ups.</span>
+                        <em>View teams →</em>
+                    </a>
+                    <a href="about.html" class="race-control-card">
+                        <span class="race-control-index">04</span>
+                        <span class="race-control-icon" aria-hidden="true">⌁</span>
+                        <strong>Inside the paddock</strong>
+                        <span>Rich biographies, team stories and season context.</span>
+                        <em>Explore profiles →</em>
+                    </a>
+                </div>
             </section>
 
             <!-- Last Race Podium -->

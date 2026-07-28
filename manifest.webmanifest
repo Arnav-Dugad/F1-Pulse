@@ -1,0 +1,11 @@
+{
+  "name": "F1 Pulse",
+  "short_name": "F1 Pulse",
+  "description": "Live Formula 1 schedules, standings, race results and driver intelligence.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#07080c",
+  "theme_color": "#e10600",
+  "orientation": "any",
+  "icons": []
+}

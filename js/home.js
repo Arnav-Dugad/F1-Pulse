@@ -65,6 +65,18 @@
         title.textContent = race.raceName || 'Grand Prix';
         subtitle.innerHTML = `${countryFlagHTML(race.Circuit?.Location?.country, 28)} ${race.Circuit?.circuitName || ''} — ${race.Circuit?.Location?.locality || ''}, ${race.Circuit?.Location?.country || ''}`;
 
+        if (!document.getElementById('hero-actions')) {
+            const actions = document.createElement('div');
+            actions.id = 'hero-actions';
+            actions.className = 'hero-actions';
+            actions.innerHTML = `
+                <a class="hero-action hero-action-primary" href="race-detail.html?season=${encodeURIComponent(race.season || new Date().getFullYear())}&round=${encodeURIComponent(race.round || '')}">
+                    Open race centre <span aria-hidden="true">→</span>
+                </a>
+                <a class="hero-action hero-action-secondary" href="schedule.html">Explore full calendar</a>`;
+            subtitle.insertAdjacentElement('afterend', actions);
+        }
+
         // Add large country flag to hero
         const country = race.Circuit?.Location?.country;
         const heroFlagISO = getCountryISO(country);
@@ -135,6 +147,42 @@
 
         // Render race weekend schedule below countdown
         renderWeekendSchedule(race);
+        renderHeroCommandStrip(race);
+    }
+
+    function renderHeroCommandStrip(race) {
+        const heroContent = document.querySelector('.hero-content');
+        if (!heroContent || document.getElementById('hero-command-strip')) return;
+        const strip = document.createElement('div');
+        strip.id = 'hero-command-strip';
+        strip.className = 'hero-command-strip';
+        const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local time';
+        strip.innerHTML = `
+            <div class="hero-command-item">
+                <span class="hero-command-signal"></span>
+                <span><small>Data feed</small><strong>Jolpica + OpenF1</strong></span>
+            </div>
+            <div class="hero-command-item">
+                <span><small>Season</small><strong>${race.season || new Date().getFullYear()} · Round ${race.round || '—'}</strong></span>
+            </div>
+            <div class="hero-command-item">
+                <span><small>Your timezone</small><strong>${zone.replaceAll('_', ' ')}</strong></span>
+            </div>
+            <div class="hero-command-item hero-command-clock">
+                <span><small>Local time</small><strong id="hero-local-clock">--:--</strong></span>
+            </div>`;
+        heroContent.appendChild(strip);
+        const updateClock = () => {
+            const clock = document.getElementById('hero-local-clock');
+            if (clock) {
+                clock.textContent = new Date().toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
+            }
+        };
+        updateClock();
+        window.setInterval(updateClock, 30000);
     }
 
     function renderWeekendSchedule(race) {

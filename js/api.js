@@ -9,6 +9,8 @@ const F1API = (() => {
 
     const CACHE_DURATION = 5 * 60 * 1000;      // 5 minutes for live data
     const CACHE_DURATION_LONG = 60 * 60 * 1000; // 1 hour for standings/schedule
+    const REQUEST_TIMEOUT = 12000;
+    const STORAGE_PREFIX = 'f1pulse_api_v2:';
     const cache = new Map();
 
     function getCached(key) {
@@ -22,16 +24,54 @@ const F1API = (() => {
 
     function setCache(key, data, duration = CACHE_DURATION) {
         cache.set(key, { data, timestamp: Date.now(), duration });
+        try {
+            const payload = JSON.stringify({
+                data,
+                timestamp: Date.now(),
+                duration,
+            });
+            const isHeavyTelemetry = /\/(?:car_data|location|laps|team_radio)\?/i.test(key);
+            if (!isHeavyTelemetry && payload.length < 750000) {
+                localStorage.setItem(`${STORAGE_PREFIX}${key}`, payload);
+            }
+        } catch (e) {
+            // Storage can be unavailable in private browsing; in-memory caching still works.
+        }
+    }
+
+    function getStored(key, maxAge = 7 * 24 * 60 * 60 * 1000) {
+        try {
+            const raw = localStorage.getItem(`${STORAGE_PREFIX}${key}`);
+            if (!raw) return null;
+            const entry = JSON.parse(raw);
+            if (!entry?.timestamp || Date.now() - entry.timestamp > maxAge) return null;
+            return entry.data;
+        } catch (e) {
+            return null;
+        }
     }
 
     async function fetchJSON(url, cacheDuration = CACHE_DURATION) {
         const cached = getCached(url);
         if (cached) return cached;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`API error: ${res.status}`);
-        const data = await res.json();
-        setCache(url, data, cacheDuration);
-        return data;
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+        try {
+            const res = await fetch(url, {
+                signal: controller.signal,
+                headers: { Accept: 'application/json' },
+            });
+            if (!res.ok) throw new Error(`API error: ${res.status}`);
+            const data = await res.json();
+            setCache(url, data, cacheDuration);
+            return data;
+        } catch (error) {
+            const stored = getStored(url);
+            if (stored) return stored;
+            throw error;
+        } finally {
+            clearTimeout(timeout);
+        }
     }
 
     // ========================================
@@ -67,7 +107,20 @@ const F1API = (() => {
             `${JOLPICA_BASE}/current/next.json`,
             CACHE_DURATION
         );
-        return data?.MRData?.RaceTable?.Races?.[0] || null;
+        const nextFromEndpoint = data?.MRData?.RaceTable?.Races?.[0] || null;
+        const raceStart = nextFromEndpoint
+            ? new Date(`${nextFromEndpoint.date}T${nextFromEndpoint.time || '14:00:00Z'}`).getTime()
+            : 0;
+        const endpointStillCurrent = Number.isFinite(raceStart) && raceStart > Date.now() - (4 * 60 * 60 * 1000);
+        if (endpointStillCurrent) return nextFromEndpoint;
+
+        // Jolpica can briefly keep /next pointed at the race that just finished.
+        // Deriving the next future round from the calendar prevents a stale hero.
+        const schedule = await getSchedule();
+        return schedule.find((race) => {
+            const start = new Date(`${race.date}T${race.time || '14:00:00Z'}`).getTime();
+            return Number.isFinite(start) && start > Date.now() - (4 * 60 * 60 * 1000);
+        }) || nextFromEndpoint;
     }
 
     async function getLastRaceResults() {
