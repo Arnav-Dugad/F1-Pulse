@@ -1,6 +1,6 @@
 # F1 Pulse
 
-F1 Pulse is a premium, zero-subscription Formula 1 command centre built with plain HTML, CSS and JavaScript. It combines live championship data, race schedules, results, driver profiles, constructor analysis and OpenF1 telemetry in a fast, responsive interface.
+F1 Pulse is a premium, zero-subscription Formula 1 companion built with plain HTML, CSS and JavaScript. It combines live championship data, race schedules, results, driver profiles, constructor analysis and OpenF1 telemetry in a fast, responsive interface.
 
 ## Highlights
 

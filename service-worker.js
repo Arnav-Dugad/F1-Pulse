@@ -1,4 +1,4 @@
-const CACHE_NAME = 'f1-pulse-shell-v4';
+const CACHE_NAME = 'f1-pulse-shell-v5';
 const APP_SHELL = [
     './',
     './index.html',
@@ -12,6 +12,7 @@ const APP_SHELL = [
     './404.html',
     './css/core.css',
     './css/premium.css',
+    './css/mobile.css',
     './css/pages/about.css',
     './css/pages/standings.css',
     './css/pages/race.css',
@@ -21,6 +22,7 @@ const APP_SHELL = [
     './icons/icon-180.png',
     './icons/icon-192.png',
     './icons/icon-512.png',
+    './icons/f1-tv-logo.svg',
     './js/api.js',
     './js/components.js',
     './js/home.js',

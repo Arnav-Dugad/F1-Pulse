@@ -10,7 +10,7 @@
     <meta name="application-name" content="F1 Pulse">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="F1 Pulse — The Formula 1 Command Centre">
+    <meta property="og:title" content="F1 Pulse — Live Formula 1 Intelligence">
     <meta property="og:description" content="Live race context, standings, schedules and deep F1 intelligence in one premium dashboard.">
     <meta property="og:image" content="/og.png">
     <meta name="twitter:card" content="summary_large_image">
@@ -24,6 +24,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/core.css">
     <link rel="stylesheet" href="css/premium.css">
+    <link rel="stylesheet" href="css/mobile.css" media="(max-width: 760px)">
 </head>
 <body>
     <nav id="main-nav"></nav>
@@ -51,46 +52,6 @@
             <div class="section" id="season-progress-section" style="display:none">
                 <div id="season-progress"></div>
             </div>
-
-            <section class="section race-control-hub" aria-labelledby="race-control-title">
-                <div class="race-control-heading">
-                    <div>
-                        <p class="race-control-kicker">Your F1 command centre</p>
-                        <h2 id="race-control-title">Everything on the grid. <span class="text-red">One pulse.</span></h2>
-                    </div>
-                    <p>Move from live context to deep championship analysis without losing the rhythm of the race weekend.</p>
-                </div>
-                <div class="race-control-grid">
-                    <a href="schedule.html" class="race-control-card race-control-card-featured">
-                        <span class="race-control-index">01</span>
-                        <span class="race-control-icon" aria-hidden="true">◉</span>
-                        <strong>Race weekends</strong>
-                        <span>Session times, circuit intelligence and complete results.</span>
-                        <em>Open calendar →</em>
-                    </a>
-                    <a href="drivers.html" class="race-control-card">
-                        <span class="race-control-index">02</span>
-                        <span class="race-control-icon" aria-hidden="true">∆</span>
-                        <strong>Driver intelligence</strong>
-                        <span>Standings, form, head-to-head comparisons and profiles.</span>
-                        <em>View drivers →</em>
-                    </a>
-                    <a href="teams.html" class="race-control-card">
-                        <span class="race-control-index">03</span>
-                        <span class="race-control-icon" aria-hidden="true">◇</span>
-                        <strong>Constructor battle</strong>
-                        <span>Team momentum, points progress and teammate line-ups.</span>
-                        <em>View teams →</em>
-                    </a>
-                    <a href="about.html" class="race-control-card">
-                        <span class="race-control-index">04</span>
-                        <span class="race-control-icon" aria-hidden="true">⌁</span>
-                        <strong>Inside the paddock</strong>
-                        <span>Rich biographies, team stories and season context.</span>
-                        <em>Explore profiles →</em>
-                    </a>
-                </div>
-            </section>
 
             <!-- Last Race Podium -->
             <section class="section" id="last-podium-section" style="display:none">

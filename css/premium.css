@@ -131,6 +131,15 @@ body::before {
     color: #111;
 }
 
+.nav-f1tv-logo-img {
+    width: 76px;
+    height: auto;
+    max-width: none;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
 .hero {
     min-height: min(760px, calc(100svh - var(--nav-height)));
     padding-top: clamp(76px, 10vw, 132px);
@@ -147,7 +156,13 @@ body::before {
 }
 
 .hero-content {
+    width: 100%;
+    min-width: 0;
     max-width: 1120px;
+}
+
+body.has-bulletin-strip .page-content {
+    padding-top: calc(var(--nav-height) + var(--bulletin-offset));
 }
 
 .hero-label {
@@ -323,116 +338,6 @@ body::before {
     box-shadow: 0 0 0 5px rgba(52, 223, 139, 0.1), 0 0 14px rgba(52, 223, 139, 0.6);
 }
 
-.race-control-hub {
-    margin-top: clamp(52px, 7vw, 90px);
-    padding: clamp(24px, 4vw, 46px);
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 28px;
-    background:
-        radial-gradient(620px 260px at 0% 0%, rgba(255, 30, 18, 0.13), transparent 64%),
-        linear-gradient(145deg, rgba(17, 21, 30, 0.92), rgba(8, 10, 15, 0.92));
-    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.3);
-}
-
-.race-control-heading {
-    display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
-    align-items: end;
-    gap: 24px;
-    margin-bottom: 26px;
-}
-
-.race-control-heading h2 {
-    max-width: 720px;
-    margin: 0;
-    font-size: clamp(2rem, 4vw, 4.3rem);
-    line-height: 0.96;
-    letter-spacing: -0.035em;
-    text-transform: none;
-}
-
-.race-control-heading > p {
-    max-width: 450px;
-    color: var(--f1-gray);
-    font-size: 0.96rem;
-}
-
-.race-control-kicker {
-    margin-bottom: 10px;
-    color: #ff6b62;
-    font-size: 0.68rem;
-    font-weight: var(--fw-black);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-
-.race-control-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-}
-
-.race-control-card {
-    min-height: 250px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.025);
-    transition: transform 200ms ease, border-color 200ms ease, background 200ms ease;
-}
-
-.race-control-card:hover {
-    color: #fff;
-    transform: translateY(-5px);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.055);
-}
-
-.race-control-card-featured {
-    border-color: rgba(255, 30, 18, 0.28);
-    background: linear-gradient(155deg, rgba(255, 30, 18, 0.16), rgba(255, 255, 255, 0.025));
-}
-
-.race-control-index {
-    color: var(--f1-gray);
-    font-size: 0.62rem;
-    letter-spacing: 1.4px;
-}
-
-.race-control-icon {
-    margin: auto 0 16px;
-    color: #ff6258;
-    font-size: 2.1rem;
-    line-height: 1;
-}
-
-.race-control-card strong {
-    margin-bottom: 6px;
-    font-size: 1.1rem;
-    line-height: 1.1;
-    text-transform: uppercase;
-}
-
-.race-control-card > span:not(.race-control-index, .race-control-icon) {
-    color: var(--f1-gray);
-    font-size: 0.78rem;
-    line-height: 1.45;
-}
-
-.race-control-card em {
-    margin-top: 16px;
-    color: #fff;
-    font-size: 0.68rem;
-    font-style: normal;
-    font-weight: var(--fw-bold);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
 .section-header h2 {
     letter-spacing: -0.025em;
 }
@@ -504,9 +409,6 @@ body::before {
         display: none;
     }
 
-    .race-control-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
 @media (max-width: 900px) {
@@ -592,10 +494,6 @@ body::before {
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .race-control-heading {
-        grid-template-columns: 1fr;
-        align-items: start;
-    }
 
     .driver-bulletin-strip {
         min-height: 44px;
@@ -776,10 +674,6 @@ body::before {
         right: 14px;
     }
 
-    .race-control-hub {
-        padding: 22px 16px;
-        border-radius: 22px;
-    }
 }
 
 @media (max-width: 600px) {
@@ -907,17 +801,6 @@ body::before {
         white-space: normal;
     }
 
-    .race-control-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .race-control-card {
-        min-height: 190px;
-    }
-
-    .race-control-heading h2 {
-        font-size: clamp(2.15rem, 11vw, 3.3rem);
-    }
 
     .section-header {
         align-items: flex-end;
@@ -1012,8 +895,7 @@ body::before {
     .driver-card:hover,
     .team-card:hover,
     .race-card:hover,
-    .battle-card:hover,
-    .race-control-card:hover {
+    .battle-card:hover {
         transform: none;
     }
 }

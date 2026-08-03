@@ -43,12 +43,31 @@ for (const file of fs.readdirSync(root).filter((name) => name.endsWith('.html'))
         }
     }
 
+    if (!html.includes('css/premium.css')) fail(`${file}: premium stylesheet is not linked`);
+    if (!html.includes('css/mobile.css')) fail(`${file}: mobile stylesheet is not linked`);
+    if (!html.includes('href="css/mobile.css" media="(max-width: 760px)"')) {
+        fail(`${file}: mobile bundle is not conditionally loaded for small screens`);
+    }
+    if (html.indexOf('css/mobile.css') < html.indexOf('css/premium.css')) {
+        fail(`${file}: mobile stylesheet must load after the premium layer`);
+    }
     if (file !== '404.html') {
-        if (!html.includes('css/premium.css')) fail(`${file}: premium stylesheet is not linked`);
         if (!html.includes('manifest.webmanifest')) fail(`${file}: web app manifest is not linked`);
     }
     if (!html.includes('css/core.css')) fail(`${file}: shared core stylesheet is not linked`);
     if (html.includes('css/styles.css')) fail(`${file}: legacy monolithic stylesheet is still linked`);
+}
+
+if (read('index.html').includes('Everything on the grid') || read('index.html').includes('One pulse')) {
+    fail('Home: removed command-centre copy is still present');
+}
+
+const componentsSource = read('js/components.js');
+if (!componentsSource.includes("logoImageUrl: 'icons/f1-tv-logo.svg'")) {
+    fail('Navigation: authentic F1 TV logo is not configured');
+}
+if (!componentsSource.includes("matchMedia('(min-width: 761px)')")) {
+    fail('Navigation: desktop-only floating utilities are not gated on mobile');
 }
 
 const expectedPageBundles = {
@@ -64,7 +83,7 @@ for (const [file, bundle] of Object.entries(expectedPageBundles)) {
     if (!read(file).includes(bundle)) fail(`${file}: expected page bundle "${bundle}" is not linked`);
 }
 
-for (const required of ['api/f1.mjs', 'css/core.css', 'css/premium.css', 'css/pages/about.css', 'css/pages/standings.css', 'css/pages/race.css', 'css/pages/schedule.css', 'manifest.webmanifest', 'service-worker.js', 'vercel.json', 'robots.txt', 'og.png', 'favicon.svg', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png']) {
+for (const required of ['api/f1.mjs', 'css/core.css', 'css/premium.css', 'css/mobile.css', 'css/pages/about.css', 'css/pages/standings.css', 'css/pages/race.css', 'css/pages/schedule.css', 'manifest.webmanifest', 'service-worker.js', 'vercel.json', 'robots.txt', 'og.png', 'favicon.svg', 'icons/f1-tv-logo.svg', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png']) {
     if (!fs.existsSync(path.join(root, required))) fail(`missing required file "${required}"`);
 }
 
@@ -79,6 +98,7 @@ if (fs.existsSync(path.join(root, 'public'))) {
 for (const file of [
     'css/core.css',
     'css/premium.css',
+    'css/mobile.css',
     'css/pages/about.css',
     'css/pages/standings.css',
     'css/pages/race.css',

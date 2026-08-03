@@ -859,10 +859,9 @@ function iconHTML(svg, className = 'ui-inline-icon') {
     return `<span class="${className}" aria-hidden="true">${svg}</span>`;
 }
 
-// Add your custom logo URL here (or set window.F1TV_BUTTON_CONFIG before initPage runs).
 const F1TV_BUTTON_CONFIG = {
     href: 'https://f1tv.formula1.com/',
-    logoImageUrl: '',
+    logoImageUrl: 'icons/f1-tv-logo.svg',
     logoAlt: 'F1 TV',
     logoText: 'F1 TV',
     buttonText: 'Watch Live',
@@ -2247,12 +2246,13 @@ function initPage(activePage) {
     injectGlobalPageVisualLayer(activePage);
     createPageBackButton(activePage);
     initScrollProgressRail();
-    initScrollTop();
+    const desktopUtilities = window.matchMedia('(min-width: 761px)').matches;
+    if (desktopUtilities) initScrollTop();
     createDriverModal();
-    if (activePage === 'home') {
+    if (desktopUtilities && activePage === 'home') {
         createQuickActionsDock(activePage);
     }
-    createFloatingStandingsWidget(activePage);
+    if (desktopUtilities) createFloatingStandingsWidget(activePage);
     initConnectionStatus();
     registerF1PulseServiceWorker();
     initInteractiveCardAccessibility();
