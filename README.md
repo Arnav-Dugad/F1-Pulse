@@ -38,6 +38,12 @@ The deployment publishes `f1-pulse` to your Cloudflare account and prints its `w
 
 `_headers` adds security headers and revalidates service-worker updates. `wrangler.jsonc` preserves existing `.html` routes and the custom 404 page. Add a custom domain from the Worker's Cloudflare dashboard if desired.
 
+## Automatic GitHub deployments
+
+The existing `f1-pulse` Worker is connected to [Arnav-Dugad/F1-Pulse](https://github.com/Arnav-Dugad/F1-Pulse) through Cloudflare Workers Builds. Pushes to `main` automatically run `npm test && npm run build`, then deploy with `npx wrangler deploy` from the repository root. Preview builds are enabled for other branches. Build authentication is managed by Cloudflare; no credentials belong in this repository.
+
+Live site: [f1-pulse.arnavrival12.workers.dev](https://f1-pulse.arnavrival12.workers.dev).
+
 ## Existing Vercel deployment
 
 1. Import this repository into Vercel.
