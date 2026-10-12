@@ -89,7 +89,7 @@ export default async function handler(request) {
     const incoming = new URL(request.url);
     const providerName = incoming.searchParams.get('provider') || '';
     const path = incoming.searchParams.get('path') || '';
-    const provider = PROVIDERS[providerName];
+    const provider = Object.hasOwn(PROVIDERS, providerName) ? PROVIDERS[providerName] : null;
 
     if (!provider || !isValidPath(providerName, path)) {
         return jsonResponse({ error: 'Unsupported Formula 1 API route' }, 400);

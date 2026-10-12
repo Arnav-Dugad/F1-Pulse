@@ -2240,6 +2240,7 @@ function initPage(activePage) {
     document.body.classList.add(pageClass);
     try { localStorage.removeItem('f1pulse_recent_races_v1'); } catch (e) { /* ignore */ }
     buildNav(activePage);
+    initPremiumExperience();
     createMobileNavigation(activePage);
     createDriverBulletinStrip();
     buildFooter();

@@ -13,15 +13,32 @@ F1 Pulse is a premium, zero-subscription Formula 1 companion built with plain HT
 - Driver biographies and team showcase pages
 - Responsive mobile navigation and touch-friendly data tables
 - Installable Progressive Web App with an offline shell
-- Allowlisted Vercel Edge API cache with endpoint-specific freshness windows
+- Allowlisted Cloudflare Worker API cache with endpoint-specific freshness windows
 - Shared and page-specific CSS bundles for faster route loading
 - Resilient local data fallback when a live API is temporarily unavailable
 - Keyboard navigation, reduced-motion support and accessible focus states
+- Searchable page finder with Ctrl/Cmd K and native dialog focus management
+- Saved compact-view and calm-motion preferences
 - No paid API keys or framework subscription required
 
 Data comes from the free [Jolpica F1](https://api.jolpi.ca/) and [OpenF1](https://openf1.org/) APIs. F1 Pulse is an independent fan project and is not affiliated with Formula 1.
 
-## Deploy on Vercel
+## Deploy on Cloudflare
+
+Install Node.js 22 or newer, then run:
+
+```sh
+npm ci
+npx wrangler login
+npm test
+npm run deploy
+```
+
+The deployment publishes `f1-pulse` to your Cloudflare account and prints its `workers.dev` URL. No API secrets or database provisioning are required. The build copies only public website assets to `dist/`; source, tests, credentials and dependencies are excluded. `cloudflare/worker.mjs` serves the homepage and `/api/f1`, while the asset binding serves the other pages. The shared proxy keeps Jolpica/OpenF1 validation, request timeouts and endpoint freshness windows. Successful API responses are cached through Cloudflare's Cache API; errors are never cached.
+
+`_headers` adds security headers and revalidates service-worker updates. `wrangler.jsonc` preserves existing `.html` routes and the custom 404 page. Add a custom domain from the Worker's Cloudflare dashboard if desired.
+
+## Existing Vercel deployment
 
 1. Import this repository into Vercel.
 2. Choose **Other** as the framework preset if Vercel asks.
@@ -32,7 +49,9 @@ The included `vercel.json` adds sensible security headers and ensures service-wo
 
 ## Local preview
 
-Serve the repository root with any static file server, then open `index.html`. A server is recommended because offline/PWA behavior does not run from `file://` URLs.
+Run `npm run dev` and open `http://localhost:8787` to preview the site and Worker API together. A plain static server on another port also works, using the data providers directly. Offline/PWA behavior does not run from `file://` URLs.
+
+See [PREMIUM-ROADMAP.md](PREMIUM-ROADMAP.md) for 60 advanced feature, UI, data and animation ideas. These are proposed future additions, separate from the features implemented in this repository.
 
 ---
 

@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="css/core.css">
     <link rel="stylesheet" href="css/premium.css">
     <link rel="stylesheet" href="css/mobile.css" media="(max-width: 760px)">
+    <link rel="stylesheet" href="css/finish.css">
 </head>
 <body>
     <nav id="main-nav"></nav>
@@ -43,6 +44,18 @@
         </section>
 
         <div class="container">
+            <div class="dashboard-toolbar" aria-label="Dashboard controls">
+                <div class="dashboard-shortcuts">
+                    <span class="toolbar-label">Your race briefing</span>
+                    <a href="drivers.html">Championship ↗</a>
+                    <a href="schedule.html">Race calendar ↗</a>
+                    <a href="#latest-results-section">Latest results ↓</a>
+                </div>
+                <div class="dashboard-preferences">
+                    <button class="preference-btn" type="button" data-preference="density" aria-pressed="false">Compact view</button>
+                    <button class="preference-btn" type="button" data-preference="motion" aria-pressed="false">Calm motion</button>
+                </div>
+            </div>
             <!-- Quick Stats -->
             <div class="section" id="quick-stats-section" style="display:none">
                 <div class="quick-stats" id="quick-stats"></div>
@@ -138,6 +151,7 @@
     <footer id="main-footer"></footer>
 
     <script src="js/api.js"></script>
+    <script src="js/experience.js"></script>
     <script src="js/components.js"></script>
     <script src="js/home.js"></script>
 </body>

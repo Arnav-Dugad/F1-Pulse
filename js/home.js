@@ -7,38 +7,29 @@
     document.body.classList.add('home-page');
     injectHomeVisualLayers();
 
-    let enrichedDrivers = {};
-    try {
-        enrichedDrivers = await Promise.race([
+    // Start optional portraits alongside race data so they do not delay the briefing.
+    const enrichmentPromise = Promise.race([
             loadEnrichedDrivers(),
             new Promise((resolve) => setTimeout(() => resolve({}), 2800)),
-        ]) || {};
-    } catch (e) {
-        enrichedDrivers = {};
-    }
+        ]).catch(() => ({}));
 
     // Helper: safely extract value from Promise.allSettled result
     const safeValue = (result) => result.status === 'fulfilled' ? result.value : null;
 
     // Load all data concurrently
-    const [nextRace, lastRace, driverStandings, constructorStandings, schedule, finishingStatus] = await Promise.allSettled([
-        F1API.getNextRace(),
+    const [nextRace, lastRace, driverStandings, constructorStandings, schedule, finishingStatus, enrichedResult] = await Promise.allSettled([
+        F1API.getNextRace().then((race) => { renderHero(race); return race; }),
         F1API.getLastRaceResults(),
         F1API.getDriverStandings(),
         F1API.getConstructorStandings(),
         F1API.getSchedule(),
         F1API.getFinishingStatus(),
+        enrichmentPromise,
     ]);
-
-    // Fetch team logos from Wikipedia using constructor data
-    if (safeValue(constructorStandings)?.length) {
-        await fetchTeamLogos(safeValue(constructorStandings));
-    }
-
-    renderHero(safeValue(nextRace));
+    const enrichedDrivers = safeValue(enrichedResult) || {};
+    if (nextRace.status !== 'fulfilled') renderHero(null);
     renderQuickStats(safeValue(lastRace), safeValue(driverStandings), safeValue(schedule), enrichedDrivers, safeValue(finishingStatus));
     renderSeasonProgress(safeValue(schedule));
-    await renderUpcomingRaces(safeValue(schedule));
     renderChampionshipBattle(safeValue(driverStandings), enrichedDrivers);
     renderTopDrivers(safeValue(driverStandings), enrichedDrivers);
     renderConstructorBattle(safeValue(constructorStandings));
@@ -47,6 +38,12 @@
     renderLastPodium(safeValue(lastRace), enrichedDrivers);
     renderLatestResults(safeValue(lastRace), enrichedDrivers);
     renderFastestLaps(safeValue(lastRace), enrichedDrivers);
+    await renderUpcomingRaces(safeValue(schedule));
+    if (safeValue(constructorStandings)?.length) {
+        fetchTeamLogos(safeValue(constructorStandings)).then(() => {
+            renderTopConstructors(safeValue(constructorStandings), enrichedDrivers);
+        }).catch(() => {});
+    }
 
     // --- Hero / Countdown ---
     function renderHero(race) {
@@ -56,8 +53,10 @@
         const countdownEl = document.getElementById('countdown');
 
         if (!race) {
-            title.textContent = 'Season Loading...';
-            subtitle.textContent = 'Waiting for schedule data';
+            label.textContent = 'Race calendar';
+            title.textContent = 'The next lights out.';
+            subtitle.textContent = 'The next race is not available right now. Explore the calendar for the latest schedule.';
+            countdownEl.innerHTML = '<a class="hero-action hero-action-primary" href="schedule.html">Explore race calendar →</a>';
             return;
         }
 

@@ -22,8 +22,8 @@ const F1API = (() => {
                 return url;
             }
 
-            // A plain local static server does not run Vercel Functions.
-            if (['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)) {
+            // Wrangler's standard preview port runs the same proxy as production.
+            if (['localhost', '127.0.0.1', '::1'].includes(window.location.hostname) && window.location.port !== '8787') {
                 return url;
             }
 
