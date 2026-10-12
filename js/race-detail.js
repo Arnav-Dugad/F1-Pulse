@@ -538,6 +538,26 @@ function switchTab(tab) {
                 renderPodium(race.Results);
                 renderRaceResults(race.Results);
                 renderRaceAnalytics(race.Results);
+                const lapTab = document.querySelector('[data-tab="laptimes"]');
+                const lapPanel = document.getElementById('laptimes-results');
+                if (lapTab && lapPanel) {
+                    lapTab.style.display = '';
+                    lapPanel.textContent = 'Select Lap Times to load the complete lap chart.';
+                    let loadingLaps = false, lapsLoaded = false;
+                    lapTab.addEventListener('click', async () => {
+                        if (loadingLaps || lapsLoaded) return;
+                        loadingLaps = true;
+                        showLoading(lapPanel, 'Loading complete lap timing');
+                        try {
+                            const lapData = await F1API.getLapTimes(raceInfo.season || season, raceInfo.round || round);
+                            if (lapData.length) renderLapChart(lapData, race.Results);
+                            else lapPanel.textContent = 'Lap timing is not published for this race.';
+                            lapsLoaded = true;
+                        } catch {
+                            showError(lapPanel, 'Lap timing is temporarily unavailable. Select Lap Times again to retry.');
+                        } finally { loadingLaps = false; }
+                    });
+                }
             }
             if (hasQualResults) renderQualifyingResults(qual.QualifyingResults);
             if (hasSprintResults) renderSprintResults(sprint.SprintResults);
@@ -697,17 +717,6 @@ function switchTab(tab) {
                 }, 12_000);
             }
 
-            // Load lap times from Jolpica (separate call, can be slow)
-            if (hasResults) {
-                try {
-                    const lapData = await F1API.getLapTimes(raceInfo.season || season, raceInfo.round || round);
-                    if (lapData?.length) {
-                        renderLapChart(lapData, race?.Results);
-                        const ltTab = document.querySelector('[data-tab="laptimes"]');
-                        if (ltTab) ltTab.style.display = '';
-                    }
-                } catch (e) { /* lap times non-critical */ }
-            }
             reorderRaceDetailSections();
         } catch (e) {
             console.log('OpenF1 enrichment unavailable:', e.message);

@@ -1950,7 +1950,7 @@ async function openDriverModal(driverId, constructorId, season) {
 
                 statsHTML += `
                 <div class="driver-chart-section">
-                    <div class="driver-chart-label">${iconHTML(UI_ICONS.trophy, 'driver-chart-icon')}Points Progression</div>
+                    <div class="driver-chart-label">${iconHTML(UI_ICONS.trophy, 'driver-chart-icon')}Race Points Progression</div>
                     <div class="driver-chart-meta">
                         <span>Total ${chartPoints[chartPoints.length - 1]?.pts || 0} pts</span>
                         <span>Avg ${(chartPoints[chartPoints.length - 1]?.pts / chartPoints.length).toFixed(1)} pts/race</span>

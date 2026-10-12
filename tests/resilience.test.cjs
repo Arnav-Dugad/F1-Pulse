@@ -65,7 +65,7 @@ test('request queue limits concurrent upstream calls to three', async () => {
         await new Promise(resolve => setTimeout(resolve, 5));
         active--; return response(standings());
     });
-    await Promise.all(Array.from({ length: 8 }, (_, i) => context.api.getDriverStandings(2000 + i)));
+    await Promise.all(Array.from({ length: 8 }, (_, i) => context.api.getOpenF1Weather(2000 + i)));
     assert.equal(peak, 3);
 });
 
@@ -223,4 +223,28 @@ test('lap pagination retrieves final laps and merges split timing rows', async (
     assert.equal(laps.length, 1);
     assert.equal(laps[0].Timings.length, 2);
     assert.equal(laps[0].Timings[1].driverId, 'last');
+});
+
+test('season pagination respects a provider cap below the requested limit', async () => {
+    const offsets = [];
+    const context = apiContext(async url => {
+        const offset = Number(new URL(url).searchParams.get('offset'));
+        offsets.push(offset);
+        return response({ MRData: { total: '3', limit: '1', RaceTable: { Races: [{ round: String(offset + 1), Results: [{ Driver: driver }] }] } } });
+    });
+    const races = await context.api.getSeasonResults(2099);
+    assert.deepEqual(offsets, [0, 1, 2]);
+    assert.equal(races.length, 3);
+});
+
+test('lap pagination respects the provider limit and reaches the final lap', async () => {
+    const offsets = [];
+    const context = apiContext(async url => {
+        const offset = Number(new URL(url).searchParams.get('offset'));
+        offsets.push(offset);
+        return response({ MRData: { total: '3', limit: '1', RaceTable: { Races: [{ Laps: [{ number: String(offset + 1), Timings: [] }] }] } } });
+    });
+    const laps = await context.api.getLapTimes(2099, 1);
+    assert.deepEqual(offsets, [0, 1, 2]);
+    assert.equal(laps[2].number, '3');
 });

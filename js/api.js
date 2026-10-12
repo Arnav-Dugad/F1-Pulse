@@ -14,12 +14,21 @@ const F1API = (() => {
     const REQUEST_TIMEOUT = 12000;
     const requestQueue = [];
     let activeRequests = 0;
+    let nextJolpicaRequestAt = 0;
 
     // Keep navigation, optional analytics and telemetry from flooding the providers.
-    async function withRequestSlot(task) {
+    async function withRequestSlot(task, url) {
         if (activeRequests >= 3) await new Promise(resolve => requestQueue.push(resolve));
         else activeRequests++;
-        try { return await task(); } finally {
+        try {
+            if (url.startsWith(JOLPICA_BASE)) {
+                const start = Math.max(Date.now(), nextJolpicaRequestAt);
+                nextJolpicaRequestAt = start + 350;
+                const delay = start - Date.now();
+                if (delay > 0) await new Promise(resolve => setTimeout(resolve, delay));
+            }
+            return await task();
+        } finally {
             const next = requestQueue.shift();
             if (next) next(); else activeRequests--;
         }
@@ -148,7 +157,7 @@ const F1API = (() => {
             } finally {
                 clearTimeout(timeout);
             }
-        });
+        }, url);
 
         pendingRequests.set(url, request);
         try {
@@ -317,7 +326,7 @@ const F1API = (() => {
                 else laps.set(entry.number, { ...entry, Timings: [...(entry.Timings || [])] });
             }
             total = Number(data?.MRData?.total) || 0;
-            offset += 1000;
+            offset += Math.max(1, Number(data?.MRData?.limit) || 1000);
         } while (offset < total);
         return [...laps.values()].sort((a, b) => Number(a.number) - Number(b.number));
     }
@@ -362,7 +371,7 @@ const F1API = (() => {
                 else races.set(race.round, { ...race, Results: [...(race.Results || [])] });
             }
             total = Number(data?.MRData?.total) || 0;
-            offset += 1000;
+            offset += Math.max(1, Number(data?.MRData?.limit) || 1000);
         } while (offset < total);
         return [...races.values()].sort((a, b) => Number(a.round) - Number(b.round));
     }
