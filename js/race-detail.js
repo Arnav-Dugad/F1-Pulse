@@ -795,6 +795,7 @@ function switchTab(tab) {
         const orderedIds = [
             'race-header',
             'race-action-bar',
+            'race-calendar-notice',
             'race-countdown-section',
             'race-info',
             'weather-section',
