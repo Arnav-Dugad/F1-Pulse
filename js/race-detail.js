@@ -472,40 +472,22 @@ function switchTab(tab) {
     const raceResultsEl = document.getElementById('race-results');
     showLoading(raceResultsEl, 'Loading race data');
 
-    try {
-        enriched = await loadEnrichedDrivers();
-    } catch (e) {
-        enriched = {};
-    }
-
-    // Also fetch constructor standings for logos
-    try {
-        const cs = await F1API.getConstructorStandings(season === 'current' ? 'current' : season);
-        if (cs?.length) await fetchTeamLogos(cs);
-    } catch (e) { /* non-critical */ }
+    // Portraits are optional and must not block the calendar or race header.
+    const enrichmentPromise = Promise.race([
+        loadEnrichedDrivers().catch(() => ({})),
+        new Promise((resolve) => setTimeout(() => resolve({}), 2500)),
+    ]);
 
     try {
-        // Load all data concurrently
-        const [raceData, qualData, sprintData, pitData] = await Promise.allSettled([
-            F1API.getRaceResults(season, round),
-            F1API.getQualifyingResults(season, round),
-            F1API.getSprintResults(season, round),
-            F1API.getPitStops(season, round),
-        ]);
-
-        const race = raceData.value;
-        const qual = qualData.value;
-        const sprint = sprintData.value;
-        const pitStops = pitData.value || [];
-
-        let raceInfo = race;
-        if (!raceInfo) {
-            const schedule = await F1API.getSchedule(season);
-            raceInfo = schedule?.find(r => r.round === round);
-        }
+        const { raceInfo, race, qual, sprint, pitStops } = await loadRacePageData(F1API, season, round, {
+            onRace: renderRaceHeader,
+        });
+        enriched = await enrichmentPromise || {};
 
         if (!raceInfo) {
-            showError(raceResultsEl, 'Race data not found.');
+            document.getElementById('race-title').textContent = 'Race data unavailable';
+            document.getElementById('race-subtitle').textContent = 'The calendar or results provider is temporarily unavailable. Try again or select another race from the schedule.';
+            showError(raceResultsEl, 'Race data is temporarily unavailable.', 'location.reload()');
             return;
         }
 
@@ -570,12 +552,26 @@ function switchTab(tab) {
             loadOpenF1Data(raceInfo, false, race, pitStops);
         }
     } catch (err) {
+        if (document.getElementById('race-title').textContent === 'Loading Race...') {
+            document.getElementById('race-title').textContent = 'Race data unavailable';
+        }
         showError(raceResultsEl, 'Failed to load race data.', 'location.reload()');
         console.error(err);
     }
 
+    // Constructor logos can arrive after the useful race content is on screen.
+    F1API.getConstructorStandings(season).then((standings) => fetchTeamLogos(standings)).catch(() => {});
+
     async function loadOpenF1Data(raceInfo, hasResults, race, pitStops) {
         try {
+            const sessionsStarted = [raceInfo, raceInfo.FirstPractice, raceInfo.SecondPractice,
+                raceInfo.ThirdPractice, raceInfo.Qualifying, raceInfo.Sprint, raceInfo.SprintQualifying]
+                .some((session) => {
+                    if (!session?.date) return false;
+                    const start = Date.parse(`${session.date}T${session.time || '23:59:59Z'}`);
+                    return Number.isFinite(start) && start <= Date.now();
+                });
+            if (!hasResults && !sessionsStarted) return;
             const year = raceInfo.season || new Date().getFullYear();
             const meetings = await F1API.getOpenF1Meetings({ year });
             if (!meetings?.length) return;
@@ -1026,7 +1022,7 @@ function switchTab(tab) {
         reorderRaceDetailSections();
     }
 
-    async function renderHistoricalComparison(raceInfo) {
+    async function renderHistoricalComparison(raceInfo, options = {}) {
         let section = document.getElementById('gp-history-section');
         if (!section) {
             section = document.createElement('section');
@@ -1043,6 +1039,15 @@ function switchTab(tab) {
         if (!targetYears.length) {
             section.style.display = 'none';
             reorderRaceDetailSections();
+            return;
+        }
+
+        if (!options.load) {
+            section.style.display = '';
+            section.innerHTML = '<div class="section-header"><h2>Historical <span class="text-red">Comparison</span></h2></div><div class="analytics-empty">Explore the previous eight seasons of this Grand Prix.</div><button class="ui-btn ui-btn-secondary" type="button">Load previous seasons</button>';
+            section.querySelector('button').addEventListener('click', () => {
+                renderHistoricalComparison(raceInfo, { load: true });
+            }, { once: true });
             return;
         }
 

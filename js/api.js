@@ -147,10 +147,39 @@ const F1API = (() => {
     }
 
     async function getSchedule(season = 'current') {
-        const data = await fetchJSON(
-            `${JOLPICA_BASE}/${season}.json?limit=30`,
-            CACHE_DURATION_LONG
-        );
+        const requestedSeason = String(season);
+        const currentURL = `${JOLPICA_BASE}/current.json?limit=30`;
+        const seasonURL = `${JOLPICA_BASE}/${requestedSeason}.json?limit=30`;
+        const matchesSeason = (data) => String(data?.MRData?.RaceTable?.season) === requestedSeason;
+
+        // Navigation already loads the current calendar. Reuse it only when the
+        // provider confirms its season; historical pages must keep their own year.
+        if (requestedSeason !== 'current') {
+            let shared = getCached(currentURL);
+            if (!shared && pendingRequests.has(currentURL)) {
+                try { shared = await pendingRequests.get(currentURL); } catch { /* Try the season below. */ }
+            }
+            if (matchesSeason(shared)) return shared.MRData.RaceTable.Races || [];
+        }
+
+        const useCurrent = requestedSeason === 'current' || requestedSeason === String(new Date().getUTCFullYear());
+        let data;
+        try {
+            data = await fetchJSON(useCurrent ? currentURL : seasonURL, CACHE_DURATION_LONG);
+            if (requestedSeason !== 'current' && !matchesSeason(data)) {
+                data = await fetchJSON(seasonURL, CACHE_DURATION_LONG);
+            }
+        } catch (error) {
+            // A calendar from a previous page still makes the race centre useful
+            // during provider throttling, without substituting a different season.
+            const stored = getStored(seasonURL) || getStored(currentURL);
+            if (!matchesSeason(stored)) throw error;
+            data = stored;
+        }
+        const actualSeason = data?.MRData?.RaceTable?.season;
+        if (/^\d{4}$/.test(String(actualSeason))) {
+            setCache(`${JOLPICA_BASE}/${actualSeason}.json?limit=30`, data, CACHE_DURATION_LONG);
+        }
         return data?.MRData?.RaceTable?.Races || [];
     }
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'f1-pulse-shell-v6';
+const CACHE_NAME = 'f1-pulse-shell-v7';
 const APP_SHELL = [
     './',
     './index.html',
@@ -35,7 +35,8 @@ const APP_SHELL = [
     './js/about.js',
     './js/driver-profile.js',
     './js/team-profile.js',
-    './js/race-detail.js'
+    './js/race-detail.js',
+    './js/race-data.js'
 ];
 
 self.addEventListener('install', (event) => {

@@ -68,6 +68,8 @@ function cacheSeconds(provider, path) {
     if (/^current(?:\.json|\/.*standings\.json)$/.test(path)) return 300;
     if (/^current\/last\//.test(path)) return 300;
     if (/^current\//.test(path)) return 900;
+    // Current-year results may still be empty or provisional during a weekend.
+    if (path.startsWith(`${new Date().getUTCFullYear()}/`) || path === `${new Date().getUTCFullYear()}.json`) return 300;
     return 86400;
 }
 

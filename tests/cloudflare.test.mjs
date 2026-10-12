@@ -70,3 +70,13 @@ test('upstream failures are returned without being stored', async () => {
     assert.equal(cacheWrites, 0);
     assert.equal(response.headers.get('Cache-Control'), 'private, no-store');
 });
+
+test('current-year results receive a short cache window while historical results retain a day', async () => {
+    globalThis.fetch = async () => Response.json({ MRData: { RaceTable: { Races: [] } } });
+    const handler = (await import('../api/f1.mjs')).default;
+    const year = new Date().getUTCFullYear();
+    const current = await handler(new Request(`https://example.com/api/f1?provider=jolpica&path=${year}/18/results.json`));
+    const historical = await handler(new Request(`https://example.com/api/f1?provider=jolpica&path=${year - 1}/18/results.json`));
+    assert.equal(current.headers.get('X-F1-Pulse-Cache-TTL'), '300');
+    assert.equal(historical.headers.get('X-F1-Pulse-Cache-TTL'), '86400');
+});
