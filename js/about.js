@@ -31,8 +31,8 @@ function aboutEsc(value) {
 
     try {
         const [driverStandings, constructorStandings, enriched] = await Promise.all([
-            F1API.getDriverStandings(),
-            F1API.getConstructorStandings(),
+            F1API.getDriverStandings().catch(() => []),
+            F1API.getConstructorStandings().catch(() => []),
             loadEnrichedDrivers().catch(() => ({})),
         ]);
 
@@ -47,6 +47,8 @@ function aboutEsc(value) {
 
         subtitle.textContent = `${state.season} visual index for all drivers and teams. Click any card to open full profile.`;
         renderOverview();
+        if (!state.drivers.length) showError(driverGrid, 'Driver overview is temporarily unavailable.', 'location.reload()');
+        if (!state.teams.length) showError(teamGrid, 'Team overview is temporarily unavailable.', 'location.reload()');
     } catch (err) {
         subtitle.textContent = 'About data unavailable right now.';
         showError(driverGrid, 'Failed to load driver overview. Please try again.', 'location.reload()');
@@ -123,7 +125,7 @@ function aboutEsc(value) {
                         ${photo
                             ? `<img src="${aboutEsc(photo)}" alt="${aboutEsc(d.givenName)} ${aboutEsc(d.familyName)}" class="about-profile-photo about-driver-tile-photo" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`
                             : ''}
-                        <div class="about-photo-placeholder" style="display:${photo ? 'none' : 'grid'}">Paste driver image URL in js/about-data.js</div>
+                        <div class="about-photo-placeholder" style="display:${photo ? 'none' : 'grid'}">Portrait unavailable</div>
                         <span class="about-driver-position">P${aboutEsc(item?.position || '-')}</span>
                     </div>
                     <div class="about-tile-caption">
@@ -165,7 +167,7 @@ function aboutEsc(value) {
                         ${car
                             ? `<img src="${aboutEsc(car)}" alt="${aboutEsc(teamName)} car" class="about-team-car" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`
                             : ''}
-                        <div class="about-photo-placeholder" style="display:${car ? 'none' : 'grid'}">Paste team image URL in js/about-data.js</div>
+                        <div class="about-photo-placeholder" style="display:${car ? 'none' : 'grid'}">Team image unavailable</div>
                     </div>
                     <div class="about-tile-caption">
                         <strong>${aboutEsc(teamName)}</strong>

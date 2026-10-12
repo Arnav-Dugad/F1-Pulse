@@ -34,3 +34,26 @@ async function loadRacePageData(api, season, round, options = {}) {
         pitStops: value(3, []) || [],
     };
 }
+
+// Match the actual weekend before loading telemetry. Several GPs share a
+// country, and sprint sessions also use OpenF1's Race session type.
+function findOpenF1Meeting(meetings, race) {
+    const normalize = value => String(value || '').toLowerCase().replace(/grand prix/g, '').replace(/[^a-z0-9]/g, '');
+    const name = normalize(race.raceName);
+    const country = normalize(race.Circuit?.Location?.country);
+    const date = Date.parse(race.date);
+    const dated = (meetings || []).filter(meeting => {
+        const start = Date.parse(meeting.date_start);
+        return Number.isFinite(date) && Number.isFinite(start) && Math.abs(date - start) <= 5 * 86400000;
+    });
+    const nearest = rows => [...rows].sort((a, b) => Math.abs(date - Date.parse(a.date_start)) - Math.abs(date - Date.parse(b.date_start)))[0] || null;
+    const exact = dated.filter(meeting => name && normalize(meeting.meeting_name) === name);
+    if (exact.length) return nearest(exact);
+    return nearest(dated.filter(meeting => country && normalize(meeting.country_name) === country));
+}
+
+function findOpenF1RaceSession(sessions) {
+    return (sessions || []).find(session => session.session_name === 'Race')
+        || (sessions || []).find(session => session.session_type === 'Race' && !/sprint/i.test(session.session_name || ''))
+        || null;
+}

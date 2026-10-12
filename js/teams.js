@@ -53,7 +53,7 @@
     try {
         const [constructorStandings, driverStandings] = await Promise.all([
             F1API.getConstructorStandings(),
-            F1API.getDriverStandings(),
+            F1API.getDriverStandings().catch(() => []),
         ]);
 
         if (!constructorStandings?.length) {
@@ -66,8 +66,8 @@
 
         state.constructorStandings = constructorStandings;
         state.teamDrivers = buildTeamDriversMap(driverStandings);
-        await loadTeamFormData(true);
         renderCurrentView();
+        loadTeamFormData(true).then(renderCurrentView).catch(() => {});
     } catch (err) {
         showError(container, 'Failed to load constructor standings. Please try again.', 'location.reload()');
         console.error(err);
@@ -171,23 +171,13 @@
         if (!force && state.teamFormUpdatedAt && !stale) return;
 
         try {
-            const schedule = await F1API.getSchedule();
-            const now = new Date();
-            const completedRounds = (Array.isArray(schedule) ? schedule : [])
-                .filter((race) => new Date(race.date) < now)
-                .sort((a, b) => (parseInt(a.round, 10) || 0) - (parseInt(b.round, 10) || 0))
-                .slice(-5);
-
+            const completedRounds = (await F1API.getSeasonResults(state.constructorStandings[0]?.season || 'current')).slice(-5);
             if (!completedRounds.length) {
                 state.teamFormData = {};
                 state.teamFormRounds = [];
                 state.teamFormUpdatedAt = Date.now();
                 return;
             }
-
-            const roundResults = await Promise.allSettled(
-                completedRounds.map((race) => F1API.getRaceResults('current', race.round))
-            );
 
             const teamIds = state.constructorStandings
                 .map((s) => normalizeConstructorId(s.Constructor?.constructorId))
@@ -196,11 +186,10 @@
             const formMap = {};
             teamIds.forEach((id) => { formMap[id] = completedRounds.map(() => 0); });
 
-            roundResults.forEach((outcome, idx) => {
-                if (outcome.status !== 'fulfilled' || !Array.isArray(outcome.value?.Results)) return;
+            completedRounds.forEach((race, idx) => {
                 const pointsByTeam = {};
 
-                outcome.value.Results.forEach((row) => {
+                race.Results.forEach((row) => {
                     const teamId = normalizeConstructorId(row.Constructor?.constructorId);
                     const points = parseFloat(row.points) || 0;
                     if (!teamId) return;

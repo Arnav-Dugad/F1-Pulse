@@ -21,7 +21,7 @@ function getSchedulePrefs() {
 function saveSchedulePrefs(partial) {
     const prev = getSchedulePrefs();
     const next = { ...prev, ...partial };
-    localStorage.setItem(SCHEDULE_PREFS_KEY, JSON.stringify(next));
+    try { localStorage.setItem(SCHEDULE_PREFS_KEY, JSON.stringify(next)); } catch { /* This visit still works without saved preferences. */ }
 }
 
 function ensureScheduleAnalyticsSection() {
@@ -103,15 +103,6 @@ async function loadSeason(season) {
         if (loadToken !== scheduleLoadToken) return;
         allRaces = races;
 
-        // If current season, also try to get last race results to show winners on completed cards
-        if (season === 'current') {
-            try {
-                const ds = await F1API.getDriverStandings();
-                const cs = await F1API.getConstructorStandings();
-                if (cs?.length) await fetchTeamLogos(cs);
-            } catch (e) { /* non-critical */ }
-        }
-
         // Fetch circuit images in background (don't await - let them load as cards render)
         Promise.allSettled(allRaces.map(r => fetchCircuitImage(r.Circuit?.url, r.Circuit?.circuitName))).then(() => {
             if (loadToken !== scheduleLoadToken) return;
@@ -125,6 +116,7 @@ async function loadSeason(season) {
         renderScheduleAnalytics();
         renderRaces();
     } catch (err) {
+        if (loadToken !== scheduleLoadToken) return;
         showError(container, 'Failed to load schedule.', 'location.reload()');
         console.error(err);
     }

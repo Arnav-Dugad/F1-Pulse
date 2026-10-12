@@ -12,6 +12,18 @@ const F1API = (() => {
     const CACHE_DURATION_LIVE = 8 * 1000;
     const CACHE_DURATION_SESSION = 30 * 1000;
     const REQUEST_TIMEOUT = 12000;
+    const requestQueue = [];
+    let activeRequests = 0;
+
+    // Keep navigation, optional analytics and telemetry from flooding the providers.
+    async function withRequestSlot(task) {
+        if (activeRequests >= 3) await new Promise(resolve => requestQueue.push(resolve));
+        else activeRequests++;
+        try { return await task(); } finally {
+            const next = requestQueue.shift();
+            if (next) next(); else activeRequests--;
+        }
+    }
     const STORAGE_PREFIX = 'f1pulse_api_v2:';
     const cache = new Map();
     const pendingRequests = new Map();
@@ -23,7 +35,7 @@ const F1API = (() => {
             }
 
             // Wrangler's standard preview port runs the same proxy as production.
-            if (['localhost', '127.0.0.1', '::1'].includes(window.location.hostname) && window.location.port !== '8787') {
+            if (window.location.hostname.endsWith('.github.io') || (['localhost', '127.0.0.1', '::1'].includes(window.location.hostname) && window.location.port !== '8787')) {
                 return url;
             }
 
@@ -51,9 +63,16 @@ const F1API = (() => {
         }
     }
 
-    function getCached(key) {
-        const entry = cache.get(key);
-        if (entry && Date.now() - entry.timestamp < entry.duration) {
+    function getCached(key, duration) {
+        let entry = cache.get(key);
+        if (!entry) {
+            try {
+                const raw = localStorage.getItem(`${STORAGE_PREFIX}${key}`);
+                if (raw) entry = JSON.parse(raw);
+            } catch { /* Memory cache still works without storage. */ }
+        }
+        if (entry && Date.now() - entry.timestamp < Math.min(entry.duration, duration ?? entry.duration)) {
+            cache.set(key, entry);
             return entry.data;
         }
         cache.delete(key);
@@ -90,14 +109,14 @@ const F1API = (() => {
     }
 
     async function fetchJSON(url, cacheDuration = CACHE_DURATION) {
-        const cached = getCached(url);
+        const cached = getCached(url, cacheDuration);
         if (cached) return cached;
 
         if (pendingRequests.has(url)) {
             return pendingRequests.get(url);
         }
 
-        const request = (async () => {
+        const request = withRequestSlot(async () => {
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
             try {
@@ -107,16 +126,29 @@ const F1API = (() => {
                 });
                 if (!res.ok) throw new Error(`API error: ${res.status}`);
                 const data = await res.json();
+                if (res.headers?.get('X-F1-Pulse-Cache') === 'STALE') {
+                    if (typeof window !== 'undefined' && typeof CustomEvent !== 'undefined') {
+                        window.dispatchEvent(new CustomEvent('f1pulse:stale-data', { detail: { url } }));
+                    }
+                    // Keep saved responses out of the fresh cache, so later visits retry live data.
+                    return data;
+                }
                 setCache(url, data, cacheDuration);
                 return data;
             } catch (error) {
-                const stored = getStored(url);
-                if (stored) return stored;
+                // A stale live feed must never masquerade as current telemetry.
+                const stored = cacheDuration >= CACHE_DURATION ? getStored(url) : null;
+                if (stored) {
+                    if (typeof window !== 'undefined' && typeof CustomEvent !== 'undefined') {
+                        window.dispatchEvent(new CustomEvent('f1pulse:stale-data', { detail: { url } }));
+                    }
+                    return stored;
+                }
                 throw error;
             } finally {
                 clearTimeout(timeout);
             }
-        })();
+        });
 
         pendingRequests.set(url, request);
         try {
@@ -131,19 +163,23 @@ const F1API = (() => {
     // ========================================
 
     async function getDriverStandings(season = 'current') {
-        const data = await fetchJSON(
-            `${JOLPICA_BASE}/${season}/driverstandings.json?limit=100`,
-            CACHE_DURATION_LONG
-        );
-        return data?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings || [];
+        const key = season === 'current' || String(season) === String(new Date().getUTCFullYear()) ? 'current' : season;
+        let data = await fetchJSON(`${JOLPICA_BASE}/${key}/driverstandings.json?limit=100`, CACHE_DURATION);
+        if (season !== 'current' && String(data?.MRData?.StandingsTable?.StandingsLists?.[0]?.season) !== String(season)) {
+            data = await fetchJSON(`${JOLPICA_BASE}/${season}/driverstandings.json?limit=100`, CACHE_DURATION);
+        }
+        const list = data?.MRData?.StandingsTable?.StandingsLists?.[0];
+        return (list?.DriverStandings || []).map(row => ({ ...row, season: list.season }));
     }
 
     async function getConstructorStandings(season = 'current') {
-        const data = await fetchJSON(
-            `${JOLPICA_BASE}/${season}/constructorstandings.json?limit=100`,
-            CACHE_DURATION_LONG
-        );
-        return data?.MRData?.StandingsTable?.StandingsLists?.[0]?.ConstructorStandings || [];
+        const key = season === 'current' || String(season) === String(new Date().getUTCFullYear()) ? 'current' : season;
+        let data = await fetchJSON(`${JOLPICA_BASE}/${key}/constructorstandings.json?limit=100`, CACHE_DURATION);
+        if (season !== 'current' && String(data?.MRData?.StandingsTable?.StandingsLists?.[0]?.season) !== String(season)) {
+            data = await fetchJSON(`${JOLPICA_BASE}/${season}/constructorstandings.json?limit=100`, CACHE_DURATION);
+        }
+        const list = data?.MRData?.StandingsTable?.StandingsLists?.[0];
+        return (list?.ConstructorStandings || []).map(row => ({ ...row, season: list.season }));
     }
 
     async function getSchedule(season = 'current') {
@@ -226,7 +262,7 @@ const F1API = (() => {
         return schedule.find((race) => {
             const start = new Date(`${race.date}T${race.time || '14:00:00Z'}`).getTime();
             return Number.isFinite(start) && start > Date.now() - (4 * 60 * 60 * 1000);
-        }) || nextFromEndpoint;
+        }) || null;
     }
 
     async function getLastRaceResults() {
@@ -271,11 +307,19 @@ const F1API = (() => {
 
     async function getLapTimes(season, round, lap) {
         const lapPath = lap ? `/${lap}` : '';
-        const data = await fetchJSON(
-            `${JOLPICA_BASE}/${season}/${round}/laps${lapPath}.json?limit=1000`,
-            CACHE_DURATION_LONG
-        );
-        return data?.MRData?.RaceTable?.Races?.[0]?.Laps || [];
+        const laps = new Map();
+        let offset = 0, total = 0;
+        do {
+            const data = await fetchJSON(`${JOLPICA_BASE}/${season}/${round}/laps${lapPath}.json?limit=1000&offset=${offset}`, CACHE_DURATION_LONG);
+            for (const entry of data?.MRData?.RaceTable?.Races?.[0]?.Laps || []) {
+                const existing = laps.get(entry.number);
+                if (existing) existing.Timings.push(...(entry.Timings || []));
+                else laps.set(entry.number, { ...entry, Timings: [...(entry.Timings || [])] });
+            }
+            total = Number(data?.MRData?.total) || 0;
+            offset += 1000;
+        } while (offset < total);
+        return [...laps.values()].sort((a, b) => Number(a.number) - Number(b.number));
     }
 
     async function getFastestLap(season, round) {
@@ -295,6 +339,9 @@ const F1API = (() => {
     }
 
     async function getDriverInfo(driverId) {
+        const standings = getCached(`${JOLPICA_BASE}/current/driverstandings.json?limit=100`);
+        const known = standings?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings?.find(row => row.Driver?.driverId === driverId);
+        if (known) return known.Driver;
         const data = await fetchJSON(
             `${JOLPICA_BASE}/drivers/${driverId}.json`,
             CACHE_DURATION_LONG
@@ -302,12 +349,28 @@ const F1API = (() => {
         return data?.MRData?.DriverTable?.Drivers?.[0] || null;
     }
 
+    async function getSeasonResults(season = 'current') {
+        const key = season;
+        const races = new Map();
+        let offset = 0;
+        let total = 0;
+        do {
+            const data = await fetchJSON(`${JOLPICA_BASE}/${key}/results.json?limit=1000&offset=${offset}`, CACHE_DURATION);
+            for (const race of data?.MRData?.RaceTable?.Races || []) {
+                const existing = races.get(race.round);
+                if (existing) existing.Results.push(...race.Results);
+                else races.set(race.round, { ...race, Results: [...(race.Results || [])] });
+            }
+            total = Number(data?.MRData?.total) || 0;
+            offset += 1000;
+        } while (offset < total);
+        return [...races.values()].sort((a, b) => Number(a.round) - Number(b.round));
+    }
+
     async function getDriverSeasonResults(season, driverId) {
-        const data = await fetchJSON(
-            `${JOLPICA_BASE}/${season}/drivers/${driverId}/results.json?limit=50`,
-            CACHE_DURATION_LONG
-        );
-        return data?.MRData?.RaceTable?.Races || [];
+        const races = await getSeasonResults(season);
+        return races.map(race => ({ ...race, Results: race.Results.filter(row => row.Driver?.driverId === driverId) }))
+            .filter(race => race.Results.length);
     }
 
     async function getConstructors(season = 'current') {
@@ -526,39 +589,12 @@ const F1API = (() => {
             return _driverCache;
         }
 
-        let openF1Drivers = [];
-        try {
-            openF1Drivers = await getOpenF1Drivers('latest');
-        } catch (e) {
-            try {
-                const year = new Date().getFullYear();
-                const meetings = await getOpenF1Meetings({ year });
-                if (meetings?.length) {
-                    const lastMeeting = meetings[meetings.length - 1];
-                    const sessions = await getOpenF1Sessions({ meeting_key: lastMeeting.meeting_key });
-                    if (sessions?.length) {
-                        openF1Drivers = await getOpenF1Drivers(sessions[sessions.length - 1].session_key);
-                    }
-                }
-            } catch (e2) { /* fallback empty */ }
-        }
+        // Official portraits are already available locally in the configuration.
+        // One optional feed lookup is enough; old seasons can have the wrong lineup.
+        const openF1Drivers = await getOpenF1Drivers('latest').catch(() => []);
 
-        // If still no drivers, try the previous year as fallback
-        if (!openF1Drivers?.length) {
-            try {
-                const prevYear = new Date().getFullYear() - 1;
-                const meetings = await getOpenF1Meetings({ year: prevYear });
-                if (meetings?.length) {
-                    const lastMeeting = meetings[meetings.length - 1];
-                    const sessions = await getOpenF1Sessions({ meeting_key: lastMeeting.meeting_key });
-                    if (sessions?.length) {
-                        openF1Drivers = await getOpenF1Drivers(sessions[sessions.length - 1].session_key);
-                    }
-                }
-            } catch (e3) { /* fallback empty */ }
-        }
-
-        const driverMap = {};
+        const driverMap = Object.fromEntries(Object.entries(OFFICIAL_DRIVER_HEADSHOTS_2026)
+            .map(([name, photos]) => [name, { ...photos, lastName: name }]));
         openF1Drivers.forEach(d => {
             const lastNameNorm = normalizeStr(d.last_name);
             const official = OFFICIAL_DRIVER_HEADSHOTS_2026[lastNameNorm] || null;
@@ -634,6 +670,7 @@ const F1API = (() => {
         getSeasons,
         getDriverInfo,
         getDriverSeasonResults,
+        getSeasonResults,
         getConstructors,
         getFinishingStatus,
         getOpenF1Drivers,

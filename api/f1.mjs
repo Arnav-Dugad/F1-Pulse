@@ -109,7 +109,7 @@ export default async function handler(request) {
     const ttl = cacheSeconds(providerName, path);
     const staleWindow = Math.max(60, ttl * 6);
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 18_000);
+    const timeout = setTimeout(() => controller.abort(), 10_000);
 
     try {
         const response = await fetch(upstream, {

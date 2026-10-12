@@ -59,6 +59,14 @@ Run `npm run dev` and open `http://localhost:8787` to preview the site and Worke
 
 See [PREMIUM-ROADMAP.md](PREMIUM-ROADMAP.md) for 60 advanced feature, UI, data and animation ideas. These are proposed future additions, separate from the features implemented in this repository.
 
+## Data reliability
+
+Fresh API responses are reused across page navigation, identical requests share one in-flight operation, and at most three provider requests run concurrently per page. Driver and team form use a single paginated season-results request. Optional statistics and portraits cannot fail an otherwise usable driver dialog; a retry control appears when statistics are unavailable. Championship points include sprint totals, while race-only charts are labeled separately and finish rates exclude retirements.
+
+The Worker keeps a dated, one-day backup of successful Jolpica responses for temporary throttling or outages. Saved responses are labeled in the UI and never cached as fresh. OpenF1 telemetry does not use stale fallbacks. Race telemetry matches the dated weekend and main race session, and polling avoids overlapping requests and pauses in hidden tabs.
+
+Run `npm test` for static asset checks and regression coverage of cache behavior, pagination, partial outages, modal races, profile links, comparisons, telemetry matching, and restricted browser storage.
+
 ## Calendar resilience
 
 Race pages share the current calendar request, load published results independently, and defer historical comparisons until requested. During provider throttling, `data/calendar-current.json` supplies a dated provider snapshot for the matching season. Race pages label it as a saved calendar. Refresh the snapshot with `node scripts/update-calendar.mjs`, then commit and push the updated JSON. Failed refreshes preserve the existing file; fallback calendars never replace a different season.

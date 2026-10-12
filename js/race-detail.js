@@ -576,43 +576,20 @@ function switchTab(tab) {
             const meetings = await F1API.getOpenF1Meetings({ year });
             if (!meetings?.length) return;
 
-            // Find matching meeting by race name, country, or date
-            const raceName = (raceInfo.raceName || '').toLowerCase();
-            const raceDate = raceInfo.date;
-            const raceCountry = (raceInfo.Circuit?.Location?.country || '').toLowerCase();
-
-            function normMeetingName(name) {
-                return (name || '').toLowerCase()
-                    .replace(/grand prix/gi, '')
-                    .replace(/[-_]/g, ' ')
-                    .replace(/\s+/g, ' ')
-                    .trim();
-            }
-
-            const normalizedRace = normMeetingName(raceName);
-
-            const meeting = meetings.find(m => {
-                const mNorm = normMeetingName(m.meeting_name);
-                const mCountry = (m.country_name || '').toLowerCase();
-                return mNorm === normalizedRace ||
-                       mNorm.includes(normalizedRace) ||
-                       normalizedRace.includes(mNorm) ||
-                       (raceCountry && mCountry && raceCountry === mCountry);
-            }) || meetings.find(m => {
-                return m.date_start && raceDate && m.date_start.startsWith(raceDate.substring(0, 7));
-            });
+            const meeting = findOpenF1Meeting(meetings, raceInfo);
 
             if (!meeting) return;
 
             const sessions = await F1API.getOpenF1Sessions({ meeting_key: meeting.meeting_key });
             if (!sessions?.length) return;
 
-            const raceSess = sessions.find(s => s.session_type === 'Race') || sessions[sessions.length - 1];
+            const raceSess = findOpenF1RaceSession(sessions);
             if (!raceSess) return;
             const sk = raceSess.session_key;
             const nowMs = Date.now();
             const startMs = Date.parse(raceSess.date_start || '');
             const endMs = Date.parse(raceSess.date_end || '');
+            if (!Number.isFinite(startMs) || startMs > nowMs) return;
             const sessionIsLive = Number.isFinite(startMs) && Number.isFinite(endMs)
                 ? nowMs >= startMs && nowMs <= endMs
                 : Number.isFinite(endMs) ? nowMs <= endMs : false;
@@ -691,7 +668,11 @@ function switchTab(tab) {
 
             if (sessionIsLive) {
                 const driverSnapshot = drivers.value || [];
+                let refreshing = false;
                 liveTimingRefreshTimer = setInterval(async () => {
+                    if (refreshing || document.hidden) return;
+                    refreshing = true;
+                    try {
                     const [nextWeather, nextStints, nextControl, nextPositions, nextIntervals] = await Promise.allSettled([
                         F1API.getOpenF1Weather(sk),
                         F1API.getOpenF1Stints(sk),
@@ -709,8 +690,10 @@ function switchTab(tab) {
                         stints: nextStints.value || [],
                         weather: nextWeather.value || [],
                         raceControl: nextControl.value || [],
-                        isLive: true,
+                        isLive: !Number.isFinite(endMs) || Date.now() <= endMs,
                     });
+                    if (Number.isFinite(endMs) && Date.now() > endMs) { clearInterval(liveTimingRefreshTimer); liveTimingRefreshTimer = null; }
+                    } finally { refreshing = false; }
                 }, 12_000);
             }
 
@@ -1272,7 +1255,11 @@ function switchTab(tab) {
             return;
         }
 
+        let snapshotPending = false;
         const renderSnapshot = async () => {
+            if (snapshotPending || document.hidden) return;
+            snapshotPending = true;
+            try {
             const snapshotWindowStart = isLiveSession
                 ? new Date((Math.floor(Date.now() / 30_000) * 30_000) - (3 * 60 * 1000)).toISOString()
                 : initialWindowStart;
@@ -1308,6 +1295,7 @@ function switchTab(tab) {
             });
 
             renderTelemetryMiniPanel(telemetryRows, isLiveSession);
+            } finally { snapshotPending = false; }
         };
 
         if (telemetryRefreshTimer) {

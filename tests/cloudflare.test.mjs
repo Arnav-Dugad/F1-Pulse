@@ -80,3 +80,43 @@ test('current-year results receive a short cache window while historical results
     assert.equal(current.headers.get('X-F1-Pulse-Cache-TTL'), '300');
     assert.equal(historical.headers.get('X-F1-Pulse-Cache-TTL'), '86400');
 });
+
+test('expired Jolpica cache survives throttling as explicitly dated saved data', async () => {
+    const stored = new Map();
+    const pending = [];
+    globalThis.caches = { default: {
+        match: async key => stored.get(key.url)?.clone(),
+        put: async (key, response) => stored.set(key.url, response),
+    } };
+    const request = new Request('https://example.com/api/f1?provider=jolpica&path=current/driverstandings.json');
+    globalThis.fetch = async () => Response.json({ MRData: { value: 'saved' } });
+    const ctx = { waitUntil: promise => pending.push(promise) };
+    await worker.fetch(request, {}, ctx);
+    await Promise.all(pending);
+    for (const key of stored.keys()) if (new URL(key).pathname === '/api/f1') stored.delete(key); // The dated backup remains.
+    globalThis.fetch = async () => new Response('rate limited', { status: 429 });
+    const response = await worker.fetch(request, {}, ctx);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('X-F1-Pulse-Cache'), 'STALE');
+    assert.ok(response.headers.get('X-F1-Pulse-Saved-At'));
+    assert.equal(response.headers.get('Cache-Control'), 'private, no-store');
+    assert.deepEqual(await response.json(), { MRData: { value: 'saved' } });
+});
+
+test('expired OpenF1 telemetry never receives a stale fallback', async () => {
+    const stored = new Map();
+    const pending = [];
+    globalThis.caches = { default: {
+        match: async key => stored.get(key.url)?.clone(),
+        put: async (key, response) => stored.set(key.url, response),
+    } };
+    const request = new Request('https://example.com/api/f1?provider=openf1&path=position&session_key=123');
+    globalThis.fetch = async () => Response.json([{ position: 1 }]);
+    const ctx = { waitUntil: promise => pending.push(promise) };
+    await worker.fetch(request, {}, ctx);
+    await Promise.all(pending);
+    assert.equal(stored.size, 1);
+    stored.clear();
+    globalThis.fetch = async () => new Response('unavailable', { status: 503 });
+    assert.equal((await worker.fetch(request, {}, ctx)).status, 502);
+});

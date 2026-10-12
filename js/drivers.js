@@ -46,7 +46,7 @@ function switchView(view) {
     try {
         const [standings, constructorStandings] = await Promise.all([
             F1API.getDriverStandings(),
-            F1API.getConstructorStandings(),
+            F1API.getConstructorStandings().catch(() => []),
         ]);
 
         standingsData = standings;
@@ -64,8 +64,8 @@ function switchView(view) {
         renderGrid(standingsData);
         renderTable(standingsData);
         renderDriversCompareTool(standingsData);
-        await renderDriverFormTrends(standingsData);
         openDriverFromQueryIfNeeded(standingsData);
+        renderDriverFormTrends(standingsData).catch(() => {});
     } catch (err) {
         showError(grid, 'Failed to load driver standings. Please try again.', 'location.reload()');
         console.error(err);
@@ -187,9 +187,9 @@ function switchView(view) {
         section.innerHTML = `
             <div class="section-header"><h2>Driver Compare</h2></div>
             <div class="drivers-compare-controls">
-                <select id="driver-compare-a" class="ui-input"></select>
+                <select aria-label="First driver to compare" id="driver-compare-a" class="ui-input"></select>
                 <button id="driver-compare-swap" class="ui-btn" type="button">Swap</button>
-                <select id="driver-compare-b" class="ui-input"></select>
+                <select aria-label="Second driver to compare" id="driver-compare-b" class="ui-input"></select>
             </div>
             <div id="drivers-compare-output" class="drivers-compare-output"></div>`;
 
@@ -218,11 +218,13 @@ function switchView(view) {
         const out = compare.querySelector('#drivers-compare-output');
         if (!selectA || !selectB || !swapBtn || !out) return;
 
+        const previousA = selectA.value;
+        const previousB = selectB.value;
         selectA.innerHTML = standings.map((s) => `<option value="${s.Driver?.driverId}">${s.position}. ${s.Driver?.givenName || ''} ${s.Driver?.familyName || ''}</option>`).join('');
         selectB.innerHTML = standings.map((s) => `<option value="${s.Driver?.driverId}">${s.position}. ${s.Driver?.givenName || ''} ${s.Driver?.familyName || ''}</option>`).join('');
 
-        if (!selectA.value) selectA.value = standings[0]?.Driver?.driverId || '';
-        if (!selectB.value) selectB.value = standings[1]?.Driver?.driverId || standings[0]?.Driver?.driverId || '';
+        selectA.value = standings.some(row => row.Driver?.driverId === previousA) ? previousA : standings[0]?.Driver?.driverId || '';
+        selectB.value = standings.some(row => row.Driver?.driverId === previousB) ? previousB : standings[1]?.Driver?.driverId || standings[0]?.Driver?.driverId || '';
 
         const render = () => {
             const a = standings.find((x) => x.Driver?.driverId === selectA.value);
@@ -340,7 +342,7 @@ function switchView(view) {
         if (!grid) return;
 
         const targetDrivers = standings.slice(0, 6);
-        const season = String(new Date().getFullYear());
+        const season = standings[0]?.season || String(new Date().getFullYear());
         grid.innerHTML = '<div class="analytics-empty">Loading recent form...</div>';
 
         const settled = await Promise.allSettled(targetDrivers.map(async (s) => {
@@ -397,7 +399,7 @@ function switchView(view) {
             .map((x) => x.value);
 
         if (!rows.length) {
-            grid.innerHTML = '<div class="analytics-empty">No recent form data available.</div>';
+            grid.innerHTML = `<div class="analytics-empty">${settled.some(x => x.status === 'rejected') ? 'Recent form is temporarily unavailable. Try refreshing later.' : 'No recent form data available yet.'}</div>`;
             return;
         }
 

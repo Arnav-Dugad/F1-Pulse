@@ -26,7 +26,7 @@ function teamProfileEsc(value) {
 
     try {
         const [driverStandings, constructorStandings, enriched] = await Promise.all([
-            F1API.getDriverStandings(),
+            F1API.getDriverStandings().catch(() => []),
             F1API.getConstructorStandings(),
             loadEnrichedDrivers().catch(() => ({})),
         ]);
@@ -35,8 +35,9 @@ function teamProfileEsc(value) {
             await fetchTeamLogos(constructorStandings);
         }
 
-        const item = (constructorStandings || []).find((t) => resolveTeamId(t?.Constructor?.constructorId) === teamParam)
-            || (constructorStandings || [])[0];
+        const item = teamParam
+            ? (constructorStandings || []).find(t => resolveTeamId(t?.Constructor?.constructorId) === resolveTeamId(teamParam))
+            : (constructorStandings || [])[0];
 
         if (!item?.Constructor) {
             showError(main, 'Team profile not found.', 'window.location.href="about.html"');
@@ -96,7 +97,7 @@ function teamProfileEsc(value) {
                         ${driverPhoto
                             ? `<img src="${teamProfileEsc(driverPhoto)}" alt="${teamProfileEsc(`${driverFirst} ${driverLast}`.trim())}" class="team-driver-show-photo" style="object-position:${teamProfileEsc(driverHeroPos)}" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`
                             : ''}
-                        <div class="about-photo-placeholder" style="display:${driverPhoto ? 'none' : 'grid'}">Paste driver image URL in js/about-data.js</div>
+                        <div class="about-photo-placeholder" style="display:${driverPhoto ? 'none' : 'grid'}">Portrait unavailable</div>
                     </div>
                 </article>`;
             }).join('')
@@ -134,7 +135,7 @@ function teamProfileEsc(value) {
                         ${car
                             ? `<img src="${teamProfileEsc(car)}" alt="${teamProfileEsc(teamName)} car" class="team-car-hero-image" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`
                             : ''}
-                        <div class="about-photo-placeholder" style="display:${car ? 'none' : 'grid'}">Paste team image URL in js/about-data.js</div>
+                        <div class="about-photo-placeholder" style="display:${car ? 'none' : 'grid'}">Team image unavailable</div>
                     </div>
                 </div>
                 <div class="team-car-hero-meta">

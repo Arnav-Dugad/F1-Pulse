@@ -1,4 +1,4 @@
-const CACHE_NAME = 'f1-pulse-shell-v8';
+const CACHE_NAME = 'f1-pulse-shell-v9';
 const APP_SHELL = [
     './',
     './index.html',
@@ -48,7 +48,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys()
-            .then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))))
+            .then((keys) => Promise.all(keys.filter((key) => key.startsWith('f1-pulse-shell-') && key !== CACHE_NAME).map((key) => caches.delete(key))))
             .then(() => self.clients.claim())
     );
 });
@@ -75,7 +75,7 @@ self.addEventListener('fetch', (event) => {
             .then((response) => {
                 if (response.ok && response.type === 'basic') {
                     const clone = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+                    event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {}));
                 }
                 return response;
             })

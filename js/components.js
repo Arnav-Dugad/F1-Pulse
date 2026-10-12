@@ -114,11 +114,15 @@ const TEAM_CAR_IMAGES = {
 
 function resolveTeamId(raw) {
     if (!raw) return null;
-    const key = raw.toLowerCase().replace(/[-_\s]+/g, ' ').trim();
-    for (const [alias, id] of Object.entries(TEAM_ALIASES)) {
-        if (key.includes(alias) || alias.includes(key)) return id;
-    }
-    return null;
+    const normalize = value => String(value).toLowerCase().replace(/[-_\s]+/g, ' ').trim();
+    const key = normalize(raw);
+    const aliases = Object.entries(TEAM_ALIASES);
+    const exact = aliases.find(([alias]) => normalize(alias) === key);
+    if (exact) return exact[1];
+    // Full sponsor names may contain an alias. Short or unknown IDs must not
+    // accidentally match an arbitrary team through reverse substring matching.
+    const contained = aliases.find(([alias]) => normalize(alias).length >= 4 && key.includes(normalize(alias)));
+    return contained?.[1] || null;
 }
 
 function getTeamColor(constructorId) {
@@ -661,7 +665,10 @@ let _enrichedDrivers = null;
 
 async function loadEnrichedDrivers() {
     if (!_enrichedDrivers) {
-        _enrichedDrivers = await F1API.getEnrichedDrivers().catch(() => ({}));
+        _enrichedDrivers = Promise.race([
+            F1API.getEnrichedDrivers().catch(() => ({})),
+            new Promise(resolve => setTimeout(() => resolve({}), 2500)),
+        ]);
     }
     return _enrichedDrivers;
 }
@@ -1609,7 +1616,7 @@ function createDriverModal() {
     modal.className = 'modal-overlay';
     modal.setAttribute('role', 'dialog');
     modal.setAttribute('aria-modal', 'true');
-    modal.setAttribute('aria-labelledby', 'driver-modal-title');
+    modal.setAttribute('aria-label', 'Driver details');
     modal.setAttribute('aria-hidden', 'true');
     modal.innerHTML = `
         <div class="modal-content" tabindex="-1">
@@ -1639,12 +1646,16 @@ function createDriverModal() {
     document.body.appendChild(modal);
 }
 
+let driverModalRequest = 0;
+
 function closeDriverModal() {
+    driverModalRequest++;
     const modal = document.getElementById('driver-modal');
     if (modal) {
         modal.classList.remove('open');
         modal.setAttribute('aria-hidden', 'true');
     }
+    document.querySelectorAll('[data-driver-modal-inert]').forEach(element => { element.inert = false; element.removeAttribute('data-driver-modal-inert'); });
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
     const returnFocus = window.__f1ModalReturnFocus;
@@ -1655,7 +1666,9 @@ function closeDriverModal() {
 async function openDriverModal(driverId, constructorId, season) {
     const modal = document.getElementById('driver-modal');
     if (!modal) return;
-    window.__f1ModalReturnFocus = document.activeElement;
+    const requestId = ++driverModalRequest;
+    if (!modal.classList.contains('open')) window.__f1ModalReturnFocus = document.activeElement;
+    [...document.body.children].filter(element => element !== modal && !element.inert && !['SCRIPT', 'STYLE'].includes(element.tagName)).forEach(element => { element.inert = true; element.setAttribute('data-driver-modal-inert', ''); });
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
@@ -1668,15 +1681,23 @@ async function openDriverModal(driverId, constructorId, season) {
     const currentSeason = season || (new Date().getFullYear());
 
     try {
-        const [info, results, seasonStandings] = await Promise.all([
+        const outcomes = await Promise.allSettled([
             F1API.getDriverInfo(driverId),
             F1API.getDriverSeasonResults(currentSeason, driverId),
-            F1API.getDriverStandings(currentSeason).catch(() => []),
+            F1API.getDriverStandings(currentSeason),
+            loadEnrichedDrivers(),
         ]);
+        if (requestId !== driverModalRequest) return;
+        const seasonStandings = outcomes[2].status === 'fulfilled' ? outcomes[2].value : [];
+        const standing = seasonStandings.find(row => row.Driver?.driverId === driverId);
+        const info = outcomes[0].status === 'fulfilled' ? outcomes[0].value : standing?.Driver;
+        const resultsAvailable = outcomes[1].status === 'fulfilled';
+        const results = resultsAvailable ? outcomes[1].value : [];
+        const ed = outcomes[3].status === 'fulfilled' ? outcomes[3].value : {};
+        constructorId = constructorId || standing?.Constructors?.[0]?.constructorId;
+        if (!info) throw new Error('Driver identity unavailable');
+        modal.setAttribute('aria-label', `${info.givenName || ''} ${info.familyName || ''} details`);
 
-        if (!info) { body.innerHTML = '<p style="text-align:center;color:var(--f1-gray);padding:32px">Driver information not available.</p>'; return; }
-
-        const ed = await loadEnrichedDrivers().catch(() => ({}));
         const headshot = getDriverHeadshotHiRes(info.givenName, info.familyName, ed, info.permanentNumber);
         const teamColor = constructorId ? getTeamColor(constructorId) : (getDriverTeamColor(info.givenName, info.familyName, ed, info.permanentNumber) || '#e10600');
         const raceResults = Array.isArray(results) ? results : [];
@@ -1735,7 +1756,7 @@ async function openDriverModal(driverId, constructorId, season) {
         let statsHTML = '';
         if (raceResults.length) {
             let totalPoints = 0, wins = 0, podiums = 0, dnfs = 0, fastestLaps = 0;
-            let totalFinishPos = 0, finishCount = 0, totalGridPos = 0, gridCount = 0;
+            let totalFinishPos = 0, finishCount = 0, completedCount = 0, totalGridPos = 0, gridCount = 0;
             let positionsGained = 0, bestFinish = 99, bestGrid = 99;
 
             raceResults.forEach(r => {
@@ -1749,7 +1770,8 @@ async function openDriverModal(driverId, constructorId, season) {
                 if (pos && pos < 100) { totalFinishPos += pos; finishCount++; bestFinish = Math.min(bestFinish, pos); }
                 if (grid && grid < 100) { totalGridPos += grid; gridCount++; bestGrid = Math.min(bestGrid, grid); }
                 if (pos && grid) positionsGained += grid - pos;
-                if (res.status && res.status !== 'Finished' && !res.status.startsWith('+')) dnfs++;
+                if (res.status === 'Finished' || /^\+\d+ Lap/.test(res.status || '')) completedCount++;
+                else if (res.status) dnfs++;
                 if (res.FastestLap?.rank === '1') fastestLaps++;
             });
 
@@ -1757,10 +1779,11 @@ async function openDriverModal(driverId, constructorId, season) {
             const avgGrid = gridCount ? (totalGridPos / gridCount).toFixed(1) : '-';
             const avgGained = finishCount ? (positionsGained / finishCount).toFixed(1) : '-';
 
+            const championshipPoints = standing ? Number(standing.points) : null;
             const ptsPerRace = raceResults.length > 0 ? (totalPoints / raceResults.length).toFixed(1) : '0.0';
             const podiumPct = raceResults.length > 0 ? ((podiums / raceResults.length) * 100).toFixed(0) : '0';
             const pointsFinishes = raceResults.filter(r => parseFloat(r.Results?.[0]?.points) > 0).length;
-            const completionRate = raceResults.length > 0 ? Math.round((finishCount / raceResults.length) * 100) : 0;
+            const completionRate = raceResults.length > 0 ? Math.round((completedCount / raceResults.length) * 100) : 0;
             const visualScaleMax = Math.max(totalPoints, wins * 25, podiums * 12, fastestLaps * 10, 1);
 
             const visualBarsHTML = `
@@ -1772,7 +1795,7 @@ async function openDriverModal(driverId, constructorId, season) {
                             <small>Finish Rate</small>
                         </div>
                         <div class="driver-visual-bars">
-                            <div class="driver-visual-bar-row"><span>Points</span><div class="driver-visual-bar-track"><span style="width:${((totalPoints / visualScaleMax) * 100).toFixed(1)}%;background:var(--f1-red)"></span></div><strong>${totalPoints.toFixed(1)}</strong></div>
+                            <div class="driver-visual-bar-row"><span>Race Points</span><div class="driver-visual-bar-track"><span style="width:${((totalPoints / visualScaleMax) * 100).toFixed(1)}%;background:var(--f1-red)"></span></div><strong>${totalPoints.toFixed(1)}</strong></div>
                             <div class="driver-visual-bar-row"><span>Wins</span><div class="driver-visual-bar-track"><span style="width:${(((wins * 25) / visualScaleMax) * 100).toFixed(1)}%;background:#FFD700"></span></div><strong>${wins}</strong></div>
                             <div class="driver-visual-bar-row"><span>Podiums</span><div class="driver-visual-bar-track"><span style="width:${(((podiums * 12) / visualScaleMax) * 100).toFixed(1)}%;background:var(--f1-success)"></span></div><strong>${podiums}</strong></div>
                             <div class="driver-visual-bar-row"><span>Fastest Laps</span><div class="driver-visual-bar-track"><span style="width:${(((fastestLaps * 10) / visualScaleMax) * 100).toFixed(1)}%;background:var(--f1-purple)"></span></div><strong>${fastestLaps}</strong></div>
@@ -1792,8 +1815,8 @@ async function openDriverModal(driverId, constructorId, season) {
                         <div class="driver-stat-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--f1-red)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                         </div>
-                        <div class="driver-stat-value" style="color:var(--f1-red)">${totalPoints}</div>
-                        <div class="driver-stat-label">Points</div>
+                        <div class="driver-stat-value" style="color:var(--f1-red)">${championshipPoints ?? totalPoints}</div>
+                        <div class="driver-stat-label">${championshipPoints !== null ? 'Championship Points' : 'Race Points'}</div>
                     </div>
                     <div class="driver-stat-item ${wins > 0 ? 'stat-gold' : ''}">
                         <div class="driver-stat-icon">
@@ -1856,7 +1879,7 @@ async function openDriverModal(driverId, constructorId, season) {
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--f1-gray)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>
                         </div>
                         <div class="driver-stat-value">P${bestGrid}</div>
-                        <div class="driver-stat-label">Best Quali</div>
+                        <div class="driver-stat-label">Best Grid</div>
                     </div>` : ''}
                     <div class="driver-stat-item">
                         <div class="driver-stat-icon">
@@ -1999,7 +2022,7 @@ async function openDriverModal(driverId, constructorId, season) {
             statsHTML = `
                 <div class="driver-chart-section driver-no-data-panel">
                     <div class="driver-chart-label">${iconHTML(UI_ICONS.schedule, 'driver-chart-icon')}Season Visuals</div>
-                    <p style="color:var(--f1-gray)">No completed race statistics available for this driver in ${currentSeason} yet.</p>
+                    <p style="color:var(--f1-gray)">${resultsAvailable ? `No completed race statistics available for this driver in ${currentSeason} yet.` : 'Race statistics are temporarily unavailable. Driver details remain available.'}</p>
                 </div>
                 ${teammateOnlyHTML}`;
         }
@@ -2050,9 +2073,18 @@ async function openDriverModal(driverId, constructorId, season) {
                 </div>
             </div>
             ${statsHTML}
-            ${resultsHTML}`;
+            ${resultsHTML}
+            ${!resultsAvailable ? '<button type="button" class="retry-btn" id="driver-stats-retry">Retry race statistics</button>' : ''}`;
+        body.querySelector('#driver-stats-retry')?.addEventListener('click', () => openDriverModal(driverId, constructorId, currentSeason));
     } catch (err) {
-        showError(body, 'Failed to load driver details.');
+        if (requestId !== driverModalRequest) return;
+        showError(body, 'Driver details are temporarily unavailable.');
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'retry-btn';
+        retry.textContent = 'Retry driver details';
+        retry.addEventListener('click', () => openDriverModal(driverId, constructorId, currentSeason));
+        body.appendChild(retry);
         console.error(err);
     }
 }
@@ -2250,6 +2282,15 @@ function initPage(activePage) {
     const desktopUtilities = window.matchMedia('(min-width: 761px)').matches;
     if (desktopUtilities) initScrollTop();
     createDriverModal();
+    window.addEventListener('f1pulse:stale-data', () => {
+        if (document.getElementById('saved-data-notice')) return;
+        const notice = document.createElement('p');
+        notice.id = 'saved-data-notice';
+        notice.className = 'saved-data-notice';
+        notice.setAttribute('role', 'status');
+        notice.textContent = 'Showing previously saved data while the provider is unavailable. Rankings and results may be out of date.';
+        document.querySelector('main')?.prepend(notice);
+    });
     if (desktopUtilities && activePage === 'home') {
         createQuickActionsDock(activePage);
     }

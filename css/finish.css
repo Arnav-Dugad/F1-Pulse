@@ -79,3 +79,7 @@ html { scroll-padding-top: calc(var(--nav-height) + var(--bulletin-offset) + 24p
 }
 @media (max-width: 350px) { .nav-f1tv-btn { display: none !important; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+.modal-overlay[aria-hidden="true"] { visibility: hidden; pointer-events: none; }
+.modal-overlay.open { visibility: visible; }
+.saved-data-notice { margin: 20px auto; padding: 14px 20px; max-width: var(--max-width); border: 1px solid #f5b64266; border-radius: 12px; background: #f5b64212; color: #f5d68e; font-size: .88rem; }

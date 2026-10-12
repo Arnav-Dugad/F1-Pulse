@@ -5,6 +5,10 @@ function withCacheStatus(response, status) {
     headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
     headers.set('X-F1-Pulse-Cache', status);
     headers.delete('Vercel-CDN-Cache-Control');
+    if (status === 'STALE') {
+        headers.set('Cache-Control', 'private, no-store');
+        headers.delete('CDN-Cache-Control');
+    }
     return new Response(response.body, { status: response.status, headers });
 }
 
@@ -17,11 +21,19 @@ export default {
             const canonicalURL = new URL(url);
             canonicalURL.searchParams.sort();
             const key = new Request(canonicalURL, { method: 'GET' });
+            const staleURL = new URL(canonicalURL);
+            staleURL.pathname = '/__f1-pulse-saved-response';
+            const staleKey = new Request(staleURL, { method: 'GET' });
+            const allowSaved = url.searchParams.get('provider') === 'jolpica';
             const cache = globalThis.caches?.default;
             const cached = cache ? await cache.match(key) : null;
             if (cached) return withCacheStatus(cached, 'HIT');
 
             const response = await handleF1Request(request);
+            if (!response.ok && cache && allowSaved && [429, 502, 503, 504].includes(response.status)) {
+                const saved = await cache.match(staleKey);
+                if (saved) return withCacheStatus(saved, 'STALE');
+            }
             if (response.ok && cache) {
                 const ttl = Number(response.headers.get('X-F1-Pulse-Cache-TTL')) || 8;
                 const cacheHeaders = new Headers(response.headers);
@@ -29,6 +41,13 @@ export default {
                 cacheHeaders.delete('Vercel-CDN-Cache-Control');
                 const cacheResponse = new Response(response.clone().body, { headers: cacheHeaders });
                 ctx.waitUntil(cache.put(key, cacheResponse).catch(() => {}));
+                if (allowSaved) {
+                    const savedHeaders = new Headers(cacheHeaders);
+                    savedHeaders.set('Cache-Control', 'public, max-age=86400');
+                    savedHeaders.set('X-F1-Pulse-Saved-At', new Date().toISOString());
+                    const savedResponse = new Response(response.clone().body, { headers: savedHeaders });
+                    ctx.waitUntil(cache.put(staleKey, savedResponse).catch(() => {}));
+                }
             }
             return response.ok ? withCacheStatus(response, 'MISS') : response;
         }

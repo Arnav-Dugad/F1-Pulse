@@ -19,10 +19,10 @@
     // Load all data concurrently
     const [nextRace, lastRace, driverStandings, constructorStandings, schedule, finishingStatus, enrichedResult] = await Promise.allSettled([
         F1API.getNextRace().then((race) => { renderHero(race); return race; }),
-        F1API.getLastRaceResults(),
-        F1API.getDriverStandings(),
-        F1API.getConstructorStandings(),
-        F1API.getSchedule(),
+        F1API.getLastRaceResults().then(race => { renderLastPodium(race, {}); renderLatestResults(race, {}); renderFastestLaps(race, {}); return race; }),
+        F1API.getDriverStandings().then(rows => { renderChampionshipBattle(rows, {}); renderTopDrivers(rows, {}); renderTeammateH2H(rows, {}); return rows; }),
+        F1API.getConstructorStandings().then(rows => { renderConstructorBattle(rows); renderTopConstructors(rows, {}); return rows; }),
+        F1API.getSchedule().then(rows => { renderSeasonProgress(rows); renderUpcomingRaces(rows).catch(() => {}); return rows; }),
         F1API.getFinishingStatus(),
         enrichmentPromise,
     ]);

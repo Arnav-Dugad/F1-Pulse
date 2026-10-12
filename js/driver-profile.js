@@ -28,7 +28,7 @@ function driverProfileEsc(value) {
     try {
         const [driverStandings, constructorStandings, enriched] = await Promise.all([
             F1API.getDriverStandings(),
-            F1API.getConstructorStandings(),
+            F1API.getConstructorStandings().catch(() => []),
             loadEnrichedDrivers().catch(() => ({})),
         ]);
 
@@ -36,9 +36,10 @@ function driverProfileEsc(value) {
             await fetchTeamLogos(constructorStandings);
         }
 
-        const item = (driverStandings || []).find((d) => String(d?.Driver?.driverId || '') === driverIdParam)
-            || (driverStandings || []).find((d) => resolveTeamId(d?.Constructors?.[0]?.constructorId) === teamParam)
-            || (driverStandings || [])[0];
+        const item = driverIdParam
+            ? (driverStandings || []).find(d => d?.Driver?.driverId === driverIdParam)
+            : teamParam ? (driverStandings || []).find(d => resolveTeamId(d?.Constructors?.[0]?.constructorId) === teamParam)
+            : (driverStandings || [])[0];
 
         if (!item?.Driver) {
             showError(main, 'Driver profile not found.', 'window.location.href="about.html"');
@@ -88,7 +89,7 @@ function driverProfileEsc(value) {
                         ${profilePhoto
                             ? `<img src="${driverProfileEsc(profilePhoto)}" alt="${driverProfileEsc(displayName)}" class="driver-brand-photo" style="object-position:${driverProfileEsc(heroPhotoPosition)}" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`
                             : ''}
-                        <div class="about-photo-placeholder" style="display:${profilePhoto ? 'none' : 'grid'}">Paste driver image URL in js/about-data.js</div>
+                        <div class="about-photo-placeholder" style="display:${profilePhoto ? 'none' : 'grid'}">Portrait unavailable</div>
                     </div>
                 </div>
             </section>
@@ -104,7 +105,7 @@ function driverProfileEsc(value) {
                         <strong>${driverProfileEsc(dateOfBirth)}</strong>
                     </article>
                     <article>
-                        <span><span class="profile-inline-icon">${SVG_ICONS.flagBlue}</span>Place Of Birth</span>
+                        <span><span class="profile-inline-icon">${SVG_ICONS.flagBlue}</span>Nationality</span>
                         <strong>${driverProfileEsc(country || 'Unknown')}</strong>
                     </article>
                 </div>
@@ -113,7 +114,7 @@ function driverProfileEsc(value) {
                         ${profilePhoto
                             ? `<img src="${driverProfileEsc(profilePhoto)}" alt="${driverProfileEsc(displayName)}" class="driver-bio-photo" style="object-position:${driverProfileEsc(photoObjectPosition)}" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`
                             : ''}
-                        <div class="about-photo-placeholder" style="display:${profilePhoto ? 'none' : 'grid'}">Paste driver image URL in js/about-data.js</div>
+                        <div class="about-photo-placeholder" style="display:${profilePhoto ? 'none' : 'grid'}">Portrait unavailable</div>
                         <figcaption>${flag} ${driverProfileEsc(country)} · ${driverProfileEsc(teamName)}</figcaption>
                     </figure>
                     <div class="driver-bio-copy">
