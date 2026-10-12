@@ -408,7 +408,7 @@ function switchView(view) {
             const trendClass = row.trend === 'up' ? 'up' : row.trend === 'down' ? 'down' : 'flat';
             const teamColor = getTeamColor(row.cId);
             const chips = row.races.map((item) => {
-                if (item.pos == null) return '<span class="form-chip dnf">DNF</span>';
+                if (item.pos == null || (item.status && item.status !== 'Finished' && !item.status.startsWith('+'))) return '<span class="form-chip dnf">DNF</span>';
                 const cls = item.pos <= 3 ? `p${item.pos}` : '';
                 return `<span class="form-chip ${cls}">P${item.pos}</span>`;
             }).join('');
@@ -422,7 +422,7 @@ function switchView(view) {
                     </div>
                 </div>
                 <div class="form-trend-row">
-                    <span>Last 5 finishes</span>
+                    <span>Last 5 race results</span>
                     <div class="form-chips">${chips}</div>
                 </div>
                 <div class="form-trend-row">
@@ -434,7 +434,7 @@ function switchView(view) {
                     <strong>${row.consistency.toFixed(0)} / 100</strong>
                 </div>
                 <div class="form-consistency-track"><span style="width:${row.consistency.toFixed(1)}%;background:${teamColor}"></span></div>
-                <div class="form-trend-footnote">Average finish: ${row.avg != null ? `P${row.avg.toFixed(1)}` : 'N/A'}</div>
+                <div class="form-trend-footnote">Average classification: ${row.avg != null ? `P${row.avg.toFixed(1)}` : 'N/A'}</div>
             </article>`;
         }).join('');
     }

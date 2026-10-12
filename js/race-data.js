@@ -57,3 +57,12 @@ function findOpenF1RaceSession(sessions) {
         || (sessions || []).find(session => session.session_type === 'Race' && !/sprint/i.test(session.session_name || ''))
         || null;
 }
+
+function findHistoricalRace(schedule, race) {
+    const normalize = value => String(value || '').toLowerCase().replace(/grand prix/g, '').replace(/[^a-z0-9]/g, '');
+    const circuit = race.Circuit?.circuitId;
+    const name = normalize(race.raceName);
+    return (schedule || []).find(entry => circuit && entry.Circuit?.circuitId === circuit)
+        || (schedule || []).find(entry => name && normalize(entry.raceName) === name)
+        || null;
+}

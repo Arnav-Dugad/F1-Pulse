@@ -1,4 +1,4 @@
-const CACHE_NAME = 'f1-pulse-shell-v10';
+const CACHE_NAME = 'f1-pulse-shell-v11';
 const APP_SHELL = [
     './',
     './index.html',

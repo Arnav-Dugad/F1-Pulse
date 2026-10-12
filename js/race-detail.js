@@ -960,8 +960,8 @@ function switchTab(tab) {
         };
 
         const winnerInline = inlineDriverValue(winner, 'TBA');
-        const poleInline = inlineDriverValue(pole, 'TBA');
-        const sprintInline = inlineDriverValue(sprintWinner, 'N/A');
+        const poleInline = inlineDriverValue(pole, results.length ? 'Unavailable' : 'Not published');
+        const sprintInline = inlineDriverValue(sprintWinner, raceInfo.Sprint ? 'Unavailable' : 'N/A');
 
         const pitDurations = pits.map((p) => parseFloat(p.duration)).filter((x) => Number.isFinite(x) && x > 0);
         const avgPit = pitDurations.length ? (pitDurations.reduce((a, b) => a + b, 0) / pitDurations.length).toFixed(2) : '-';
@@ -1003,7 +1003,7 @@ function switchTab(tab) {
             <div class="gp-dashboard-stats">
                 <article class="gp-stat-card"><span class="label">Winner</span><div class="gp-stat-driver">${winnerInline}</div><span>${winner ? inlineTeamHTML(winner.Constructor?.constructorId) : ''}</span></article>
                 <article class="gp-stat-card"><span class="label">Pole</span><div class="gp-stat-driver">${poleInline}</div><span>${pole ? (pole.Q3 || pole.Q2 || pole.Q1 || '-') : '-'}</span></article>
-                <article class="gp-stat-card"><span class="label">Sprint Winner</span><div class="gp-stat-driver">${sprintInline}</div><span>${sprintWinner ? inlineTeamHTML(sprintWinner.Constructor?.constructorId) : 'No sprint'}</span></article>
+                <article class="gp-stat-card"><span class="label">Sprint Winner</span><div class="gp-stat-driver">${sprintInline}</div><span>${sprintWinner ? inlineTeamHTML(sprintWinner.Constructor?.constructorId) : raceInfo.Sprint ? 'Sprint results not available' : 'No sprint'}</span></article>
                 <article class="gp-stat-card"><span class="label">Pit Stops</span><strong>${pits.length}</strong><span>Avg ${avgPit}s · Best ${fastestPit}s</span></article>
             </div>
             <div class="standings-analytics-grid gp-dashboard-grid">
@@ -1053,11 +1053,6 @@ function switchTab(tab) {
             return;
         }
 
-        const normalizeName = (name) => String(name || '').toLowerCase().replace(/grand prix/gi, '').replace(/[^a-z0-9]/g, '');
-        const targetCircuitId = raceInfo?.Circuit?.circuitId;
-        const targetName = normalizeName(raceInfo?.raceName);
-        const targetCountry = String(raceInfo?.Circuit?.Location?.country || '').toLowerCase();
-
         section.style.display = '';
         section.innerHTML = '<div class="section-header"><h2>Historical <span class="text-red">Comparison</span></h2></div><div class="analytics-empty">Loading previous seasons...</div>';
 
@@ -1065,10 +1060,7 @@ function switchTab(tab) {
             const schedule = await F1API.getSchedule(year);
             if (!schedule?.length) return null;
 
-            const matchedRace = schedule.find((r) => r.Circuit?.circuitId && targetCircuitId && r.Circuit.circuitId === targetCircuitId)
-                || schedule.find((r) => normalizeName(r.raceName) === targetName)
-                || schedule.find((r) => normalizeName(r.raceName).includes(targetName) || targetName.includes(normalizeName(r.raceName)))
-                || schedule.find((r) => String(r.Circuit?.Location?.country || '').toLowerCase() === targetCountry);
+            const matchedRace = findHistoricalRace(schedule, raceInfo);
 
             if (!matchedRace?.round) return null;
 

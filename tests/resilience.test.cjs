@@ -248,3 +248,25 @@ test('lap pagination respects the provider limit and reaches the final lap', asy
     assert.deepEqual(offsets, [0, 1, 2]);
     assert.equal(laps[2].number, '3');
 });
+
+test('historical comparisons never substitute a different race in the same country', () => {
+    const context = vm.createContext({});
+    vm.runInContext(source('js/race-data.js'), context);
+    const usRace = { raceName: 'United States Grand Prix', Circuit: { circuitId: 'americas', Location: { country: 'USA' } } };
+    const miami = { raceName: 'Miami Grand Prix', Circuit: { circuitId: 'miami', Location: { country: 'USA' } } };
+    assert.equal(context.findHistoricalRace([usRace], miami), null);
+    assert.equal(context.findHistoricalRace([usRace, miami], miami), miami);
+    assert.equal(context.findHistoricalRace([usRace, miami], { raceName: '' }), null);
+});
+
+test('missing sprint and qualifying data are labeled unavailable rather than implying no sprint', () => {
+    const section = { innerHTML: '' };
+    const context = vm.createContext({ document: { getElementById: () => section }, enriched: {},
+        reorderRaceDetailSections() {}, inlineTeamHTML: () => '', getTeamColor: () => '#123', getTeamName: () => 'Team', driverImgHTML: () => '' });
+    const code = source('js/race-detail.js');
+    vm.runInContext(code.slice(code.indexOf('    function renderGrandPrixDashboard('), code.indexOf('    async function renderHistoricalComparison(')), context);
+    context.renderGrandPrixDashboard({ Sprint: { date: '2000-01-01' } }, [{ Driver: driver, position: '1', points: '25', status: 'Finished' }], [], [], []);
+    assert.match(section.innerHTML, /Sprint results not available/);
+    assert.match(section.innerHTML, /Unavailable/);
+    assert.doesNotMatch(section.innerHTML, /No sprint/);
+});
