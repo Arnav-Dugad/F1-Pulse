@@ -151,6 +151,12 @@ const F1API = (() => {
         const currentURL = `${JOLPICA_BASE}/current.json?limit=30`;
         const seasonURL = `${JOLPICA_BASE}/${requestedSeason}.json?limit=30`;
         const matchesSeason = (data) => String(data?.MRData?.RaceTable?.season) === requestedSeason;
+        const scheduleRaces = (data) => {
+            const races = data?.MRData?.RaceTable?.Races || [];
+            return data?.F1Pulse?.source === 'saved-calendar'
+                ? races.map((race) => ({ ...race, calendarSnapshotAt: data.F1Pulse.updatedAt }))
+                : races;
+        };
 
         // Navigation already loads the current calendar. Reuse it only when the
         // provider confirms its season; historical pages must keep their own year.
@@ -159,7 +165,7 @@ const F1API = (() => {
             if (!shared && pendingRequests.has(currentURL)) {
                 try { shared = await pendingRequests.get(currentURL); } catch { /* Try the season below. */ }
             }
-            if (matchesSeason(shared)) return shared.MRData.RaceTable.Races || [];
+            if (matchesSeason(shared)) return scheduleRaces(shared);
         }
 
         const useCurrent = requestedSeason === 'current' || requestedSeason === String(new Date().getUTCFullYear());
@@ -173,14 +179,28 @@ const F1API = (() => {
             // A calendar from a previous page still makes the race centre useful
             // during provider throttling, without substituting a different season.
             const stored = getStored(seasonURL) || getStored(currentURL);
-            if (!matchesSeason(stored)) throw error;
-            data = stored;
+            if (matchesSeason(stored) || (requestedSeason === 'current' && stored?.MRData?.RaceTable?.Races?.length)) {
+                data = stored;
+            } else if (useCurrent) {
+                const snapshotURL = typeof window !== 'undefined' && window.location?.origin
+                    ? new URL('/data/calendar-current.json', window.location.origin).toString()
+                    : '/data/calendar-current.json';
+                const snapshot = await fetchJSON(snapshotURL, CACHE_DURATION_LONG);
+                const snapshotSeason = String(snapshot?.MRData?.RaceTable?.season);
+                const expectedSeason = requestedSeason === 'current' ? String(new Date().getUTCFullYear()) : requestedSeason;
+                if (snapshotSeason !== expectedSeason) throw error;
+                data = snapshot;
+            } else {
+                throw error;
+            }
         }
         const actualSeason = data?.MRData?.RaceTable?.season;
         if (/^\d{4}$/.test(String(actualSeason))) {
-            setCache(`${JOLPICA_BASE}/${actualSeason}.json?limit=30`, data, CACHE_DURATION_LONG);
+            const duration = data?.F1Pulse?.source === 'saved-calendar' ? CACHE_DURATION : CACHE_DURATION_LONG;
+            setCache(`${JOLPICA_BASE}/${actualSeason}.json?limit=30`, data, duration);
+            if (useCurrent && String(actualSeason) === String(new Date().getUTCFullYear())) setCache(currentURL, data, duration);
         }
-        return data?.MRData?.RaceTable?.Races || [];
+        return scheduleRaces(data);
     }
 
     async function getNextRace() {

@@ -737,6 +737,15 @@ function switchTab(tab) {
         const flag = countryFlagHTML(race.Circuit?.Location?.country, 32);
         document.getElementById('race-title').innerHTML = `${flag} ${race.raceName || 'Grand Prix'}`;
         document.getElementById('race-subtitle').textContent = `Round ${race.round} — ${race.Circuit?.circuitName || ''} — ${race.Circuit?.Location?.locality || ''}, ${race.Circuit?.Location?.country || ''}`;
+        if (race.calendarSnapshotAt && !document.getElementById('race-calendar-notice')) {
+            const notice = document.createElement('p');
+            notice.id = 'race-calendar-notice';
+            notice.className = 'calendar-fallback-note';
+            notice.setAttribute('role', 'status');
+            const date = new Date(race.calendarSnapshotAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+            notice.textContent = `Saved calendar · Updated ${date}. Live schedule data is temporarily unavailable.`;
+            document.getElementById('race-header').insertAdjacentElement('afterend', notice);
+        }
     }
 
     function renderRaceActions(race) {

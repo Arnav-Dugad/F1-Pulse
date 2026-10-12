@@ -12,6 +12,7 @@ html { scroll-padding-top: calc(var(--nav-height) + var(--bulletin-offset) + 24p
 .hero-subtitle { color: #c1c6d0; }
 .hero-command-item strong, .stat-value, .countdown-value { font-variant-numeric: tabular-nums; }
 .hero-command-signal { animation: none; }
+.calendar-fallback-note { padding: 12px 16px; margin-block: 18px; border: 1px solid #f2b95c33; border-radius: 10px; background: #f2b95c09; color: #d8c6a8; font-size: .85rem; }
 .nav-search { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-width: 44px; min-height: 40px; padding: 8px 11px; border: 1px solid var(--f1-border-light); border-radius: 10px; color: #bfc7d4; background: rgba(255,255,255,.035); flex-shrink: 0; }
 .nav-search:hover { background: rgba(255,255,255,.09); color: #fff; }
 .nav-search kbd { font: 11px var(--font-primary); white-space: nowrap; }

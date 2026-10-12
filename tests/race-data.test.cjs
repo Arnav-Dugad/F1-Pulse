@@ -133,3 +133,30 @@ test('stored calendar from the selected year survives a temporary provider outag
     storage.forEach((value, key) => second.storage.set(key, value));
     assert.equal((await second.api.getSchedule(year))[0].season, year);
 });
+
+test('fresh visitor receives a dated saved calendar when both API aliases are unavailable', async () => {
+    const year = String(new Date().getUTCFullYear());
+    const snapshot = await calendarResponse(year).json();
+    const updatedAt = new Date().toISOString();
+    snapshot.F1Pulse = { source: 'saved-calendar', updatedAt };
+    const requests = [];
+    const { api } = browserAPI(async (url) => {
+        requests.push(String(url));
+        return String(url).endsWith('/data/calendar-current.json')
+            ? { ok: true, json: async () => snapshot }
+            : { ok: false, status: 429 };
+    });
+    const races = await api.getSchedule(year);
+    assert.equal(races[0].season, year);
+    assert.equal(races[0].calendarSnapshotAt, updatedAt);
+    await api.getSchedule();
+    assert.equal(requests.length, 2);
+});
+
+test('saved calendar from a different season cannot be used for a current-year race', async () => {
+    const year = String(new Date().getUTCFullYear());
+    const { api } = browserAPI(async (url) => String(url).endsWith('/data/calendar-current.json')
+        ? calendarResponse(String(Number(year) - 1))
+        : { ok: false, status: 429 });
+    await assert.rejects(() => api.getSchedule(year), /429/);
+});

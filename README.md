@@ -59,6 +59,10 @@ Run `npm run dev` and open `http://localhost:8787` to preview the site and Worke
 
 See [PREMIUM-ROADMAP.md](PREMIUM-ROADMAP.md) for 60 advanced feature, UI, data and animation ideas. These are proposed future additions, separate from the features implemented in this repository.
 
+## Calendar resilience
+
+Race pages share the current calendar request, load published results independently, and defer historical comparisons until requested. During provider throttling, `data/calendar-current.json` supplies a dated provider snapshot for the matching season. Race pages label it as a saved calendar. Refresh the snapshot with `node scripts/update-calendar.mjs`, then commit and push the updated JSON. Failed refreshes preserve the existing file; fallback calendars never replace a different season.
+
 ---
 
 F1 Pulse. For fans, by fans.<br>
