@@ -1,162 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Pulse - Live Formula 1 Stats & Schedules</title>
-    <meta name="description" content="Real-time Formula 1 standings, race schedules, driver stats, and live timing. Free F1 data for fans.">
-    <meta name="theme-color" content="#07080c">
-    <meta name="color-scheme" content="dark light">
-    <meta name="application-name" content="F1 Pulse">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="F1 Pulse — Live Formula 1 Intelligence">
-    <meta property="og:description" content="Live race context, standings, schedules and deep F1 intelligence in one premium dashboard.">
-    <meta property="og:image" content="/og.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="/og.png">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="apple-touch-icon" href="icons/icon-180.png">
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://flagcdn.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="js/preferences.js"></script>
-    <link rel="stylesheet" href="css/core.css">
-    <link rel="stylesheet" href="css/premium.css">
-    <link rel="stylesheet" href="css/mobile.css" media="(max-width: 760px)">
-    <link rel="stylesheet" href="css/finish.css">
-    <link rel="stylesheet" href="css/polish.css">
-</head>
-<body>
-    <nav id="main-nav"></nav>
-
-    <main class="page-content">
-        <!-- Hero: Next Race Countdown -->
-        <section class="hero" id="hero-section">
-            <div class="hero-stripe"></div>
-            <div class="hero-racing-stripe"></div>
-            <div class="container hero-content">
-                <div class="hero-label" id="hero-label">Next Race</div>
-                <h1 class="hero-title" id="hero-title">Loading...</h1>
-                <p class="hero-subtitle" id="hero-subtitle"></p>
-                <div class="countdown" id="countdown"></div>
-            </div>
-        </section>
-
-        <div class="container">
-            <div class="dashboard-toolbar" aria-label="Dashboard controls">
-                <div class="dashboard-shortcuts">
-                    <span class="toolbar-label">Your race briefing</span>
-                    <a href="championship.html">Championship Lab</a>
-                    <a href="replay.html">Race Replay</a>
-                    <a href="insights.html">Insights</a>
-                </div>
-                <div class="dashboard-preferences">
-                    <button class="preference-btn" type="button" data-preference="density" aria-pressed="false">Compact view</button>
-                    <button class="preference-btn" type="button" data-preference="motion" aria-pressed="false">Calm motion</button>
-                </div>
-            </div>
-            <!-- Quick Stats -->
-            <div class="section" id="quick-stats-section" style="display:none">
-                <div class="quick-stats" id="quick-stats"></div>
-            </div>
-
-            <!-- Season Progress -->
-            <div class="section" id="season-progress-section" style="display:none">
-                <div id="season-progress"></div>
-            </div>
-
-            <!-- Last Race Podium -->
-            <section class="section" id="last-podium-section" style="display:none">
-                <div class="section-header">
-                    <h2>Last Race <span class="text-red">Podium</span></h2>
-                    <a href="#" class="section-link" id="last-podium-link">Race Details</a>
-                </div>
-                <div id="last-podium"></div>
-            </section>
-
-            <!-- Latest Race Results -->
-            <section class="section" id="latest-results-section" style="display:none">
-                <div class="section-header">
-                    <h2>Latest Results</h2>
-                    <a href="#" class="section-link" id="latest-results-link">Full Results</a>
-                </div>
-                <div id="latest-results"></div>
-            </section>
-
-            <!-- Championship Battle -->
-            <section class="section" id="championship-battle-section" style="display:none">
-                <div class="section-header">
-                    <h2>Championship <span class="text-red">Battle</span></h2>
-                    <a href="drivers.html" class="section-link">Full Standings</a>
-                </div>
-                <div id="championship-battle"></div>
-            </section>
-
-            <!-- Driver Standings Preview -->
-            <section class="section" id="standings-section" style="display:none">
-                <div class="section-header">
-                    <h2>Driver Standings</h2>
-                    <a href="drivers.html" class="section-link">View All</a>
-                </div>
-                <div class="grid-5" id="top-drivers"></div>
-            </section>
-
-            <!-- Constructor Battle -->
-            <section class="section" id="constructor-battle-section" style="display:none">
-                <div class="section-header">
-                    <h2>Constructor <span class="text-red">Championship</span></h2>
-                    <a href="teams.html" class="section-link">View All</a>
-                </div>
-                <div id="constructor-battle"></div>
-            </section>
-
-            <!-- Constructor Standings Preview -->
-            <section class="section" id="constructors-section" style="display:none">
-                <div class="section-header">
-                    <h2>Constructor Standings</h2>
-                    <a href="teams.html" class="section-link">View All</a>
-                </div>
-                <div class="grid-3" id="top-constructors"></div>
-            </section>
-
-            <!-- Upcoming Races -->
-            <section class="section" id="upcoming-section" style="display:none">
-                <div class="section-header">
-                    <h2>Upcoming Races</h2>
-                    <a href="schedule.html" class="section-link">Full Calendar</a>
-                </div>
-                <div class="grid-3" id="upcoming-races"></div>
-            </section>
-
-            <!-- Fastest Lap Leaderboard -->
-            <section class="section" id="fastest-laps-section" style="display:none">
-                <div class="section-header">
-                    <h2>Fastest <span class="text-red">Laps</span></h2>
-                </div>
-                <div id="fastest-laps"></div>
-            </section>
-
-            <!-- Teammate Head-to-Head -->
-            <section class="section" id="teammate-h2h-section" style="display:none">
-                <div class="section-header">
-                    <h2>Teammate <span class="text-red">Battles</span></h2>
-                    <a href="drivers.html" class="section-link">Full Standings</a>
-                </div>
-                <div id="teammate-h2h"></div>
-            </section>
-        </div>
-    </main>
-
-    <footer id="main-footer"></footer>
-
-    <script src="js/api.js"></script>
-    <script src="js/experience.js"></script>
-    <script src="js/lab-core.js"></script>
-    <script src="js/pulse-ui.js"></script>
-    <script src="js/components.js"></script>
-    <script src="js/home.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#121419" />
+    <meta
+      name="description"
+      content="Your Formula 1 obsession, beautifully connected. Real results, driver and team profiles, race weekends, historical telemetry and free fan tools."
+    />
+    <meta property="og:title" content="F1 Pulse — Feel every moment." />
+    <meta
+      property="og:description"
+      content="The independent Formula 1 fan and intelligence platform."
+    />
+    <meta
+      property="og:image"
+      content="https://f1-pulse.arnavrival12.workers.dev/assets/hero.webp"
+    />
+    <link rel="icon" href="/favicon.svg" />
+    <title>F1 Pulse — Feel every moment.</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
