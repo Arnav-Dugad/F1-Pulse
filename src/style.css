@@ -2370,6 +2370,385 @@ details > summary {
 .main > section {
   animation: enter 0.4s both;
 }
+.page-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.share-control {
+  position: relative;
+}
+.share-fallback {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  top: calc(100% + 8px);
+  width: min(300px, 75vw);
+  box-shadow: var(--shadow);
+}
+.calendar-export-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.calendar-export-option input {
+  flex-shrink: 0;
+  accent-color: var(--red);
+}
+.chart-help {
+  font-size: 10px;
+  margin: 4px 0 10px;
+}
+.chart svg {
+  touch-action: pan-y;
+}
+.weekend-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  overflow: hidden;
+}
+.weekend-session {
+  padding: 22px 20px;
+  border-right: 1px solid var(--border);
+  position: relative;
+  min-width: 0;
+}
+.weekend-session:last-child {
+  border-right: 0;
+}
+.weekend-session .eyebrow {
+  font-size: 8px;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.weekend-session h3 {
+  margin-bottom: 9px;
+  font-size: 18px;
+}
+.weekend-session > strong {
+  display: block;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.weekend-session > small {
+  display: block;
+  color: var(--muted);
+  margin-top: 8px;
+  font-size: 10px;
+}
+.weekend-session.next-session {
+  box-shadow: inset 0 3px var(--red);
+  background: var(--surface2);
+}
+.weekend-session.next-session .eyebrow {
+  color: var(--red);
+}
+.weekend-session:hover {
+  background: var(--surface2);
+}
+.weekend-arrow {
+  position: absolute;
+  right: 14px;
+  top: 19px;
+  color: var(--muted);
+}
+.fan-summary {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 30px;
+  margin-bottom: 30px;
+}
+.fan-summary > div:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.fan-summary h2 {
+  margin: 8px 0;
+}
+.fan-summary p {
+  font-size: 12px;
+}
+.fan-emblem {
+  width: 62px;
+  height: 62px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: #ed374817;
+  color: var(--red);
+  border: 1px solid #ed374833;
+}
+.collection-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+  padding: 65px 24px;
+}
+.collection-empty > svg {
+  color: var(--red);
+}
+.collection-empty p {
+  max-width: 500px;
+  font-size: 13px;
+}
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+  gap: 20px;
+}
+.collection-card {
+  padding: 22px;
+  border-top: 2px solid var(--team);
+  min-width: 0;
+  overflow: hidden;
+}
+.collection-card .collection-portrait {
+  width: 100%;
+  height: 225px;
+  object-fit: contain;
+  object-position: center top;
+  margin: 18px 0;
+}
+.collection-card .collection-car {
+  width: 100%;
+  height: 190px;
+  object-fit: contain;
+  margin: 18px 0;
+}
+.collection-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.collection-name h2 {
+  font-size: 21px;
+}
+.collection-name svg {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.collection-card > p {
+  font-size: 12px;
+  margin-top: 5px;
+}
+.collection-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+  padding-top: 20px;
+}
+.collection-stats .metric {
+  padding: 0;
+  background: none;
+  border: 0;
+}
+.collection-stats .metric strong {
+  font-size: 28px;
+  margin-top: 6px;
+}
+.saved-outside {
+  padding: 10px 25px;
+}
+.saved-outside > div {
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+}
+.saved-outside > div:last-child {
+  border-bottom: 0;
+}
+.saved-outside .eyebrow {
+  font-size: 9px;
+  margin-bottom: 8px;
+}
+.rewind-selector {
+  padding: 26px;
+  margin-bottom: 24px;
+}
+.rewind-event {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 25px 0;
+}
+.rewind-event > div {
+  flex: 1;
+  min-width: 0;
+}
+.rewind-event h2 {
+  font-family: var(--heading);
+  font-size: 35px;
+  margin: 6px 0;
+  letter-spacing: 0.005em;
+}
+.rewind-event p {
+  font-size: 12px;
+}
+.rewind-round {
+  color: var(--red);
+  font-family: var(--heading);
+  font-size: 78px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.rewind-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.rewind-range {
+  flex: 1;
+  min-width: 70px;
+}
+.rewind-range input {
+  width: 100%;
+  accent-color: var(--red);
+}
+.rewind-controls .field {
+  flex: 0 1 320px;
+  min-width: 0;
+}
+.rewind-controls select {
+  width: 100%;
+}
+.rewind-baseline {
+  padding: 15px 25px;
+}
+.rank-change {
+  font-variant-numeric: tabular-nums;
+}
+.rank-change.gain {
+  color: #48cfaa;
+}
+.rank-change.loss {
+  color: #f27680;
+}
+[data-theme="light"] .rank-change.gain {
+  color: #087554;
+}
+[data-theme="light"] .rank-change.loss {
+  color: #b52535;
+}
+.gap-ladder {
+  padding: 12px 25px;
+}
+.gap-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 180px) 1fr 60px;
+  gap: 20px;
+  align-items: center;
+  padding: 13px 0;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.gap-row:last-child {
+  border-bottom: 0;
+}
+.gap-row strong {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.gap-row .bar-track {
+  width: 100%;
+  min-width: 0;
+}
+@media (max-width: 1000px) {
+  .page-title {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .page-actions {
+    justify-content: flex-start;
+  }
+  .weekend-strip {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .weekend-session {
+    border-bottom: 1px solid var(--border);
+  }
+}
+@media (max-width: 760px) {
+  .weekend-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .weekend-session {
+    padding: 20px 16px;
+  }
+  .weekend-session .eyebrow {
+    letter-spacing: 0.06em;
+    font-size: 7px;
+  }
+  .weekend-arrow {
+    display: none;
+  }
+  .fan-summary {
+    padding: 22px;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  .fan-emblem {
+    width: 45px;
+    height: 45px;
+    border-radius: 13px;
+  }
+  .fan-summary > .outline-chip {
+    margin-left: 60px;
+  }
+  .collection-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  .collection-card .collection-portrait {
+    height: 260px;
+  }
+  .rewind-selector {
+    padding: 20px;
+  }
+  .rewind-event {
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  .rewind-round {
+    font-size: 64px;
+  }
+  .rewind-event h2 {
+    font-size: 27px;
+  }
+  .rewind-event > .text-link {
+    width: 100%;
+  }
+  .rewind-controls {
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+  .rewind-controls .field {
+    flex-basis: 100%;
+  }
+  .gap-ladder {
+    padding: 10px 18px;
+  }
+  .gap-row {
+    grid-template-columns: 110px minmax(0, 1fr) 40px;
+    gap: 10px;
+    font-size: 11px;
+  }
+  .page-actions .button {
+    font-size: 11px;
+    padding: 10px 12px;
+  }
+}
 @keyframes enter {
   from {
     opacity: 0;
@@ -3502,5 +3881,52 @@ details > summary {
   [data-theme="light"] .tv-link {
     padding: 7px 8px;
     margin-left: 4px;
+  }
+}
+
+@media (max-width: 360px) {
+  .topbar {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    grid-template-rows: 44px 44px;
+    height: 98px;
+    gap: 0 10px;
+    padding: 5px 16px;
+    overflow: visible;
+  }
+  .topbar .mobile-toggle {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .topbar .brand {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .header-actions {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+    padding-top: 5px;
+  }
+  .header-actions .tv-link {
+    margin-left: 0;
+  }
+  .sidebar {
+    top: 98px;
+  }
+  .sidebar-shade {
+    top: 98px;
+  }
+  .main {
+    padding-top: 123px;
+  }
+  .rewind-selector > .row {
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  .rewind-selector > .row .tabs {
+    width: 100%;
   }
 }

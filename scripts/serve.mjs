@@ -4,6 +4,7 @@ import { readFile, stat } from "node:fs/promises";
 import { resolve, extname, sep } from "node:path";
 import worker from "../worker/index.mjs";
 const root = resolve("dist"),
+  port = Number(process.env.PULSE_PORT || 8787),
   types = {
     ".html": "text/html",
     ".js": "text/javascript",
@@ -12,6 +13,8 @@ const root = resolve("dist"),
     ".svg": "image/svg+xml",
     ".webp": "image/webp",
     ".woff2": "font/woff2",
+    ".woff": "font/woff",
+    ".png": "image/png",
     ".ttf": "font/ttf",
   };
 const cache = new Map();
@@ -48,6 +51,8 @@ const env = {
         return new Response(await readFile(path), {
           headers: {
             "Content-Type": types[extname(path)] || "application/octet-stream",
+            "Cache-Control":
+              extname(path) === ".html" ? "no-cache" : "no-store",
           },
         });
       } catch {
@@ -61,7 +66,7 @@ const env = {
 };
 createServer(async (req, res) => {
   try {
-    const request = new Request("http://127.0.0.1:8787" + req.url, {
+    const request = new Request(`http://127.0.0.1:${port}` + req.url, {
       method: req.method,
     });
     const response = await worker.fetch(request, env, {
@@ -73,6 +78,6 @@ createServer(async (req, res) => {
     res.writeHead(500);
     res.end(String(e));
   }
-}).listen(8787, "0.0.0.0", () =>
-  console.log("F1 Pulse verification server: http://127.0.0.1:8787"),
+}).listen(port, "127.0.0.1", () =>
+  console.log(`F1 Pulse verification server: http://127.0.0.1:${port}`),
 );

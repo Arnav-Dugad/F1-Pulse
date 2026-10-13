@@ -58,6 +58,13 @@ import {
 } from "./ui";
 import { name, portraitEra, driverPhoto, teamAsset, teamColor } from "./media";
 import { summarize, timeSeconds } from "./math.mjs";
+import {
+  buildCalendar,
+  weekendSessions,
+  validSeason,
+  validTimezone,
+} from "./domain.mjs";
+import UpcomingWeekend from "./weekend";
 import type { Driver, Team, Race, Result, Circuit } from "./types";
 const year = (s: string) =>
   s === "current" ? String(new Date().getFullYear()) : s;
@@ -238,6 +245,7 @@ function Overview() {
           Trackside photography · Singapore 2026 · Formula 1
         </span>
       </section>
+      {next && <UpcomingWeekend race={next} source={cal.value} />}
       <div className="overview-metrics">
         <Metric
           label="Calendar"
@@ -455,7 +463,8 @@ function Calendar() {
   const { season, timezone } = usePrefs();
   const data = useData(() => races(season), [season]);
   const [filter, setFilter] = useState("all"),
-    [q, setQ] = useState("");
+    [q, setQ] = useState(""),
+    [includeSessions, setIncludeSessions] = useState(false);
   const list = (data.value?.data || [])
     .filter((r) =>
       `${r.raceName} ${r.Circuit.Location.country}`
@@ -469,16 +478,10 @@ function Calendar() {
           (filter === "upcoming"),
     );
   const calendar = () => {
-    const events = (data.value?.data || []).map(
-      (r) =>
-        `BEGIN:VEVENT\r\nUID:${r.season}-${r.round}@f1pulse\r\nDTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z\r\nDTSTART${r.time ? "" : ";VALUE=DATE"}:${r.date.replace(/-/g, "")}${r.time ? "T" + r.time.replace(/:/g, "") : ""}\r\nSUMMARY:${r.raceName}\r\nLOCATION:${r.Circuit.circuitName}\r\nURL:${r.url}\r\nEND:VEVENT`,
-    );
     download(
       "f1-pulse-" + year(season) + ".ics",
-      "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//F1 Pulse//Race Calendar//EN\r\n" +
-        events.join("\r\n") +
-        "\r\nEND:VCALENDAR",
-      "text/calendar",
+      buildCalendar(data.value?.data || [], includeSessions),
+      "text/calendar;charset=utf-8",
     );
   };
   return (
@@ -497,6 +500,15 @@ function Calendar() {
           Add to calendar
         </button>
       </PageTitle>
+      <label className="calendar-export-option">
+        <input
+          type="checkbox"
+          checked={includeSessions}
+          onChange={(e) => setIncludeSessions(e.target.checked)}
+        />
+        Include every published practice, qualifying and sprint session in the
+        calendar export
+      </label>
       <div className="toolbar">
         <div className="tabs">
           {["all", "upcoming", "completed"].map((t) => (
@@ -593,6 +605,10 @@ function Standings() {
         title="The chase for greatness."
         description="Published championship standings. Explore any season back to 1950."
       >
+        <Link to="rewind" className="button secondary">
+          <Clock size={15} />
+          Rewind the season
+        </Link>
         <Link to="scenario" className="button secondary">
           <Trophy size={15} />
           Explore title scenarios
@@ -1064,17 +1080,7 @@ function RacePage({ round }: { round: string }) {
       : kind === "sprint"
         ? result?.SprintResults
         : result?.Results;
-  const weekend = r
-    ? ([
-        ["Practice 1", r.FirstPractice],
-        ["Practice 2", r.SecondPractice],
-        ["Practice 3", r.ThirdPractice],
-        ["Sprint qualifying", r.SprintQualifying],
-        ["Sprint", r.Sprint],
-        ["Qualifying", r.Qualifying],
-        ["Grand Prix", { date: r.date, time: r.time }],
-      ] as const)
-    : [];
+  const weekend = r ? weekendSessions(r) : [];
   return (
     <>
       <PageTitle
@@ -1086,6 +1092,21 @@ function RacePage({ round }: { round: string }) {
             : "Loading the official calendar…"
         }
       >
+        {r && (
+          <button
+            className="button secondary small"
+            onClick={() =>
+              download(
+                `f1-pulse-${r.season}-${r.round}-weekend.ics`,
+                buildCalendar([r], true),
+                "text/calendar;charset=utf-8",
+              )
+            }
+          >
+            <Download size={15} />
+            Save weekend
+          </button>
+        )}
         <More to="calendar">All races</More>
       </PageTitle>
       <State
@@ -1103,17 +1124,15 @@ function RacePage({ round }: { round: string }) {
                   {timezone === "local" ? "Your local time" : timezone}
                 </span>
               </div>
-              {weekend
-                .filter(([, s]) => s)
-                .map(([label, s]) => (
-                  <div className="session-row" key={label}>
-                    <span>
-                      <i />
-                      {label}
-                    </span>
-                    <strong>{formatTime(s!.date, s!.time, timezone)}</strong>
-                  </div>
-                ))}
+              {weekend.map((s) => (
+                <div className="session-row" key={s.label}>
+                  <span>
+                    <i />
+                    {s.label}
+                  </span>
+                  <strong>{formatTime(s.date, s.time, timezone)}</strong>
+                </div>
+              ))}
               <Source value={schedule.value} />
             </div>
             <Weather circuit={r.Circuit} />
@@ -1514,6 +1533,7 @@ function DriverProfile({ id }: { id: string }) {
               <Chart
                 label="Driver finishing positions by round"
                 minY={1}
+                reverseY
                 xLabel="Round"
                 series={[
                   {
@@ -2180,17 +2200,11 @@ function Settings() {
                         )
                       )
                         throw Error("Invalid preference file");
-                      if (
-                        p.season !== "current" &&
-                        (!/^\d{4}$/.test(p.season) ||
-                          +p.season < 1950 ||
-                          +p.season > new Date().getFullYear())
-                      )
-                        throw Error("Invalid season");
-                      if (p.timezone !== "local")
-                        new Intl.DateTimeFormat(undefined, {
-                          timeZone: p.timezone,
-                        });
+                      if (!validSeason(p.season)) throw Error("Invalid season");
+                      if (!validTimezone(p.timezone))
+                        throw Error("Invalid timezone");
+                      if (typeof p.reducedMotion !== "boolean")
+                        throw Error("Invalid motion preference");
                       prefs.setSeason(p.season);
                       prefs.setTimezone(p.timezone);
                       prefs.setTheme(p.theme);

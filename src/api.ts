@@ -8,6 +8,7 @@ import type {
   Driver,
   Team,
 } from "./types";
+import { mergeRacePage, snapshotMatches } from "./domain.mjs";
 const pending = new Map<string, Promise<Envelope<any>>>();
 const memory = new Map<string, Envelope<any>>();
 let slot = 0;
@@ -71,7 +72,11 @@ export async function request<T>(
         break;
       }
     }
-    if (saved && Date.now() - Date.parse(saved.meta.fetchedAt) < 86400000)
+    if (
+      saved?.meta &&
+      "data" in saved &&
+      Date.now() - Date.parse(saved.meta.fetchedAt) < 86400000
+    )
       return {
         ...saved,
         meta: {
@@ -94,7 +99,7 @@ export async function request<T>(
       const r = await fetch("/data/launch-snapshot.json");
       if (r.ok) {
         const snap = await r.json();
-        if (snap.responses[path])
+        if (snapshotMatches(snap, path))
           return {
             data: snap.responses[path],
             meta: {
@@ -121,22 +126,32 @@ export function useData<T>(
   deps: unknown[],
 ) {
   const [state, set] = useState<{
+    key: string;
     value?: Envelope<T>;
     error?: string;
     loading: boolean;
-  }>({ loading: true });
+  }>({ key: "", loading: true });
   const [retry, refresh] = useState(0);
+  const key = JSON.stringify([...deps, retry]);
   useEffect(() => {
     let live = true;
-    set({ loading: true });
+    set({ key, loading: true });
     loader()
-      .then((value) => live && set({ value, loading: false }))
-      .catch((e) => live && set({ loading: false, error: e.message }));
+      .then((value) => live && set({ key, value, loading: false }))
+      .catch((e) => live && set({ key, loading: false, error: e.message }));
     return () => {
       live = false;
     };
   }, [...deps, retry]);
-  return { ...state, reload: () => refresh((x) => x + 1) };
+  return {
+    ...(state.key === key
+      ? state
+      : { loading: true, value: undefined, error: undefined }),
+    reload: () => {
+      memory.clear();
+      refresh((x) => x + 1);
+    },
+  };
 }
 export async function races(season: string): Promise<Envelope<Race[]>> {
   const r = await request<any>("jolpica", `${season}.json`);
@@ -185,16 +200,29 @@ export async function allResults(
       `${season}/${filter ? filter + "/" : ""}results.json`,
       { limit: 100, offset },
     );
-    meta = r.meta;
+    meta = meta
+      ? {
+          ...r.meta,
+          fetchedAt:
+            Date.parse(meta.fetchedAt) < Date.parse(r.meta.fetchedAt)
+              ? meta.fetchedAt
+              : r.meta.fetchedAt,
+          snapshot: !!(meta.snapshot || r.meta.snapshot),
+          status: meta.snapshot ? meta.status : r.meta.status,
+        }
+      : r.meta;
     const mr = r.data.MRData;
     total = Number(mr.total);
     if (!Number.isFinite(total)) throw Error("Invalid results pagination");
-    for (const race of mr.RaceTable.Races) {
-      const old = list.find((x) => x.round === race.round);
-      if (old) old.Results?.push(...race.Results);
-      else list.push(race);
-    }
-    offset += 100;
+    list = mergeRacePage(list, mr.RaceTable.Races);
+    const limit = Number(mr.limit);
+    if (
+      !Number.isInteger(limit) ||
+      limit < 1 ||
+      (offset < total && !mr.RaceTable.Races.length)
+    )
+      throw Error("Incomplete results pagination");
+    offset += limit;
     if (offset > 10000) throw Error("Too many results");
   }
   return { data: list, meta: meta! };

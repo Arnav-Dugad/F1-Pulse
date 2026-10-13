@@ -7,9 +7,13 @@ import {
   Info,
   Heart,
   ImageOff,
+  Share2,
+  Check,
 } from "lucide-react";
 import type { Envelope, Driver, Team } from "./types";
 import { name, driverPhoto, teamAsset, teamColor } from "./media";
+import { usePrefs } from "./context";
+import { seasonHref } from "./domain.mjs";
 export function Photo({
   src,
   alt,
@@ -29,6 +33,8 @@ export function Photo({
       alt={alt}
       className={className}
       loading={eager ? "eager" : "lazy"}
+      decoding="async"
+      fetchPriority={eager ? "high" : "auto"}
       onError={() => setFailed(true)}
     />
   ) : (
@@ -47,7 +53,7 @@ export function Source({ value }: { value?: Envelope<any> }) {
     <details className="source">
       <summary>
         <Info size={12} />
-        {value.meta.snapshot ? "Saved data" : "Source verified"} ·{" "}
+        {value.meta.snapshot ? "Saved data" : "Source data"} ·{" "}
         {value.meta.source}
       </summary>
       <div>
@@ -116,6 +122,9 @@ export function PageTitle({
   description: string;
   children?: ReactNode;
 }) {
+  useEffect(() => {
+    document.title = `${title} · F1 Pulse`;
+  }, [title]);
   return (
     <div className="page-title">
       <div>
@@ -126,7 +135,10 @@ export function PageTitle({
         <h1>{title}</h1>
         <p>{description}</p>
       </div>
-      {children}
+      <div className="page-actions">
+        {children}
+        <ShareButton />
+      </div>
     </div>
   );
 }
@@ -167,10 +179,66 @@ export function Link({
   className?: string;
   style?: CSSProperties;
 }) {
+  const { season } = usePrefs();
+  const route = to.split("?")[0];
+  const current = location.hash.slice(2).split("?")[0] || "overview";
   return (
-    <a className={className} style={style} href={"#/" + to}>
+    <a
+      className={className}
+      style={style}
+      href={seasonHref(to, season)}
+      aria-current={current === route ? "page" : undefined}
+    >
       {children}
     </a>
+  );
+}
+export function ShareButton() {
+  const { season } = usePrefs();
+  const [message, setMessage] = useState("");
+  const [manual, setManual] = useState("");
+  useEffect(() => {
+    if (!message) return;
+    const timer = setTimeout(() => setMessage(""), 3500);
+    return () => clearTimeout(timer);
+  }, [message]);
+  const share = async () => {
+    const url = new URL(location.href);
+    const route = location.hash.slice(2).split("?")[0] || "overview";
+    const query = new URLSearchParams(location.hash.split("?")[1] || "");
+    query.set(
+      "season",
+      season === "current" ? String(new Date().getFullYear()) : season,
+    );
+    url.hash = seasonHref(route + "?" + query, season);
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      setMessage("Link copied");
+      setManual("");
+    } catch {
+      setManual(url.toString());
+      setMessage("Select and copy the link below");
+    }
+  };
+  return (
+    <div className="share-control">
+      <button className="button secondary small" onClick={share}>
+        {message === "Link copied" ? <Check size={15} /> : <Share2 size={15} />}
+        {message === "Link copied" ? "Copied" : "Share page"}
+      </button>
+      <span className="sr-only" role="status">
+        {message}
+      </span>
+      {manual && (
+        <input
+          className="share-fallback"
+          aria-label="Page link to copy"
+          readOnly
+          value={manual}
+          onFocus={(e) => e.target.select()}
+        />
+      )}
+    </div>
   );
 }
 export function More({
@@ -335,7 +403,7 @@ export function formatTime(date: string, time?: string, tz = "local") {
     day: "numeric",
     hour: time ? "2-digit" : undefined,
     minute: time ? "2-digit" : undefined,
-    ...(tz !== "local" ? { timeZone: tz } : {}),
+    ...(!time ? { timeZone: "UTC" } : tz !== "local" ? { timeZone: tz } : {}),
   });
 }
 export function seconds(s: number | null | undefined) {
@@ -356,6 +424,7 @@ export function Chart({
   maxY,
   hoverX,
   onHover,
+  reverseY = false,
 }: {
   series: Series[];
   label: string;
@@ -365,6 +434,7 @@ export function Chart({
   maxY?: number;
   hoverX?: number | null;
   onHover?: (x: number | null) => void;
+  reverseY?: boolean;
 }) {
   const [localHover, setLocalHover] = useState<number | null>(null);
   const hover = hoverX === undefined ? localHover : hoverX;
@@ -378,7 +448,10 @@ export function Chart({
   const ymin = minY ?? Math.min(...all.map((x) => x.y!)),
     ymax = maxY ?? Math.max(...all.map((x) => x.y!));
   const X = (x: number) => 50 + ((x - xmin) / (xmax - xmin || 1)) * 820,
-    Y = (y: number) => 240 - ((y - ymin) / (ymax - ymin || 1)) * 200;
+    Y = (y: number) =>
+      reverseY
+        ? 40 + ((y - ymin) / (ymax - ymin || 1)) * 200
+        : 240 - ((y - ymin) / (ymax - ymin || 1)) * 200;
   return (
     <div className="chart">
       <div className="chart-legend">
@@ -408,7 +481,22 @@ export function Chart({
         viewBox="0 0 900 285"
         role="img"
         aria-label={label}
-        onMouseMove={(e) => {
+        tabIndex={0}
+        onKeyDown={(e) => {
+          const step = (xmax - xmin) / 100 || 1;
+          if (
+            ["ArrowLeft", "ArrowRight", "Home", "End", "Escape"].includes(e.key)
+          )
+            e.preventDefault();
+          if (e.key === "ArrowLeft")
+            setHover(Math.max(xmin, (hover ?? xmax) - step));
+          if (e.key === "ArrowRight")
+            setHover(Math.min(xmax, (hover ?? xmin) + step));
+          if (e.key === "Home") setHover(xmin);
+          if (e.key === "End") setHover(xmax);
+          if (e.key === "Escape") setHover(null);
+        }}
+        onPointerMove={(e) => {
           const r = e.currentTarget.getBoundingClientRect();
           setHover(
             xmin +
@@ -422,13 +510,17 @@ export function Chart({
                 (xmax - xmin),
           );
         }}
-        onMouseLeave={() => setHover(null)}
+        onPointerLeave={() => setHover(null)}
+        onBlur={() => setHover(null)}
       >
         {[0, 1, 2, 3, 4].map((i) => (
           <g key={i}>
             <line x1="50" x2="870" y1={40 + i * 50} y2={40 + i * 50} />
             <text x="42" y={44 + i * 50} textAnchor="end">
-              {(ymax - ((ymax - ymin) * i) / 4).toFixed(ymax < 10 ? 2 : 0)}
+              {(reverseY
+                ? ymin + ((ymax - ymin) * i) / 4
+                : ymax - ((ymax - ymin) * i) / 4
+              ).toFixed(ymax < 10 ? 2 : 0)}
             </text>
           </g>
         ))}
@@ -467,6 +559,9 @@ export function Chart({
           {xLabel} {yLabel && `· ${yLabel}`}
         </text>
       </svg>
+      <p className="chart-help">
+        Hover or touch to inspect. Use arrow keys when the chart is focused.
+      </p>
       <details>
         <summary>View chart data</summary>
         <Table headers={[xLabel, ...series.map((s) => s.name)]}>

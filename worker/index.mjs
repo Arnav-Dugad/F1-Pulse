@@ -1,4 +1,32 @@
+import { validSeason } from "../src/domain.mjs";
 const inflight = new Map();
+export function legacyDestination(url) {
+  const routes = {
+    "/drivers.html": "drivers",
+    "/teams.html": "teams",
+    "/schedule.html": "calendar",
+    "/about.html": "settings",
+    "/driver-profile.html": "drivers",
+    "/team-profile.html": "teams",
+    "/race-detail.html": "calendar",
+  };
+  let route = routes[url.pathname];
+  if (!route) return null;
+  const driver = url.searchParams.get("driver"),
+    team = url.searchParams.get("team"),
+    round = url.searchParams.get("round");
+  if (url.pathname === "/driver-profile.html" && /^[\w-]+$/.test(driver || ""))
+    route = "driver/" + driver;
+  if (url.pathname === "/team-profile.html" && /^[\w-]+$/.test(team || ""))
+    route = "team/" + team;
+  if (url.pathname === "/race-detail.html" && /^\d{1,3}$/.test(round || ""))
+    route = "race/" + round;
+  const season = url.searchParams.get("season");
+  const destination = new URL("/", url);
+  destination.hash =
+    "/" + route + "?season=" + (validSeason(season) ? season : "current");
+  return destination.toString();
+}
 const archives = new Map();
 const openEndpoints = new Set([
   "sessions",
@@ -28,6 +56,8 @@ const fail = (message, status = 400) =>
     { status, headers: { ...headers, "Cache-Control": "no-store" } },
   );
 export function resolveUpstream(url) {
+  if (!/^\/api\/(jolpica|openf1|weather|wiki|news)$/.test(url.pathname))
+    throw Error("Unknown data source");
   const kind = url.pathname.split("/")[2],
     q = new URLSearchParams(url.searchParams),
     path = q.get("path");
@@ -48,10 +78,17 @@ export function resolveUpstream(url) {
       path.length > 220
     )
       throw Error("Invalid results path");
-    q.set(
-      "limit",
-      String(Math.min(100, Math.max(1, Number(q.get("limit") || 100)))),
-    );
+    const limit = Number(q.get("limit") ?? 100),
+      offset = Number(q.get("offset") ?? 0);
+    if (
+      !Number.isInteger(limit) ||
+      limit < 1 ||
+      !Number.isInteger(offset) ||
+      offset < 0 ||
+      offset > 100000
+    )
+      throw Error("Invalid pagination");
+    q.set("limit", String(Math.min(100, limit)));
     return {
       kind,
       url: new URL("https://api.jolpi.ca/ergast/f1/" + path + "?" + q),
@@ -97,6 +134,8 @@ export function resolveUpstream(url) {
     if (
       !q.has("latitude") ||
       !q.has("longitude") ||
+      !q.get("latitude").trim() ||
+      !q.get("longitude").trim() ||
       !Number.isFinite(lat) ||
       !Number.isFinite(lon) ||
       Math.abs(lat) > 90 ||
@@ -230,6 +269,9 @@ async function getData(spec) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    const legacy = legacyDestination(url);
+    if (legacy && ["GET", "HEAD"].includes(request.method))
+      return Response.redirect(legacy, 308);
     if (!url.pathname.startsWith("/api/")) return env.ASSETS.fetch(request);
     if (request.method !== "GET") return fail("Read-only API", 405);
     let spec;

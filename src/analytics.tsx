@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight,
   GitBranch,
@@ -69,15 +69,21 @@ function Comparison() {
   const { season } = usePrefs();
   const ds = useData(() => drivers(season), [season]),
     data = useData(() => allResults(season), [season]);
-  const [a, setA] = useState(""),
-    [b, setB] = useState(""),
-    [metric, setMetric] = useState("cumulative"),
+  const query = new URLSearchParams(location.hash.split("?")[1]);
+  const metrics = ["cumulative", "points", "position", "gain"];
+  const [a, setA] = useState(query.get("a") || ""),
+    [b, setB] = useState(query.get("b") || ""),
+    [metric, setMetric] = useState(
+      metrics.includes(query.get("metric") || "")
+        ? query.get("metric")!
+        : "cumulative",
+    ),
     [mode, setMode] = useState("line"),
     [message, setMessage] = useState("");
   const all = data.value?.data || [],
     list = ds.value?.data || [];
   const aId =
-      a ||
+      (list.some((d) => d.driverId === a) ? a : "") ||
       list.find((d) =>
         all.some((r) =>
           r.Results?.some((x) => x.Driver.driverId === d.driverId),
@@ -85,7 +91,7 @@ function Comparison() {
       )?.driverId ||
       "",
     bId =
-      b ||
+      (list.some((d) => d.driverId === b) ? b : "") ||
       list.find(
         (d) =>
           d.driverId !== aId &&
@@ -129,6 +135,15 @@ function Comparison() {
     };
   };
   const series = [makeSeries(aId, "#ed4655"), makeSeries(bId, "#67a8ff")];
+  useEffect(() => {
+    if (!aId || !bId) return;
+    const q = new URLSearchParams(location.hash.split("?")[1]);
+    q.set("a", aId);
+    q.set("b", bId);
+    q.set("metric", metric);
+    q.set("season", season);
+    history.replaceState(null, "", "#/analytics?" + q);
+  }, [aId, bId, metric, season]);
   const save = () => {
     try {
       localStorage.setItem(
@@ -147,7 +162,11 @@ function Comparison() {
         title="Two drivers. One clear picture."
         description="Compare real race outcomes in a common season. Change the season above to explore history."
       >
-        <button className="button secondary" onClick={save}>
+        <button
+          className="button secondary"
+          onClick={save}
+          disabled={!A || !B || aId === bId}
+        >
           <Save size={16} />
           Save comparison
         </button>
@@ -182,7 +201,14 @@ function Comparison() {
               const s = JSON.parse(
                 localStorage.getItem("pulse-v2-comparison") || "null",
               );
-              if (s && s.season === season) {
+              if (
+                s &&
+                s.season === season &&
+                list.some((d) => d.driverId === s.a) &&
+                list.some((d) => d.driverId === s.b) &&
+                s.a !== s.b &&
+                metrics.includes(s.metric)
+              ) {
                 setA(s.a);
                 setB(s.b);
                 setMetric(s.metric);
@@ -202,7 +228,10 @@ function Comparison() {
       <State
         loading={data.loading || ds.loading}
         error={data.error || ds.error}
-        onRetry={data.reload}
+        onRetry={() => {
+          data.reload();
+          ds.reload();
+        }}
       />
       {aId === bId ? (
         <div className="empty">Choose two different drivers to compare.</div>
@@ -342,6 +371,7 @@ function Comparison() {
               series={series}
               xLabel="Round"
               minY={metric === "position" ? 1 : undefined}
+              reverseY={metric === "position"}
             />
           ) : (
             <div className="round-bars">

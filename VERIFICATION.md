@@ -1,5 +1,21 @@
 # Verification record
 
+## Development release — 13 October 2026
+
+The replacement was extended with championship rewind, a dedicated fan collection, session calendar exports, sharing, legacy redirects, mobile focus handling and data-integrity fixes.
+
+- Passed 19 Node tests, including immutable pagination, duplicate-result protection, unranked standings, snapshot season checks, preference validation, calendar escaping/UTF-8 line folding and legacy URL redirects.
+- Passed strict TypeScript and production Vite build; the new fan/rewind screens remain separate lazy-loaded bundles.
+- Passed 13 requests against real Jolpica, OpenF1, Open-Meteo and BBC sources, including actual historical telemetry and location samples.
+- Passed Chrome desktop, tablet and mobile route/theme/search/persistence checks on the new source, including the new screens.
+- Passed the existing deep Chrome suite: profiles/favorites, race/qualifying results, comparison/save/load, scoring validation, six telemetry channels, measured location replay, clock controls and recorded stints.
+- Passed release interaction checks: actual 2025 round standings, constructor switching, season/round clipboard links, real-photo favorites, direct comparisons, keyboard crosshairs, season/session ICS downloads, legacy redirects, mobile focus confinement, 320px overflow/F1 TV visibility and corrupt-preference recovery. The 320px test found and verified fixes for the points-ladder minimum width and narrow header layout. Representative desktop and mobile screenshots were visually reviewed.
+- Cloudflare `wrangler deploy --dry-run` successfully bundled the Worker and static asset binding with the legacy routing configuration. This is packaging validation, not a production deployment.
+
+The additional release interaction suite is `npm run test:release`; reports and images are written to ignored `artifacts/`. Browser checks on this Windows environment use installed Chrome (`PULSE_CHROMIUM_CHANNEL=chrome`). No Firefox/WebKit, Lighthouse or WCAG certification is claimed for this release.
+
+## Original replacement verification
+
 Executed on 13 October 2026 against the replacement source and real providers.
 
 ## Passed

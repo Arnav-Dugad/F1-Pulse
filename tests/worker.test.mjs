@@ -1,6 +1,46 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import worker, { resolveUpstream, parseNews } from "../worker/index.mjs";
+import worker, {
+  resolveUpstream,
+  parseNews,
+  legacyDestination,
+} from "../worker/index.mjs";
+test("legacy links keep driver, team and race destinations with safe seasons", async () => {
+  assert.equal(
+    legacyDestination(
+      new URL(
+        "https://pulse.test/driver-profile.html?driver=norris&season=2025",
+      ),
+    ),
+    "https://pulse.test/#/driver/norris?season=2025",
+  );
+  assert.equal(
+    legacyDestination(
+      new URL("https://pulse.test/race-detail.html?round=5&season=2025"),
+    ),
+    "https://pulse.test/#/race/5?season=2025",
+  );
+  assert.equal(
+    legacyDestination(
+      new URL("https://pulse.test/team-profile.html?team=ferrari&season=9999"),
+    ),
+    "https://pulse.test/#/team/ferrari?season=current",
+  );
+  assert.equal(
+    legacyDestination(new URL("https://pulse.test/assets/hero.webp")),
+    null,
+  );
+  const response = await worker.fetch(
+    new Request("https://pulse.test/schedule.html?season=2025"),
+    {},
+    {},
+  );
+  assert.equal(response.status, 308);
+  assert.equal(
+    response.headers.get("Location"),
+    "https://pulse.test/#/calendar?season=2025",
+  );
+});
 test("proxy rejects path injection and unbounded telemetry", () => {
   for (const u of [
     "https://pulse.test/api/jolpica?path=../secret.json",
@@ -8,6 +48,10 @@ test("proxy rejects path injection and unbounded telemetry", () => {
     "https://pulse.test/api/openf1?path=car_data&session_key=9159",
     "https://pulse.test/api/openf1?path=location&session_key=latest",
     "https://pulse.test/api/weather?latitude=999&longitude=0",
+    "https://pulse.test/api/weather?latitude=&longitude=0",
+    "https://pulse.test/api/jolpica?path=current.json&limit=NaN",
+    "https://pulse.test/api/jolpica?path=current.json&offset=-1",
+    "https://pulse.test/api/jolpica/extra?path=current.json",
   ])
     assert.throws(() => resolveUpstream(new URL(u)));
 });

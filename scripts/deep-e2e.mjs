@@ -1,7 +1,11 @@
 import { chromium } from "@playwright/test";
 import assert from "node:assert/strict";
 import { readFile, writeFile } from "node:fs/promises";
-const browser = await chromium.launch();
+const browser = await chromium.launch(
+  process.env.PULSE_CHROMIUM_CHANNEL
+    ? { channel: process.env.PULSE_CHROMIUM_CHANNEL }
+    : {},
+);
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));

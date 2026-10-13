@@ -54,6 +54,17 @@ For an existing Cloudflare Workers Builds GitHub connection: keep build command 
 | Preferences       | Theme, timezone, favorite drivers/teams, motion, JSON export/import and saved comparisons                                                                                                          |
 | Search            | Driver/team/race/circuit/tool discovery, fuzzy matching, season navigation, keyboard navigation and Ctrl/Cmd+K                                                                                     |
 
+## Latest development additions
+
+- **Your fan collection:** saved drivers and constructors together, real season standings, current photography, unsave controls and one-click comparison of favorites. Favorites without records in the selected season remain saved and are identified separately.
+- **Championship rewind:** choose a published round for driver or constructor standings. Inspect rank/points changes against the preceding round, leader gaps, a points ladder and CSV exports. Frames use actual provider standings, including recorded sprint points and adjustments; they are not reconstructed from race-only points.
+- **Weekend planning:** upcoming sessions on the overview, individual weekend downloads, and an option to export all published sessions for a season. ICS files preserve UTC starts, escape and fold fields, and use stable session IDs. Unpublished start times remain all-day dates.
+- **Sharing and navigation:** page links pin the selected season; comparisons retain both drivers and their metric; rewind links retain the round. Previous `.html` calendar, driver, team and race URLs redirect to the new matching destinations.
+- **Interaction quality:** position charts put P1 at the top, charts accept pointer and keyboard inspection, hidden mobile navigation cannot receive focus, and the open menu confines focus and background scrolling. The narrow 320px header keeps the official F1 TV link visible.
+- **Data integrity:** pagination never mutates cached result arrays, duplicate chunks do not duplicate drivers, fallback snapshots must match the current season, corrupt saved preferences recover safely, retry clears the browser memory cache, and changing selections hides stale records immediately.
+
+The [premium improvement roadmap](PREMIUM-ROADMAP.md) contains 60 proposed future upgrades across fan features, UI, data, analytics, visuals and animation. It distinguishes completed work from additions.
+
 ## Provenance and availability
 
 Jolpica supplies schedules, standings, classifications, pit stops and lap records. Historical coverage starts in 1950, but individual datasets vary by era. Championship constructor data begins later. Queries use result pagination rather than silently truncating at the first page.
@@ -86,9 +97,12 @@ npm run verify:data
 npx playwright install --with-deps chromium firefox webkit
 npm run preview  # separate terminal
 npm run test:e2e
+npm run test:release
 node scripts/deep-e2e.mjs
 ```
 
 `verify:data` exercises actual source requests. Browser tests capture screenshots and check navigation, overflow, themes, timezone persistence, search and mobile navigation. Deep tests exercise profiles, favorites, classification, comparisons, scenario validation and real archive telemetry/replay. Environment-specific browser support is recorded explicitly in test artifacts. GitHub Actions performs unit/build/browser checks; it does not silently deploy to a different account.
+
+`test:release` additionally checks published round standings, constructor switching, clipboard sharing, favorite comparisons, real ICS downloads, legacy links, keyboard chart controls, 390/320px layouts and corrupt-preference recovery. Set `PULSE_CHROMIUM_CHANNEL=chrome` to use an installed Chrome browser. `PULSE_TEST_URL` changes the target URL; `PULSE_PORT` changes the local verification server port. The preview server binds to localhost.
 
 F1 Pulse is an unofficial noncommercial fan site, not affiliated with Formula 1, the FIA, any team, or F1 TV. Formula 1 and related marks belong to their owners. The F1 TV header link opens the official service.

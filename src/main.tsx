@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense, lazy } from "react";
+import React, { useEffect, useState, useRef, Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import {
   Activity,
@@ -29,10 +29,13 @@ import { Link, Photo, State } from "./ui";
 import { races, drivers, teams, useData } from "./api";
 import type { Driver } from "./types";
 import { name } from "./media";
+import { normalizePreference, seasonHref, validSeason } from "./domain.mjs";
 import "./style.css";
 const Core = lazy(() => import("./pages"));
 const Analytics = lazy(() => import("./analytics"));
 const Archive = lazy(() => import("./archive"));
+const Fan = lazy(() => import("./fan"));
+const Rewind = lazy(() => import("./rewind"));
 const nav = [
   ["overview", "Overview", LayoutDashboard],
   ["calendar", "Race calendar", CalendarDays],
@@ -42,6 +45,7 @@ const nav = [
   ["circuits", "Circuits", MapPin],
 ] as const;
 const tools = [
+  ["rewind", "Championship rewind", Trophy],
   ["analytics", "Comparison studio", ChartNoAxesCombined],
   ["telemetry", "Telemetry lab", Gauge],
   ["replay", "Historical replay", Play],
@@ -51,16 +55,24 @@ const tools = [
 ] as const;
 function stored<T>(key: string, defaultValue: T): T {
   try {
-    return (
-      JSON.parse(localStorage.getItem("pulse-v2-" + key) || "null") ??
-      defaultValue
+    return normalizePreference(
+      key,
+      JSON.parse(localStorage.getItem("pulse-v2-" + key) || "null"),
+      defaultValue,
     );
   } catch {
     return defaultValue;
   }
 }
 function useStored<T>(key: string, initial: T) {
-  const [value, set] = useState<T>(() => stored(key, initial));
+  const [value, set] = useState<T>(() => {
+    const querySeason = new URLSearchParams(location.hash.split("?")[1]).get(
+      "season",
+    );
+    return key === "season" && querySeason && validSeason(querySeason)
+      ? (querySeason as T)
+      : stored(key, initial);
+  });
   useEffect(() => {
     try {
       localStorage.setItem("pulse-v2-" + key, JSON.stringify(value));
@@ -79,19 +91,51 @@ function App() {
   );
   const [mobile, setMobile] = useState(false),
     [search, setSearch] = useState(false);
+  const menuRef = useRef<HTMLButtonElement>(null);
+  const asideRef = useRef<HTMLElement>(null);
+  const [narrow, setNarrow] = useState(
+    () => matchMedia("(max-width: 760px)").matches,
+  );
+  useEffect(() => {
+    const media = matchMedia("(max-width: 760px)");
+    const change = () => {
+      setNarrow(media.matches);
+      if (!media.matches) setMobile(false);
+    };
+    media.addEventListener("change", change);
+    return () => media.removeEventListener("change", change);
+  }, []);
+  useEffect(() => {
+    if (!mobile || !narrow) return;
+    const previous = document.activeElement as HTMLElement;
+    const oldOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    asideRef.current?.querySelector<HTMLElement>("a")?.focus();
+    const trap = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const links = Array.from(
+        asideRef.current?.querySelectorAll<HTMLElement>("a,button") || [],
+      );
+      const elements = [menuRef.current!, ...links].filter(Boolean);
+      const index = elements.indexOf(document.activeElement as HTMLElement);
+      e.preventDefault();
+      elements[
+        (index + (e.shiftKey ? -1 : 1) + elements.length) % elements.length
+      ]?.focus();
+    };
+    document.addEventListener("keydown", trap);
+    return () => {
+      document.body.style.overflow = oldOverflow;
+      document.removeEventListener("keydown", trap);
+      previous?.focus();
+    };
+  }, [mobile, narrow]);
   useEffect(() => {
     const change = () => {
       setRoute(location.hash.slice(2).split("?")[0] || "overview");
       const q = new URLSearchParams(location.hash.split("?")[1] || "");
       const querySeason = q.get("season");
-      if (
-        querySeason === "current" ||
-        (querySeason &&
-          /^\d{4}$/.test(querySeason) &&
-          +querySeason >= 1950 &&
-          +querySeason <= new Date().getFullYear())
-      )
-        setSeason(querySeason);
+      if (querySeason && validSeason(querySeason)) setSeason(querySeason);
       setMobile(false);
       window.scrollTo(0, 0);
     };
@@ -155,6 +199,22 @@ function App() {
   const current = route.split("/")[0];
   const isAnalytics = ["analytics", "strategy", "scenario"].includes(current);
   const isArchive = ["telemetry", "replay"].includes(current);
+  useEffect(() => {
+    const label =
+      [...nav, ...tools].find(([id]) => id === current)?.[1] ||
+      (
+        {
+          fan: "Your fan collection",
+          settings: "Preferences & sources",
+          race: "Race weekend",
+          driver: "Driver profile",
+          team: "Team profile",
+          circuit: "Circuit intelligence",
+        } as Record<string, string>
+      )[current] ||
+      "Page not found";
+    document.title = `${label} · F1 Pulse`;
+  }, [route]);
   return (
     <Context.Provider value={prefs}>
       <a
@@ -171,7 +231,10 @@ function App() {
       <header className="topbar">
         <button
           className="icon-button mobile-toggle"
-          aria-label="Open navigation"
+          ref={menuRef}
+          aria-label={mobile ? "Close navigation" : "Open navigation"}
+          aria-expanded={mobile}
+          aria-controls="paddock-navigation"
           onClick={() => setMobile((x) => !x)}
         >
           {mobile ? <X /> : <Menu />}
@@ -199,7 +262,17 @@ function App() {
           </button>
           <label className="season-select">
             <span className="sr-only">Season</span>
-            <select value={season} onChange={(e) => setSeason(e.target.value)}>
+            <select
+              value={season}
+              onChange={(e) => {
+                setSeason(e.target.value);
+                const query = new URLSearchParams(
+                  location.hash.split("?")[1] || "",
+                );
+                query.set("season", e.target.value);
+                location.hash = seasonHref(route + "?" + query, e.target.value);
+              }}
+            >
               <option value="current">{new Date().getFullYear()} season</option>
               {Array.from({ length: new Date().getFullYear() - 1949 }, (_, i) =>
                 String(new Date().getFullYear() - i),
@@ -236,7 +309,13 @@ function App() {
           onClick={() => setMobile(false)}
         />
       )}
-      <aside className={`sidebar ${mobile ? "open" : ""}`}>
+      <aside
+        id="paddock-navigation"
+        ref={asideRef}
+        inert={narrow && !mobile}
+        aria-label="Paddock navigation"
+        className={`sidebar ${mobile ? "open" : ""}`}
+      >
         <div className="nav-group">
           <span className="nav-label">THE PADDOCK</span>
           {nav.map(([id, label, Icon]) => (
@@ -265,7 +344,7 @@ function App() {
           ))}
         </div>
         <div className="sidebar-bottom">
-          <Link className="fan-pass" to="drivers">
+          <Link className="fan-pass" to="fan">
             <Heart size={19} />
             <div>
               Your fan collection
@@ -287,16 +366,27 @@ function App() {
           </p>
         </div>
       </aside>
-      <main id="main-content" className="main" tabIndex={-1}>
-        <Suspense fallback={<State loading />}>
-          {isArchive ? (
-            <Archive route={route} />
-          ) : isAnalytics ? (
-            <Analytics route={route} />
-          ) : (
-            <Core route={route} />
-          )}
-        </Suspense>
+      <main
+        id="main-content"
+        className="main"
+        tabIndex={-1}
+        inert={mobile && narrow}
+      >
+        <div className="route-view" key={route}>
+          <Suspense fallback={<State loading />}>
+            {current === "fan" ? (
+              <Fan />
+            ) : current === "rewind" ? (
+              <Rewind />
+            ) : isArchive ? (
+              <Archive route={route} />
+            ) : isAnalytics ? (
+              <Analytics route={route} />
+            ) : (
+              <Core route={route} />
+            )}
+          </Suspense>
+        </div>
         <footer>
           <div>
             <Activity size={18} />
@@ -340,6 +430,7 @@ function SearchDialog({
   const items = [
     ...nav.map(([url, label]) => ({ label, url, kind: "Page" })),
     ...tools.map(([url, label]) => ({ label, url, kind: "Tool" })),
+    { label: "Your fan collection", url: "fan", kind: "Page" },
     ...(ds.value?.data || []).map((d: Driver) => ({
       label: name(d),
       url: "driver/" + d.driverId,
@@ -377,13 +468,13 @@ function SearchDialog({
   const select = (i: number) => {
     if (/^\d{4}$/.test(q) && +q >= 1950 && +q <= new Date().getFullYear()) {
       changeSeason(q);
-      location.hash = "/standings";
+      location.hash = seasonHref("standings", q);
       close();
       return;
     }
     const item = scored[i];
     if (item) {
-      location.hash = "/" + item.url;
+      location.hash = seasonHref(item.url, season);
       try {
         localStorage.setItem("pulse-v2-last-search", q);
       } catch {}
@@ -404,7 +495,7 @@ function SearchDialog({
         aria-label="Search Formula 1"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
-          if (e.key === "ArrowDown") {
+          if (e.key === "ArrowDown" && scored.length) {
             e.preventDefault();
             setIndex((i) => Math.min(i + 1, scored.length - 1));
           }
@@ -412,7 +503,10 @@ function SearchDialog({
             e.preventDefault();
             setIndex((i) => Math.max(0, i - 1));
           }
-          if (e.key === "Enter") {
+          if (
+            e.key === "Enter" &&
+            (e.target as HTMLElement).tagName === "INPUT"
+          ) {
             e.preventDefault();
             select(index);
           }
@@ -449,7 +543,7 @@ function SearchDialog({
           </button>
         </div>
         <div className="command-results">
-          {/^\d{4}$/.test(q) ? (
+          {/^\d{4}$/.test(q) && validSeason(q) ? (
             <button onClick={() => select(0)}>
               Explore the {q} season <ArrowUpRight size={18} />
             </button>

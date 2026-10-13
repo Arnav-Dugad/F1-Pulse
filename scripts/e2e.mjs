@@ -12,7 +12,13 @@ for (const [name, engine] of Object.entries({
 }).filter(([name]) => selected.includes(name))) {
   let browser;
   try {
-    browser = await engine.launch({ headless: true, timeout: 20000 });
+    browser = await engine.launch({
+      headless: true,
+      timeout: 20000,
+      ...(name === "chromium" && process.env.PULSE_CHROMIUM_CHANNEL
+        ? { channel: process.env.PULSE_CHROMIUM_CHANNEL }
+        : {}),
+    });
   } catch (e) {
     report.push({ browser: name, blocked: e.message });
     console.log(name, "unavailable:", e.message.split("\n")[0]);
@@ -57,9 +63,16 @@ for (const [name, engine] of Object.entries({
         "scenario",
         "news",
         "settings",
+        "rewind",
+        "fan",
       ]) {
         await page.goto(base + "/#/" + route);
         await page.locator(".page-title h1").waitFor();
+        assert.notEqual(
+          await page.locator(".page-title h1").textContent(),
+          "Page not found",
+          `${route}: route must be implemented`,
+        );
         await page.waitForTimeout(400);
         const overflow = await page.evaluate(
           () => document.documentElement.scrollWidth > innerWidth + 2,
