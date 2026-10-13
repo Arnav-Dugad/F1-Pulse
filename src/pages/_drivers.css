@@ -1,0 +1,43 @@
+/* ───────────────────────── Shared: finish chips ───────────────────────── */
+.fin-chip { display: inline-grid; place-items: center; min-width: 42px; height: 30px; padding: 0 8px; border-radius: 11px; font-size: 13px; font-weight: 800; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; background: var(--fill-3); color: var(--label-2); box-shadow: inset 0 0 0 1px var(--separator); white-space: nowrap; }
+.fin-chip.gold { background: linear-gradient(160deg, #ffe08a, #d9a21b); color: #3a2a00; box-shadow: 0 6px 16px -8px #d9a21b, inset 0 1px 0 rgba(255, 255, 255, 0.5); }
+.fin-chip.silver { background: linear-gradient(160deg, #f4f6fa, #a9b0bd); color: #23272f; box-shadow: 0 6px 16px -8px #a9b0bd, inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+.fin-chip.bronze { background: linear-gradient(160deg, #f1b88a, #b5652a); color: #321705; box-shadow: 0 6px 16px -8px #b5652a, inset 0 1px 0 rgba(255, 255, 255, 0.4); }
+.fin-chip.points { background: color-mix(in srgb, var(--green) 20%, transparent); color: var(--green); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--green) 35%, transparent); }
+.fin-chip.none { background: var(--fill-3); color: var(--label-2); }
+.fin-chip.dnf { background: color-mix(in srgb, var(--accent) 16%, transparent); color: color-mix(in srgb, var(--accent) 85%, var(--label)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); font-size: 11.5px; }
+.fin-chip.absent { background: transparent; color: var(--label-4); box-shadow: inset 0 0 0 1px var(--separator); }
+.fin-chip.future { background: transparent; color: var(--label-3); box-shadow: none; border: 1.5px dashed var(--label-4); font-weight: 650; font-size: 11.5px; }
+.fin-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12px; color: var(--label-2); }
+.fin-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.fin-legend .fin-chip { min-width: 18px; width: 18px; height: 14px; padding: 0; border-radius: 5px; font-size: 0; }
+
+/* ───────────────────────── Shared: tug-of-war rows ───────────────────────── */
+.tug { display: grid; grid-template-columns: minmax(64px, 1fr) minmax(0, 2.2fr) minmax(64px, 1fr); align-items: center; gap: 6px 12px; padding: 14px 4px; border-bottom: 1px solid var(--separator); }
+.tug:last-child { border-bottom: 0; }
+.tug-val { font-family: var(--font-display); font-size: clamp(20px, 2.2vw, 28px); font-weight: 800; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--label-2); transition: color 0.3s, transform 0.5s var(--spring); }
+.tug-val.a { text-align: left; }
+.tug-val.b { text-align: right; }
+.tug-val.win { color: var(--label); }
+.tug-val.a.win { text-shadow: 0 0 22px color-mix(in srgb, var(--a) 70%, transparent); }
+.tug-val.b.win { text-shadow: 0 0 22px color-mix(in srgb, var(--b) 70%, transparent); }
+.tug-val.lose { color: var(--label-3); }
+.tug-val.a.win::after, .tug-val.b.win::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; vertical-align: 0.28em; }
+.tug-val.a.win::after { margin-left: 8px; background: var(--a); box-shadow: 0 0 10px var(--a); }
+.tug-val.b.win::before { margin-right: 8px; background: var(--b); box-shadow: 0 0 10px var(--b); }
+.tug-label { display: grid; justify-items: center; text-align: center; line-height: 1.2; min-width: 0; }
+.tug-label strong { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; }
+.tug-label strong svg { width: 14px; height: 14px; color: var(--label-3); }
+.tug-label small { font-size: 11.5px; color: var(--label-3); margin-top: 2px; }
+.tug-bar { grid-column: 1 / -1; position: relative; display: flex; height: 10px; border-radius: 99px; background: var(--fill-3); overflow: hidden; }
+.tug-fill { display: block; height: 100%; }
+.tug-fill.a { background: linear-gradient(90deg, color-mix(in srgb, var(--a) 55%, transparent), var(--a)); border-radius: 99px 0 0 99px; }
+.tug-fill.b { background: linear-gradient(270deg, color-mix(in srgb, var(--b) 55%, transparent), var(--b)); border-radius: 0 99px 99px 0; }
+.tug-fill.empty { width: 100%; background: repeating-linear-gradient(135deg, var(--fill-3) 0 6px, transparent 6px 12px); }
+.tug-mid { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 2px; translate: -1px 0; background: var(--bg); opacity: 0.9; }
+.tug.has-winner .tug-fill { filter: saturate(1.1); }
+@media (max-width: 520px) {
+  .tug { grid-template-columns: minmax(48px, 1fr) minmax(0, 2fr) minmax(48px, 1fr); gap: 6px 8px; }
+  .tug-label strong { font-size: 12.5px; }
+  .tug-label small { display: none; }
+}

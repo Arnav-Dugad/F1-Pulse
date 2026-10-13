@@ -8,3 +8,9 @@
   Cache-Control: public, max-age=604800
 /service-worker.js
   Cache-Control: no-store
+/media/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/data/*
+  Cache-Control: public, max-age=86400
+/theme-init.js
+  Cache-Control: public, max-age=3600

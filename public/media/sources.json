@@ -1,0 +1,2611 @@
+[
+ {
+  "file": "/data/tracks.json#albert_park",
+  "kind": "circuit outline",
+  "subject": "albert_park",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackmelbournewhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 12040,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#americas",
+  "kind": "circuit outline",
+  "subject": "americas",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackaustinwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 12558,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#bahrain",
+  "kind": "circuit outline",
+  "subject": "bahrain",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026tracksakhirwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 10771,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#baku",
+  "kind": "circuit outline",
+  "subject": "baku",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackbakuwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 12117,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#catalunya",
+  "kind": "circuit outline",
+  "subject": "catalunya",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackcatalunyawhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 9409,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#hungaroring",
+  "kind": "circuit outline",
+  "subject": "hungaroring",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackhungaroringwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 8370,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#imola",
+  "kind": "circuit outline",
+  "subject": "imola",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackimolawhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 11373,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#interlagos",
+  "kind": "circuit outline",
+  "subject": "interlagos",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackinterlagoswhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 11118,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#jeddah",
+  "kind": "circuit outline",
+  "subject": "jeddah",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackjeddahwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 12246,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#losail",
+  "kind": "circuit outline",
+  "subject": "losail",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026tracklusailwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 8961,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#madring",
+  "kind": "circuit outline",
+  "subject": "madring",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackmadringwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 35895,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#marina_bay",
+  "kind": "circuit outline",
+  "subject": "marina_bay",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026tracksingaporewhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 40463,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#miami",
+  "kind": "circuit outline",
+  "subject": "miami",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackmiamiwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 9369,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#monaco",
+  "kind": "circuit outline",
+  "subject": "monaco",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackmontecarlowhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 11968,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#monza",
+  "kind": "circuit outline",
+  "subject": "monza",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackmonzawhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 8061,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#red_bull_ring",
+  "kind": "circuit outline",
+  "subject": "red_bull_ring",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackspielbergwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 7965,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#rodriguez",
+  "kind": "circuit outline",
+  "subject": "rodriguez",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackmexicocitywhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 10658,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#sepang",
+  "kind": "circuit outline",
+  "subject": "sepang",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackkualalumpurwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 19282,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#shanghai",
+  "kind": "circuit outline",
+  "subject": "shanghai",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackshanghaiwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 7533,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#silverstone",
+  "kind": "circuit outline",
+  "subject": "silverstone",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026tracksilverstonewhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 11316,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#spa",
+  "kind": "circuit outline",
+  "subject": "spa",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackspafrancorchampswhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 14084,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#suzuka",
+  "kind": "circuit outline",
+  "subject": "suzuka",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026tracksuzukawhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 11477,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#vegas",
+  "kind": "circuit outline",
+  "subject": "vegas",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026tracklasvegaswhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 10064,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#villeneuve",
+  "kind": "circuit outline",
+  "subject": "villeneuve",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackmontrealwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 8534,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#yas_marina",
+  "kind": "circuit outline",
+  "subject": "yas_marina",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackyasmarinacircuitwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 9069,
+  "season": 2026
+ },
+ {
+  "file": "/data/tracks.json#zandvoort",
+  "kind": "circuit outline",
+  "subject": "zandvoort",
+  "source": "https://media.formula1.com/image/upload/v1740000001/common/f1/2026/track/2026trackzandvoortwhiteoutline.svg",
+  "sourcePage": "https://www.formula1.com/en/racing/2026",
+  "permission": "Site owner states permission granted",
+  "bytes": 9989,
+  "season": 2026
+ },
+ {
+  "file": "/media/brand/f1-logo.svg",
+  "kind": "Formula 1 logo",
+  "subject": "formula1",
+  "source": "https://media.formula1.com/image/upload/v1677237319/etc/designs/fom-website/images/f1_logo.svg",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 1999,
+  "season": 2026
+ },
+ {
+  "file": "/media/brand/f1-tv.svg",
+  "kind": "F1 TV logo",
+  "subject": "f1tv",
+  "source": "https://media.formula1.com/image/upload/v1698682266/nwp-navigation/f1-tv-logo.svg",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2598,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/albert_park-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "albert_park",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Australia.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 412458,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/albert_park-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "albert_park",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackmelbournedetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 149020,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/americas-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "americas",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/USA.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 194276,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/americas-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "americas",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackaustindetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 99860,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/bahrain-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "bahrain",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Bahrain.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 283676,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/bahrain-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "bahrain",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026tracksakhirdetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 54402,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/baku-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "baku",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Azerbaijan.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 156702,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/baku-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "baku",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackbakudetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 127368,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/catalunya-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "catalunya",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Spain.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 197210,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/catalunya-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "catalunya",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackcatalunyadetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 144776,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/hungaroring-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "hungaroring",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Hungary.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 361836,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/hungaroring-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "hungaroring",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackhungaroringdetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 100994,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/imola-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "imola",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Emilia%20Romagna.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 282218,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/imola-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "imola",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackimoladetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 84952,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/interlagos-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "interlagos",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Brazil.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 236926,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/interlagos-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "interlagos",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackinterlagosdetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 108120,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/jeddah-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "jeddah",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackjeddahdetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 88580,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/losail-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "losail",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Qatar.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 307336,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/losail-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "losail",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026tracklusaildetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 85532,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/madring-hero.webp",
+  "kind": "race photograph",
+  "subject": "madring",
+  "source": "https://media.formula1.com/image/upload/t_16by9Centre/c_fill,w_1800/q_auto/v1740000001/trackside-images/2026/F1_Grand_Prix_of_Spain/2295070886.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 136794,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/madring-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "madring",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackmadringdetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 104844,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/marina_bay-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "marina_bay",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Singapore.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 221334,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/marina_bay-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "marina_bay",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026tracksingaporedetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 150770,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/miami-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "miami",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Miami.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 468756,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/miami-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "miami",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackmiamidetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 182448,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/monaco-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "monaco",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Monaco.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 384810,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/monaco-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "monaco",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackmontecarlodetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 94686,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/monza-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "monza",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Italy.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 768604,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/monza-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "monza",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackmonzadetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 130370,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/red_bull_ring-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "red_bull_ring",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Austria.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 299666,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/red_bull_ring-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "red_bull_ring",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackspielbergdetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 142272,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/rodriguez-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "rodriguez",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Mexico.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 329570,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/rodriguez-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "rodriguez",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackmexicocitydetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 64404,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/sepang-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "sepang",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Malaysia.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 201500,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/sepang-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "sepang",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackkualalumpurdetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 111974,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/shanghai-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "shanghai",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/China.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 285422,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/shanghai-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "shanghai",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackshanghaidetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 115886,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/silverstone-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "silverstone",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Great%20Britain.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 322346,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/silverstone-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "silverstone",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026tracksilverstonedetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 128316,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/spa-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "spa",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Belgium.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 294056,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/spa-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "spa",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackspafrancorchampsdetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 127624,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/suzuka-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "suzuka",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Japan.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 223220,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/suzuka-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "suzuka",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026tracksuzukadetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 108310,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/vegas-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "vegas",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Las%20Vegas.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 358026,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/vegas-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "vegas",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026tracklasvegasdetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 76478,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/villeneuve-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "villeneuve",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Canada.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 374536,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/villeneuve-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "villeneuve",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackmontrealdetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 107470,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/yas_marina-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "yas_marina",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Abu%20Dhabi.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 292240,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/yas_marina-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "yas_marina",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackyasmarinacircuitdetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 94320,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/zandvoort-hero.webp",
+  "kind": "race hub photograph",
+  "subject": "zandvoort",
+  "source": "https://media.formula1.com/image/upload/c_fill,w_1800/q_auto/v1740000001/content/dam/fom-website/2018-redesign-assets/Racehub%20header%20images%2016x9/Netherlands.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 296672,
+  "season": 2026
+ },
+ {
+  "file": "/media/circuits/zandvoort-map.webp",
+  "kind": "detailed circuit map",
+  "subject": "zandvoort",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1400/q_auto/v1740000001/common/f1/2026/track/2026trackzandvoortdetailed.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 117510,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/alealb01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "albon",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/williams/alealb01/2026williamsalealb01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 66094,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/alealb01-front.webp",
+  "kind": "driver portrait",
+  "subject": "albon",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/williams/alealb01/2026williamsalealb01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 108710,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/alealb01-head.webp",
+  "kind": "headshot crop",
+  "subject": "alealb01",
+  "source": "derived from /media/drivers/alealb01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 10038,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/alealb01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "albon",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/williams/alealb01/2026williamsalealb01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 6502,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/andant01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "antonelli",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/mercedes/andant01/2026mercedesandant01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 70404,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/andant01-front.webp",
+  "kind": "driver portrait",
+  "subject": "antonelli",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/mercedes/andant01/2026mercedesandant01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 110678,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/andant01-head.webp",
+  "kind": "headshot crop",
+  "subject": "andant01",
+  "source": "derived from /media/drivers/andant01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 14074,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/andant01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "antonelli",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/mercedes/andant01/2026mercedesandant01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 6464,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/arvlin01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "arvid_lindblad",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 81836,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/arvlin01-front.webp",
+  "kind": "driver portrait",
+  "subject": "arvid_lindblad",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 123090,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/arvlin01-head.webp",
+  "kind": "headshot crop",
+  "subject": "arvlin01",
+  "source": "derived from /media/drivers/arvlin01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 12002,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/arvlin01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "arvid_lindblad",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/racingbulls/arvlin01/2026racingbullsarvlin01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 3434,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/carsai01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "sainz",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/williams/carsai01/2026williamscarsai01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 69698,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/carsai01-front.webp",
+  "kind": "driver portrait",
+  "subject": "sainz",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/williams/carsai01/2026williamscarsai01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 116792,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/carsai01-head.webp",
+  "kind": "headshot crop",
+  "subject": "carsai01",
+  "source": "derived from /media/drivers/carsai01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 10898,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/carsai01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "sainz",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/williams/carsai01/2026williamscarsai01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 6844,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/chalec01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "leclerc",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/ferrari/chalec01/2026ferrarichalec01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 135888,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/chalec01-front.webp",
+  "kind": "driver portrait",
+  "subject": "leclerc",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/ferrari/chalec01/2026ferrarichalec01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 181698,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/chalec01-head.webp",
+  "kind": "headshot crop",
+  "subject": "chalec01",
+  "source": "derived from /media/drivers/chalec01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 14112,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/chalec01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "leclerc",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/ferrari/chalec01/2026ferrarichalec01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 5540,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/estoco01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "ocon",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/haasf1team/estoco01/2026haasf1teamestoco01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 73740,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/estoco01-front.webp",
+  "kind": "driver portrait",
+  "subject": "ocon",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/haasf1team/estoco01/2026haasf1teamestoco01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 117854,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/estoco01-head.webp",
+  "kind": "headshot crop",
+  "subject": "estoco01",
+  "source": "derived from /media/drivers/estoco01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 10816,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/estoco01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "ocon",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/haasf1team/estoco01/2026haasf1teamestoco01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2916,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/feralo01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "alonso",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/astonmartin/feralo01/2026astonmartinferalo01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 98138,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/feralo01-front.webp",
+  "kind": "driver portrait",
+  "subject": "alonso",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/astonmartin/feralo01/2026astonmartinferalo01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 135524,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/feralo01-head.webp",
+  "kind": "headshot crop",
+  "subject": "feralo01",
+  "source": "derived from /media/drivers/feralo01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 12332,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/feralo01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "alonso",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/astonmartin/feralo01/2026astonmartinferalo01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2764,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/fracol01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "colapinto",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/alpine/fracol01/2026alpinefracol01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 81844,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/fracol01-front.webp",
+  "kind": "driver portrait",
+  "subject": "colapinto",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/alpine/fracol01/2026alpinefracol01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 135914,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/fracol01-head.webp",
+  "kind": "headshot crop",
+  "subject": "fracol01",
+  "source": "derived from /media/drivers/fracol01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 13542,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/fracol01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "colapinto",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/alpine/fracol01/2026alpinefracol01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 6224,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/gabbor01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "bortoleto",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/audi/gabbor01/2026audigabbor01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 77610,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/gabbor01-front.webp",
+  "kind": "driver portrait",
+  "subject": "bortoleto",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/audi/gabbor01/2026audigabbor01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 114030,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/gabbor01-head.webp",
+  "kind": "headshot crop",
+  "subject": "gabbor01",
+  "source": "derived from /media/drivers/gabbor01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 14696,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/gabbor01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "bortoleto",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/audi/gabbor01/2026audigabbor01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 6532,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/georus01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "russell",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/mercedes/georus01/2026mercedesgeorus01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 79128,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/georus01-front.webp",
+  "kind": "driver portrait",
+  "subject": "russell",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/mercedes/georus01/2026mercedesgeorus01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 119972,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/georus01-head.webp",
+  "kind": "headshot crop",
+  "subject": "georus01",
+  "source": "derived from /media/drivers/georus01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 11306,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/georus01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "russell",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/mercedes/georus01/2026mercedesgeorus01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 9640,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/isahad01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "hadjar",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/redbullracing/isahad01/2026redbullracingisahad01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 85928,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/isahad01-front.webp",
+  "kind": "driver portrait",
+  "subject": "hadjar",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/redbullracing/isahad01/2026redbullracingisahad01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 117306,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/isahad01-head.webp",
+  "kind": "headshot crop",
+  "subject": "isahad01",
+  "source": "derived from /media/drivers/isahad01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 10722,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/isahad01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "hadjar",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/redbullracing/isahad01/2026redbullracingisahad01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 3250,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lannor01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "norris",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/mclaren/lannor01/2026mclarenlannor01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 81596,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lannor01-front.webp",
+  "kind": "driver portrait",
+  "subject": "norris",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/mclaren/lannor01/2026mclarenlannor01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 127348,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lannor01-head.webp",
+  "kind": "headshot crop",
+  "subject": "lannor01",
+  "source": "derived from /media/drivers/lannor01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 11958,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lannor01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "norris",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/mclaren/lannor01/2026mclarenlannor01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2878,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lanstr01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "stroll",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/astonmartin/lanstr01/2026astonmartinlanstr01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 89984,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lanstr01-front.webp",
+  "kind": "driver portrait",
+  "subject": "stroll",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/astonmartin/lanstr01/2026astonmartinlanstr01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 126320,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lanstr01-head.webp",
+  "kind": "headshot crop",
+  "subject": "lanstr01",
+  "source": "derived from /media/drivers/lanstr01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 11156,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lanstr01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "stroll",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/astonmartin/lanstr01/2026astonmartinlanstr01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 6080,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lewham01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "hamilton",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/ferrari/lewham01/2026ferrarilewham01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 102952,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lewham01-front.webp",
+  "kind": "driver portrait",
+  "subject": "hamilton",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/ferrari/lewham01/2026ferrarilewham01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 164574,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lewham01-head.webp",
+  "kind": "headshot crop",
+  "subject": "lewham01",
+  "source": "derived from /media/drivers/lewham01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 10916,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lewham01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "hamilton",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/ferrari/lewham01/2026ferrarilewham01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 4990,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lialaw01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "lawson",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/racingbulls/lialaw01/2026racingbullslialaw01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 81162,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lialaw01-front.webp",
+  "kind": "driver portrait",
+  "subject": "lawson",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/racingbulls/lialaw01/2026racingbullslialaw01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 136556,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lialaw01-head.webp",
+  "kind": "headshot crop",
+  "subject": "lialaw01",
+  "source": "derived from /media/drivers/lialaw01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 13216,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/lialaw01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "lawson",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/racingbulls/lialaw01/2026racingbullslialaw01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2004,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/maxver01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "max_verstappen",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/redbullracing/maxver01/2026redbullracingmaxver01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 79158,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/maxver01-front.webp",
+  "kind": "driver portrait",
+  "subject": "max_verstappen",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/redbullracing/maxver01/2026redbullracingmaxver01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 124514,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/maxver01-head.webp",
+  "kind": "headshot crop",
+  "subject": "maxver01",
+  "source": "derived from /media/drivers/maxver01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 11454,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/maxver01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "max_verstappen",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/redbullracing/maxver01/2026redbullracingmaxver01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 3140,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/nichul01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "hulkenberg",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/audi/nichul01/2026audinichul01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 78498,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/nichul01-front.webp",
+  "kind": "driver portrait",
+  "subject": "hulkenberg",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/audi/nichul01/2026audinichul01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 102598,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/nichul01-head.webp",
+  "kind": "headshot crop",
+  "subject": "nichul01",
+  "source": "derived from /media/drivers/nichul01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 10942,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/nichul01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "hulkenberg",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/audi/nichul01/2026audinichul01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 4306,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/olibea01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "bearman",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/haasf1team/olibea01/2026haasf1teamolibea01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 73616,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/olibea01-front.webp",
+  "kind": "driver portrait",
+  "subject": "bearman",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/haasf1team/olibea01/2026haasf1teamolibea01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 125498,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/olibea01-head.webp",
+  "kind": "headshot crop",
+  "subject": "olibea01",
+  "source": "derived from /media/drivers/olibea01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 11094,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/olibea01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "bearman",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/haasf1team/olibea01/2026haasf1teamolibea01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 4460,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/oscpia01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "piastri",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/mclaren/oscpia01/2026mclarenoscpia01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 84714,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/oscpia01-front.webp",
+  "kind": "driver portrait",
+  "subject": "piastri",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/mclaren/oscpia01/2026mclarenoscpia01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 131650,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/oscpia01-head.webp",
+  "kind": "headshot crop",
+  "subject": "oscpia01",
+  "source": "derived from /media/drivers/oscpia01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 14012,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/oscpia01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "piastri",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/mclaren/oscpia01/2026mclarenoscpia01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2018,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/piegas01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "gasly",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/alpine/piegas01/2026alpinepiegas01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 69964,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/piegas01-front.webp",
+  "kind": "driver portrait",
+  "subject": "gasly",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/alpine/piegas01/2026alpinepiegas01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 127348,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/piegas01-head.webp",
+  "kind": "headshot crop",
+  "subject": "piegas01",
+  "source": "derived from /media/drivers/piegas01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 11036,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/piegas01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "gasly",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/alpine/piegas01/2026alpinepiegas01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 3996,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/serper01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "perez",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/cadillac/serper01/2026cadillacserper01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 71002,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/serper01-front.webp",
+  "kind": "driver portrait",
+  "subject": "perez",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/cadillac/serper01/2026cadillacserper01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 92420,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/serper01-head.webp",
+  "kind": "headshot crop",
+  "subject": "serper01",
+  "source": "derived from /media/drivers/serper01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 11190,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/serper01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "perez",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/cadillac/serper01/2026cadillacserper01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 3078,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/valbot01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "bottas",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/cadillac/valbot01/2026cadillacvalbot01right.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 61850,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/valbot01-front.webp",
+  "kind": "driver portrait",
+  "subject": "bottas",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/cadillac/valbot01/2026cadillacvalbot01front.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 91658,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/valbot01-head.webp",
+  "kind": "headshot crop",
+  "subject": "valbot01",
+  "source": "derived from /media/drivers/valbot01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 9730,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/valbot01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "bottas",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/cadillac/valbot01/2026cadillacvalbot01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 3000,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/yuktsu01-card.webp",
+  "kind": "driver portrait (card)",
+  "subject": "tsunoda",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/racingbulls/yuktsu01/2026racingbullsyuktsu01right.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 89986,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/yuktsu01-front.webp",
+  "kind": "driver portrait",
+  "subject": "tsunoda",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_760/q_auto/v1740000001/common/f1/2026/racingbulls/yuktsu01/2026racingbullsyuktsu01front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 116622,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/yuktsu01-head.webp",
+  "kind": "headshot crop",
+  "subject": "tsunoda",
+  "source": "derived from /media/drivers/yuktsu01-front.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 17164,
+  "season": 2026
+ },
+ {
+  "file": "/media/drivers/yuktsu01-number.webp",
+  "kind": "driver number artwork",
+  "subject": "tsunoda",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_520/q_auto/v1740000001/common/f1/2026/racingbulls/yuktsu01/2026racingbullsyuktsu01numberwhitefrless.webp",
+  "sourcePage": "https://www.formula1.com/en/drivers",
+  "permission": "Site owner states permission granted",
+  "bytes": 6910,
+  "season": 2026
+ },
+ {
+  "file": "/media/flags/ae.webp",
+  "kind": "country flag",
+  "subject": "ae",
+  "source": "https://flagcdn.com/w80/ae.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 80
+ },
+ {
+  "file": "/media/flags/ar.webp",
+  "kind": "country flag",
+  "subject": "ar",
+  "source": "https://flagcdn.com/w80/ar.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 274
+ },
+ {
+  "file": "/media/flags/at.webp",
+  "kind": "country flag",
+  "subject": "at",
+  "source": "https://flagcdn.com/w80/at.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 62
+ },
+ {
+  "file": "/media/flags/au.webp",
+  "kind": "country flag",
+  "subject": "au",
+  "source": "https://flagcdn.com/w80/au.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 512
+ },
+ {
+  "file": "/media/flags/az.webp",
+  "kind": "country flag",
+  "subject": "az",
+  "source": "https://flagcdn.com/w80/az.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 206
+ },
+ {
+  "file": "/media/flags/be.webp",
+  "kind": "country flag",
+  "subject": "be",
+  "source": "https://flagcdn.com/w80/be.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 74
+ },
+ {
+  "file": "/media/flags/bh.webp",
+  "kind": "country flag",
+  "subject": "bh",
+  "source": "https://flagcdn.com/w80/bh.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 258
+ },
+ {
+  "file": "/media/flags/br.webp",
+  "kind": "country flag",
+  "subject": "br",
+  "source": "https://flagcdn.com/w80/br.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 740
+ },
+ {
+  "file": "/media/flags/ca.webp",
+  "kind": "country flag",
+  "subject": "ca",
+  "source": "https://flagcdn.com/w80/ca.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 292
+ },
+ {
+  "file": "/media/flags/ch.webp",
+  "kind": "country flag",
+  "subject": "ch",
+  "source": "https://flagcdn.com/w80/ch.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 80
+ },
+ {
+  "file": "/media/flags/cl.webp",
+  "kind": "country flag",
+  "subject": "cl",
+  "source": "https://flagcdn.com/w80/cl.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 200
+ },
+ {
+  "file": "/media/flags/cn.webp",
+  "kind": "country flag",
+  "subject": "cn",
+  "source": "https://flagcdn.com/w80/cn.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 244
+ },
+ {
+  "file": "/media/flags/co.webp",
+  "kind": "country flag",
+  "subject": "co",
+  "source": "https://flagcdn.com/w80/co.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 72
+ },
+ {
+  "file": "/media/flags/cz.webp",
+  "kind": "country flag",
+  "subject": "cz",
+  "source": "https://flagcdn.com/w80/cz.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 252
+ },
+ {
+  "file": "/media/flags/de.webp",
+  "kind": "country flag",
+  "subject": "de",
+  "source": "https://flagcdn.com/w80/de.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 48
+ },
+ {
+  "file": "/media/flags/dk.webp",
+  "kind": "country flag",
+  "subject": "dk",
+  "source": "https://flagcdn.com/w80/dk.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 104
+ },
+ {
+  "file": "/media/flags/ee.webp",
+  "kind": "country flag",
+  "subject": "ee",
+  "source": "https://flagcdn.com/w80/ee.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 46
+ },
+ {
+  "file": "/media/flags/es.webp",
+  "kind": "country flag",
+  "subject": "es",
+  "source": "https://flagcdn.com/w80/es.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 604
+ },
+ {
+  "file": "/media/flags/fi.webp",
+  "kind": "country flag",
+  "subject": "fi",
+  "source": "https://flagcdn.com/w80/fi.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 92
+ },
+ {
+  "file": "/media/flags/fr.webp",
+  "kind": "country flag",
+  "subject": "fr",
+  "source": "https://flagcdn.com/w80/fr.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 72
+ },
+ {
+  "file": "/media/flags/gb.webp",
+  "kind": "country flag",
+  "subject": "gb",
+  "source": "https://flagcdn.com/w80/gb.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 336
+ },
+ {
+  "file": "/media/flags/hk.webp",
+  "kind": "country flag",
+  "subject": "hk",
+  "source": "https://flagcdn.com/w80/hk.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 416
+ },
+ {
+  "file": "/media/flags/hu.webp",
+  "kind": "country flag",
+  "subject": "hu",
+  "source": "https://flagcdn.com/w80/hu.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 72
+ },
+ {
+  "file": "/media/flags/id.webp",
+  "kind": "country flag",
+  "subject": "id",
+  "source": "https://flagcdn.com/w80/id.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 50
+ },
+ {
+  "file": "/media/flags/ie.webp",
+  "kind": "country flag",
+  "subject": "ie",
+  "source": "https://flagcdn.com/w80/ie.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 66
+ },
+ {
+  "file": "/media/flags/in.webp",
+  "kind": "country flag",
+  "subject": "in",
+  "source": "https://flagcdn.com/w80/in.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 288
+ },
+ {
+  "file": "/media/flags/it.webp",
+  "kind": "country flag",
+  "subject": "it",
+  "source": "https://flagcdn.com/w80/it.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 72
+ },
+ {
+  "file": "/media/flags/jp.webp",
+  "kind": "country flag",
+  "subject": "jp",
+  "source": "https://flagcdn.com/w80/jp.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 260
+ },
+ {
+  "file": "/media/flags/kr.webp",
+  "kind": "country flag",
+  "subject": "kr",
+  "source": "https://flagcdn.com/w80/kr.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 874
+ },
+ {
+  "file": "/media/flags/li.webp",
+  "kind": "country flag",
+  "subject": "li",
+  "source": "https://flagcdn.com/w80/li.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 326
+ },
+ {
+  "file": "/media/flags/ma.webp",
+  "kind": "country flag",
+  "subject": "ma",
+  "source": "https://flagcdn.com/w80/ma.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 256
+ },
+ {
+  "file": "/media/flags/mc.webp",
+  "kind": "country flag",
+  "subject": "mc",
+  "source": "https://flagcdn.com/w80/mc.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 44
+ },
+ {
+  "file": "/media/flags/mx.webp",
+  "kind": "country flag",
+  "subject": "mx",
+  "source": "https://flagcdn.com/w80/mx.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 512
+ },
+ {
+  "file": "/media/flags/my.webp",
+  "kind": "country flag",
+  "subject": "my",
+  "source": "https://flagcdn.com/w80/my.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 342
+ },
+ {
+  "file": "/media/flags/nl.webp",
+  "kind": "country flag",
+  "subject": "nl",
+  "source": "https://flagcdn.com/w80/nl.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 72
+ },
+ {
+  "file": "/media/flags/nz.webp",
+  "kind": "country flag",
+  "subject": "nz",
+  "source": "https://flagcdn.com/w80/nz.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 478
+ },
+ {
+  "file": "/media/flags/pl.webp",
+  "kind": "country flag",
+  "subject": "pl",
+  "source": "https://flagcdn.com/w80/pl.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 44
+ },
+ {
+  "file": "/media/flags/pt.webp",
+  "kind": "country flag",
+  "subject": "pt",
+  "source": "https://flagcdn.com/w80/pt.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 794
+ },
+ {
+  "file": "/media/flags/qa.webp",
+  "kind": "country flag",
+  "subject": "qa",
+  "source": "https://flagcdn.com/w80/qa.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 182
+ },
+ {
+  "file": "/media/flags/ru.webp",
+  "kind": "country flag",
+  "subject": "ru",
+  "source": "https://flagcdn.com/w80/ru.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 74
+ },
+ {
+  "file": "/media/flags/sa.webp",
+  "kind": "country flag",
+  "subject": "sa",
+  "source": "https://flagcdn.com/w80/sa.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 498
+ },
+ {
+  "file": "/media/flags/se.webp",
+  "kind": "country flag",
+  "subject": "se",
+  "source": "https://flagcdn.com/w80/se.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 58
+ },
+ {
+  "file": "/media/flags/sg.webp",
+  "kind": "country flag",
+  "subject": "sg",
+  "source": "https://flagcdn.com/w80/sg.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 268
+ },
+ {
+  "file": "/media/flags/th.webp",
+  "kind": "country flag",
+  "subject": "th",
+  "source": "https://flagcdn.com/w80/th.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 82
+ },
+ {
+  "file": "/media/flags/tr.webp",
+  "kind": "country flag",
+  "subject": "tr",
+  "source": "https://flagcdn.com/w80/tr.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 296
+ },
+ {
+  "file": "/media/flags/us.webp",
+  "kind": "country flag",
+  "subject": "us",
+  "source": "https://flagcdn.com/w80/us.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 404
+ },
+ {
+  "file": "/media/flags/uy.webp",
+  "kind": "country flag",
+  "subject": "uy",
+  "source": "https://flagcdn.com/w80/uy.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 456
+ },
+ {
+  "file": "/media/flags/ve.webp",
+  "kind": "country flag",
+  "subject": "ve",
+  "source": "https://flagcdn.com/w80/ve.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 254
+ },
+ {
+  "file": "/media/flags/vn.webp",
+  "kind": "country flag",
+  "subject": "vn",
+  "source": "https://flagcdn.com/w80/vn.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 210
+ },
+ {
+  "file": "/media/flags/za.webp",
+  "kind": "country flag",
+  "subject": "za",
+  "source": "https://flagcdn.com/w80/za.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 470
+ },
+ {
+  "file": "/media/flags/zw.webp",
+  "kind": "country flag",
+  "subject": "zw",
+  "source": "https://flagcdn.com/w80/zw.webp",
+  "sourcePage": "https://flagpedia.net/",
+  "permission": "Flagpedia: free to use",
+  "bytes": 520
+ },
+ {
+  "file": "/media/teams/alpine-car-front.webp",
+  "kind": "2026 car (front)",
+  "subject": "alpine",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_900/q_auto/v1740000001/common/f1/2026/alpine/2026alpinecarfront.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 81748,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/alpine-car.webp",
+  "kind": "2026 car",
+  "subject": "alpine",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1600/q_auto/v1740000001/common/f1/2026/alpine/2026alpinecarright.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 79588,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/alpine-logo-white.webp",
+  "kind": "team logo (white)",
+  "subject": "alpine",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/alpine/2026alpinelogowhite.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 1396,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/alpine-logo.webp",
+  "kind": "team logo",
+  "subject": "alpine",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/alpine/2026alpinelogo.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 3908,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/astonmartin-car-front.webp",
+  "kind": "2026 car (front)",
+  "subject": "aston_martin",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_900/q_auto/v1740000001/common/f1/2026/astonmartin/2026astonmartincarfront.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 75594,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/astonmartin-car.webp",
+  "kind": "2026 car",
+  "subject": "aston_martin",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1600/q_auto/v1740000001/common/f1/2026/astonmartin/2026astonmartincarright.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 69722,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/astonmartin-logo-white.webp",
+  "kind": "team logo (white)",
+  "subject": "aston_martin",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/astonmartin/2026astonmartinlogowhite.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2178,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/astonmartin-logo.webp",
+  "kind": "team logo",
+  "subject": "aston_martin",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/astonmartin/2026astonmartinlogo.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2012,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/audi-car-front.webp",
+  "kind": "2026 car (front)",
+  "subject": "audi",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_900/q_auto/v1740000001/common/f1/2026/audi/2026audicarfront.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 67126,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/audi-car.webp",
+  "kind": "2026 car",
+  "subject": "audi",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1600/q_auto/v1740000001/common/f1/2026/audi/2026audicarright.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 74982,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/audi-logo-white.webp",
+  "kind": "team logo (white)",
+  "subject": "audi",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/audi/2026audilogowhite.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2342,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/audi-logo.webp",
+  "kind": "team logo",
+  "subject": "audi",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/audi/2026audilogo.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2034,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/cadillac-car-front.webp",
+  "kind": "2026 car (front)",
+  "subject": "cadillac",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_900/q_auto/v1740000001/common/f1/2026/cadillac/2026cadillaccarfront.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 64438,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/cadillac-car.webp",
+  "kind": "2026 car",
+  "subject": "cadillac",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1600/q_auto/v1740000001/common/f1/2026/cadillac/2026cadillaccarright.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 62070,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/cadillac-logo-white.webp",
+  "kind": "team logo (white)",
+  "subject": "cadillac",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/cadillac/2026cadillaclogowhite.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 1688,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/cadillac-logo.webp",
+  "kind": "team logo",
+  "subject": "cadillac",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/cadillac/2026cadillaclogo.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 1510,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/ferrari-car-front.webp",
+  "kind": "2026 car (front)",
+  "subject": "ferrari",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_900/q_auto/v1740000001/common/f1/2026/ferrari/2026ferraricarfront.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 79256,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/ferrari-car.webp",
+  "kind": "2026 car",
+  "subject": "ferrari",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1600/q_auto/v1740000001/common/f1/2026/ferrari/2026ferraricarright.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 87206,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/ferrari-logo-white.webp",
+  "kind": "team logo (white)",
+  "subject": "ferrari",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/ferrari/2026ferrarilogowhite.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 7878,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/ferrari-logo.webp",
+  "kind": "team logo",
+  "subject": "ferrari",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/ferrari/2026ferrarilogo.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 14776,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/haasf1team-car-front.webp",
+  "kind": "2026 car (front)",
+  "subject": "haas",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_900/q_auto/v1740000001/common/f1/2026/haasf1team/2026haasf1teamcarfront.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 78796,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/haasf1team-car.webp",
+  "kind": "2026 car",
+  "subject": "haas",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1600/q_auto/v1740000001/common/f1/2026/haasf1team/2026haasf1teamcarright.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 64854,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/haasf1team-logo-white.webp",
+  "kind": "team logo (white)",
+  "subject": "haas",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/haasf1team/2026haasf1teamlogowhite.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2424,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/haasf1team-logo.webp",
+  "kind": "team logo",
+  "subject": "haas",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/haasf1team/2026haasf1teamlogo.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 4440,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/mclaren-car-front.webp",
+  "kind": "2026 car (front)",
+  "subject": "mclaren",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_900/q_auto/v1740000001/common/f1/2026/mclaren/2026mclarencarfront.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 84400,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/mclaren-car.webp",
+  "kind": "2026 car",
+  "subject": "mclaren",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1600/q_auto/v1740000001/common/f1/2026/mclaren/2026mclarencarright.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 77482,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/mclaren-logo-white.webp",
+  "kind": "team logo (white)",
+  "subject": "mclaren",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/mclaren/2026mclarenlogowhite.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 1366,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/mclaren-logo.webp",
+  "kind": "team logo",
+  "subject": "mclaren",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/mclaren/2026mclarenlogo.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 3220,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/mercedes-car-front.webp",
+  "kind": "2026 car (front)",
+  "subject": "mercedes",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_900/q_auto/v1740000001/common/f1/2026/mercedes/2026mercedescarfront.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 59666,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/mercedes-car.webp",
+  "kind": "2026 car",
+  "subject": "mercedes",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1600/q_auto/v1740000001/common/f1/2026/mercedes/2026mercedescarright.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 63596,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/mercedes-logo-white.webp",
+  "kind": "team logo (white)",
+  "subject": "mercedes",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/mercedes/2026mercedeslogowhite.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 3676,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/mercedes-logo.webp",
+  "kind": "team logo",
+  "subject": "mercedes",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/mercedes/2026mercedeslogo.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 3998,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/racingbulls-car-front.webp",
+  "kind": "2026 car (front)",
+  "subject": "rb",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_900/q_auto/v1740000001/common/f1/2026/racingbulls/2026racingbullscarfront.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 84258,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/racingbulls-car.webp",
+  "kind": "2026 car",
+  "subject": "rb",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1600/q_auto/v1740000001/common/f1/2026/racingbulls/2026racingbullscarright.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 77444,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/racingbulls-logo-white.webp",
+  "kind": "team logo (white)",
+  "subject": "rb",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/racingbulls/2026racingbullslogowhite.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2874,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/racingbulls-logo.webp",
+  "kind": "team logo",
+  "subject": "rb",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/racingbulls/2026racingbullslogo.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 6702,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/redbullracing-car-front.webp",
+  "kind": "2026 car (front)",
+  "subject": "red_bull",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_900/q_auto/v1740000001/common/f1/2026/redbullracing/2026redbullracingcarfront.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 80212,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/redbullracing-car.webp",
+  "kind": "2026 car",
+  "subject": "red_bull",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1600/q_auto/v1740000001/common/f1/2026/redbullracing/2026redbullracingcarright.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 87070,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/redbullracing-logo-white.webp",
+  "kind": "team logo (white)",
+  "subject": "red_bull",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/redbullracing/2026redbullracinglogowhite.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2732,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/redbullracing-logo.webp",
+  "kind": "team logo",
+  "subject": "red_bull",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/redbullracing/2026redbullracinglogo.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 11434,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/williams-car-front.webp",
+  "kind": "2026 car (front)",
+  "subject": "williams",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_900/q_auto/v1740000001/common/f1/2026/williams/2026williamscarfront.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 75526,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/williams-car.webp",
+  "kind": "2026 car",
+  "subject": "williams",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_1600/q_auto/v1740000001/common/f1/2026/williams/2026williamscarright.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 82846,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/williams-logo-white.webp",
+  "kind": "team logo (white)",
+  "subject": "williams",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/williams/2026williamslogowhite.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 1240,
+  "season": 2026
+ },
+ {
+  "file": "/media/teams/williams-logo.webp",
+  "kind": "team logo",
+  "subject": "williams",
+  "source": "https://media.formula1.com/image/upload/c_fit,w_320/q_auto/v1740000001/common/f1/2026/williams/2026williamslogo.webp",
+  "sourcePage": "https://www.formula1.com/",
+  "permission": "Site owner states permission granted",
+  "bytes": 2922,
+  "season": 2026
+ }
+]

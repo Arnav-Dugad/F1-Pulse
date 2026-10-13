@@ -1,0 +1,94 @@
+import media from "../data/media.json";
+import { useEffect, useState } from "react";
+import type { Driver, Team } from "../types";
+
+/** Official imagery exists for the 2026 grid only; other seasons get era-neutral treatments. */
+export const MEDIA_SEASON = "2026";
+export const isMediaSeason = (year: string) => year === MEDIA_SEASON;
+
+type DriverMedia = { team: string; front: string | null; card: string | null; number: string | null; head?: string };
+type TeamMedia = { slug: string; colour: string; accessible: string; logo: string; logoWhite: string; car: string; carFront: string; drivers: string[] };
+
+const driverAliases: Record<string, string> = { lindblad: "arvid_lindblad" };
+const teamAliases: Record<string, string> = { racing_bulls: "rb", haas_f1_team: "haas" };
+
+export function driverMedia(driverId: string | undefined, year: string): DriverMedia | null {
+  if (!driverId || !isMediaSeason(year)) return null;
+  return (media.drivers as Record<string, DriverMedia>)[driverAliases[driverId] || driverId] || null;
+}
+export function teamMedia(constructorId: string | undefined, year: string): TeamMedia | null {
+  if (!constructorId || !isMediaSeason(year)) return null;
+  return (media.teams as Record<string, TeamMedia>)[teamAliases[constructorId] || constructorId] || null;
+}
+
+export function circuitMedia(circuitId?: string): { hero?: string; map?: string } {
+  return (circuitId && (media.circuits as Record<string, { hero?: string; map?: string }>)[circuitId]) || {};
+}
+type Outline = { viewBox: string; paths: string[] };
+let tracks: Record<string, Outline> | null = null;
+let loading: Promise<Record<string, Outline>> | null = null;
+/** Circuit outlines (~100 KB gzipped) load once, on first use. */
+export const loadTracks = () =>
+  (loading ??= fetch("/data/tracks.json")
+    .then((r) => (r.ok ? r.json() : {}))
+    .then((d) => (tracks = d))
+    .catch(() => (tracks = {})));
+export function useTrackOutline(circuitId?: string): Outline | null {
+  const [, ready] = useState(0);
+  useEffect(() => {
+    if (!tracks) loadTracks().then(() => ready((x) => x + 1));
+  }, []);
+  return (circuitId && tracks?.[circuitId]) || null;
+}
+
+/** Brand colours: official 2026 values, then well-known historical liveries. */
+const historical: Record<string, string> = {
+  sauber: "#52E252", kick_sauber: "#52E252", alfa: "#B12039", alphatauri: "#5E8FAA", toro_rosso: "#469BFF",
+  renault: "#FFF500", force_india: "#F596C8", racing_point: "#F596C8", lotus_f1: "#B6A16B", lotus: "#FFB800",
+  team_lotus: "#1C4E2F", brawn: "#B8FD6E", toyota: "#E0D7C5", bmw_sauber: "#6CD3FF", honda: "#F0F0F0",
+  jaguar: "#0A6E3C", minardi: "#191919", jordan: "#F5D30E", benetton: "#4CB848", tyrrell: "#3953A3",
+  brabham: "#2E5A2F", cooper: "#00573A", maserati: "#A0001E", vanwall: "#004225", brm: "#0E4D2E",
+  matra: "#3166C1", ligier: "#3A82D9", arrows: "#F2751E", stewart: "#FFFFFF", super_aguri: "#E30613",
+  spyker: "#FF7A00", hrt: "#B2945E", caterham: "#0A8547", marussia: "#6E0000", manor: "#ED1C24",
+  virgin: "#C51D23", alphatauri_honda: "#5E8FAA", prost: "#1F3F9A", march: "#CC0000", wolf: "#1C2B4B",
+};
+const official: Record<string, string> = Object.fromEntries(
+  Object.entries(media.teams).map(([id, t]) => [id, (t as TeamMedia).colour]),
+);
+export function teamColor(team?: Pick<Team, "constructorId"> | string): string {
+  const id = typeof team === "string" ? team : team?.constructorId || "";
+  const key = teamAliases[id] || id;
+  return official[key] || historical[key] || "#8E8E99";
+}
+/** Light liveries need dark ink on solid team-colour surfaces. */
+export function isLightColor(hex: string) {
+  const v = parseInt(hex.replace("#", ""), 16);
+  const r = (v >> 16) & 255, g = (v >> 8) & 255, b = v & 255;
+  return 0.299 * r + 0.587 * g + 0.114 * b > 168;
+}
+
+/**
+ * The team a driver currently represents. Jolpica's `Constructors` array on a standing is NOT
+ * chronological (e.g. Lawson 2026: Racing Bulls, three rounds at Red Bull, back to Racing Bulls
+ * is listed as [rb, red_bull]). Prefer a known latest-race constructor map when available,
+ * then the official 2026 roster, then the last listed constructor.
+ */
+export function teamOf<T extends Pick<Team, "constructorId">>(
+  standing: { Driver: Pick<Driver, "driverId">; Constructors: T[] },
+  year: string,
+  latest?: Map<string, string>,
+): T | undefined {
+  const list = standing.Constructors || [];
+  if (list.length <= 1) return list[0];
+  const known = latest?.get(standing.Driver.driverId) || driverMedia(standing.Driver.driverId, year)?.team;
+  return list.find((c) => c.constructorId === known) || list.at(-1);
+}
+
+export const fullName =(d: Pick<Driver, "givenName" | "familyName">) => `${d.givenName} ${d.familyName}`;
+export const initials = (s: string) =>
+  s.split(/[\s-]+/).filter(Boolean).slice(0, 2).map((x) => x[0]).join("").toUpperCase();
+/** Display name: drops the " F1 Team" suffix; RB has raced as Racing Bulls since 2025. */
+export const teamShortName = (name: string, year = "2026") => {
+  const short = name.replace(/ F1 Team$/, "");
+  return short === "RB" && +year >= 2025 ? "Racing Bulls" : short;
+};

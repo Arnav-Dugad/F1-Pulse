@@ -251,3 +251,125 @@ export async function teams(season: string): Promise<Envelope<Team[]>> {
   const r = await request<any>("jolpica", `${season}/constructors.json`);
   return { ...r, data: r.data.MRData.ConstructorTable.Constructors };
 }
+
+type RaceArrayKey = "Results" | "SprintResults" | "QualifyingResults" | "Laps" | "PitStops";
+/**
+ * Fetch every page of a Jolpica race-table endpoint and merge the per-race arrays.
+ * `key` is the per-race array the endpoint paginates over.
+ */
+export async function paginate(path: string, key: RaceArrayKey, pageSize = 100): Promise<Envelope<Race[]>> {
+  let offset = 0,
+    total = Infinity,
+    meta: Envelope<any>["meta"] | undefined;
+  const merged = new Map<string, any>();
+  while (offset < total) {
+    const r = await request<any>("jolpica", path, { limit: pageSize, offset });
+    meta ??= r.meta;
+    if (r.meta.snapshot) meta = { ...meta, snapshot: true, status: r.meta.status };
+    const mr = r.data.MRData;
+    total = Number(mr.total);
+    if (!Number.isFinite(total)) throw Error("Invalid results pagination");
+    for (const race of mr.RaceTable.Races as any[]) {
+      const id = race.season + ":" + race.round;
+      const prev = merged.get(id);
+      if (!prev) merged.set(id, { ...race, [key]: [...(race[key] || [])] });
+      else prev[key] = [...prev[key], ...(race[key] || [])];
+    }
+    const limit = Number(mr.limit);
+    if (!Number.isInteger(limit) || limit < 1 || !mr.RaceTable.Races.length) break;
+    offset += limit;
+    if (offset > 20000) throw Error("Too many results");
+  }
+  const data = [...merged.values()].sort((a, b) => +a.season - +b.season || +a.round - +b.round);
+  if (key === "Laps")
+    // A lap's timings can straddle two pages; join them by lap number.
+    for (const race of data) {
+      const laps = new Map<string, any>();
+      for (const lap of race.Laps) {
+        const prev = laps.get(lap.number);
+        laps.set(lap.number, prev ? { ...prev, Timings: [...prev.Timings, ...lap.Timings] } : { ...lap, Timings: [...lap.Timings] });
+      }
+      race.Laps = [...laps.values()].sort((a, b) => +a.number - +b.number);
+    }
+  return { data, meta: meta! };
+}
+export const sprintResults = (season: string) => paginate(`${season}/sprint.json`, "SprintResults");
+export const qualifyingResults = (season: string) => paginate(`${season}/qualifying.json`, "QualifyingResults");
+export const driverCareer = (driverId: string) => paginate(`drivers/${driverId}/results.json`, "Results");
+export const teamSeasonResults = (season: string, constructorId: string) => paginate(`${season}/constructors/${constructorId}/results.json`, "Results");
+export const circuitWinners = (circuitId: string) => paginate(`circuits/${circuitId}/results/1.json`, "Results");
+export const circuitRaces = async (circuitId: string): Promise<Envelope<Race[]>> => {
+  const r = await request<any>("jolpica", `circuits/${circuitId}/races.json`, { limit: 100 });
+  return { ...r, data: r.data.MRData.RaceTable.Races };
+};
+export const raceLaps = (season: string, round: string) => paginate(`${season}/${round}/laps.json`, "Laps");
+export const pitStops = (season: string, round: string) => paginate(`${season}/${round}/pitstops.json`, "PitStops");
+
+export type StandingsList = { season: string; round: string; DriverStandings?: Standing[]; ConstructorStandings?: TeamStanding[] };
+type HistoryFile = {
+  generatedAt: string;
+  lastSeason: number;
+  drivers: Record<string, [string, string, number, number, string[]][]>;
+  constructors: Record<string, [string, string, number, number][]>;
+  names: { drivers: Record<string, [string, string, string]>; constructors: Record<string, [string, string]> };
+  rounds: Record<string, string>;
+};
+let historyFile: Promise<HistoryFile> | null = null;
+/** Final tables of every completed season, snapshotted by scripts/fetch-history.mjs. */
+const loadHistory = () =>
+  (historyFile ??= fetch("/data/history.json").then((r) => {
+    if (!r.ok) throw Error("Championship history unavailable");
+    return r.json();
+  }).catch((e) => { historyFile = null; throw e; }));
+
+/**
+ * One final (or, for the running season, latest) championship standing per season for a driver
+ * or constructor. Jolpica only serves standings season by season, so completed seasons come from
+ * a static snapshot and only newer seasons are requested live.
+ */
+export async function standingsHistory(kind: "drivers" | "constructors", id: string): Promise<Envelope<StandingsList[]>> {
+  const h = await loadHistory();
+  const team = (cid: string): Team => ({ constructorId: cid, name: h.names.constructors[cid]?.[0] || cid, nationality: h.names.constructors[cid]?.[1] || "", url: "" });
+  const lists: StandingsList[] = [];
+  const table: Record<string, (string | number | string[])[][]> = kind === "drivers" ? h.drivers : h.constructors;
+  for (const [season, rows] of Object.entries(table)) {
+    const row = rows.find((r) => r[0] === id) as [string, string, number, number, string[]?] | undefined;
+    if (!row) continue;
+    const [, positionText, points, wins] = row;
+    const position = /^\d+$/.test(positionText) ? positionText : "";
+    if (kind === "drivers") {
+      const [given, family, nationality] = h.names.drivers[id] || ["", id, ""];
+      lists.push({ season, round: h.rounds[season], DriverStandings: [{
+        position, points: String(points), wins: String(wins),
+        Driver: { driverId: id, givenName: given, familyName: family, nationality, dateOfBirth: "", url: "" },
+        Constructors: (row[4] || []).map(team),
+      }] });
+    } else {
+      lists.push({ season, round: h.rounds[season], ConstructorStandings: [{ position, points: String(points), wins: String(wins), Constructor: team(id) }] });
+    }
+  }
+  let meta: Envelope<unknown>["meta"] = { source: "jolpica", url: "https://api.jolpi.ca/ergast/f1/", fetchedAt: h.generatedAt, status: `Final standings snapshot 1950–${h.lastSeason}` };
+  for (let y = h.lastSeason + 1; y <= new Date().getFullYear(); y++) {
+    const path = kind === "drivers" ? `${y}/drivers/${id}/driverStandings.json` : `${y}/constructors/${id}/constructorStandings.json`;
+    const r = await request<any>("jolpica", path);
+    const list = r.data.MRData.StandingsTable.StandingsLists[0];
+    if (list) lists.push(list);
+    meta = r.meta;
+  }
+  return { data: lists.sort((a, b) => +a.season - +b.season), meta };
+}
+/** Official standings after a given round. */
+export async function roundStandings(season: string, round: string, kind: "driver" | "constructor" = "driver"): Promise<Envelope<StandingsList | undefined>> {
+  const r = await request<any>("jolpica", `${season}/${round}/${kind}Standings.json`);
+  return { ...r, data: r.data.MRData.StandingsTable.StandingsLists[0] };
+}
+export type Weather = {
+  current?: { time: string; temperature_2m: number; relative_humidity_2m: number; precipitation: number; wind_speed_10m: number };
+  hourly?: { time: string[]; temperature_2m: number[]; precipitation_probability: number[] };
+  timezone?: string;
+};
+export const weather = (lat: string | number, lon: string | number) => request<Weather>("weather", "", { latitude: lat, longitude: lon });
+export type NewsItem = { title: string; url: string; date: string; publisher: string };
+export const news = () => request<NewsItem[]>("news");
+export type WikiSummary = { title: string; extract: string; thumbnail?: { source: string }; content_urls?: { desktop?: { page: string } } };
+export const wiki = (title: string) => request<WikiSummary>("wiki", "", { title });

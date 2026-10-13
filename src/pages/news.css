@@ -1,0 +1,80 @@
+/* ───────────────────────── News · hero ───────────────────────── */
+.nws-hero { position: relative; min-height: min(56vh, 520px); border-radius: var(--r-2xl); overflow: hidden; isolation: isolate; display: flex; color: #fff; margin-top: -14px; box-shadow: 0 40px 100px -50px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.1); }
+.nws-hero-media { position: absolute; inset: 0; z-index: -1; background: radial-gradient(90% 120% at 85% 0%, #5a1010, #0b0b0f 62%); }
+.nws-hero-media img { width: 100%; height: 100%; object-fit: cover; filter: blur(6px) saturate(1.1); transform: scale(1.12); animation: nws-drift 26s var(--ease) forwards; }
+@keyframes nws-drift { to { transform: scale(1.04); } }
+.nws-hero-scrim { position: absolute; inset: 0; background:
+  radial-gradient(70% 90% at 100% 0%, rgba(187, 25, 25, 0.45), transparent 70%),
+  linear-gradient(90deg, rgba(4, 4, 8, 0.92) 0%, rgba(4, 4, 8, 0.66) 55%, rgba(4, 4, 8, 0.45) 100%),
+  linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 40%, rgba(0, 0, 0, 0.55)); }
+.nws-hero-inner { position: relative; flex: 1; display: grid; gap: 20px; align-content: end; padding: clamp(96px, 12vh, 130px) clamp(22px, 4vw, 56px) clamp(26px, 4vw, 48px); }
+.nws-eyebrow { color: rgba(255, 255, 255, 0.8); }
+.nws-title { display: grid; color: #fff; text-shadow: 0 10px 50px rgba(0, 0, 0, 0.35); }
+.nws-title span { color: rgba(255, 255, 255, 0.55); }
+.nws-lede { max-width: 58ch; font-size: clamp(15px, 1.35vw, 17.5px); line-height: 1.55; color: rgba(255, 255, 255, 0.74); }
+.nws-hero-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.nws-pill { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 99px; font-size: 13px; font-weight: 650; color: rgba(255, 255, 255, 0.9); background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.16); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18); }
+.nws-refresh { transition: background-color 0.2s, transform 0.4s var(--spring); }
+.nws-refresh:hover { background: rgba(255, 255, 255, 0.2); }
+.nws-refresh:active { transform: scale(0.95); }
+.nws-refresh:disabled { opacity: 0.6; cursor: default; }
+.nws-refresh .spin { animation: spin 0.9s linear infinite; }
+@media (max-width: 900px) { .nws-hero { min-height: auto; margin-top: -24px; } .nws-hero-inner { padding-top: 92px; } }
+
+/* ───────────────────────── Toolbar ───────────────────────── */
+.nws-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin: 28px 0 24px; }
+.nws-search { flex: 1 1 320px; max-width: 520px; }
+.nws-search .input { height: 46px; padding-right: 44px; font-size: 15px; }
+.nws-search .input::-webkit-search-cancel-button { display: none; }
+.nws-clear { position: absolute; right: 9px; top: 50%; translate: 0 -50%; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: var(--label-2); background: var(--fill-3); }
+.nws-clear:hover { background: var(--fill-1); color: var(--label); }
+.nws-search .nws-clear svg { position: static; translate: none; width: 15px; color: inherit; }
+.nws-found { font-size: 13px; font-weight: 650; color: var(--label-2); }
+
+/* ───────────────────────── Lead block ───────────────────────── */
+.nws-lead { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
+@media (max-width: 980px) { .nws-lead { grid-template-columns: minmax(0, 1fr); } }
+.nws-feature { position: relative; display: grid; grid-template-rows: auto 1fr auto; gap: 22px; min-height: 380px; padding: clamp(22px, 3vw, 38px); border-radius: var(--r-2xl); overflow: hidden; isolation: isolate; color: #fff; box-shadow: 0 30px 70px -36px rgba(120, 10, 10, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.12); transition: transform 0.6s var(--spring), box-shadow 0.4s; }
+.nws-feature:hover { transform: translateY(-4px); }
+.nws-feature:active { transform: scale(0.99); }
+.nws-feature-bg { position: absolute; inset: 0; z-index: -1; background:
+  radial-gradient(80% 90% at 100% 0%, rgba(255, 90, 70, 0.55), transparent 60%),
+  radial-gradient(70% 80% at 0% 100%, rgba(120, 0, 30, 0.7), transparent 70%),
+  linear-gradient(150deg, #b3141b 0%, #5c0b12 48%, #16070a 100%); }
+.nws-feature-bg::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.045) 0 2px, transparent 2px 16px); mask: linear-gradient(180deg, #000, transparent 75%); }
+.nws-feature-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.nws-feature .chip.accent { background: rgba(255, 255, 255, 0.95); color: #b3141b; }
+.nws-feature-meta { font-size: 13px; font-weight: 650; color: rgba(255, 255, 255, 0.78); }
+.nws-feature-title { align-self: end; font-family: var(--font-display); font-size: clamp(30px, 3.9vw, 56px); font-weight: 800; letter-spacing: -0.045em; line-height: 1.02; text-wrap: balance; text-shadow: 0 8px 40px rgba(0, 0, 0, 0.3); }
+.nws-feature-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.nws-feature-foot .faint { color: rgba(255, 255, 255, 0.6); }
+.nws-feature-cta { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 18px; border-radius: 99px; background: #fff; color: #000; font-size: 14.5px; font-weight: 650; transition: gap 0.4s var(--spring); }
+.nws-feature:hover .nws-feature-cta { gap: 12px; }
+
+.nws-leading { display: grid; gap: 12px; align-content: start; }
+.nws-leading > .eyebrow { padding-left: 4px; font-size: 11px; }
+.nws-lead-item { position: relative; display: flex; align-items: flex-start; gap: 14px; padding: 18px 44px 18px 18px; border-radius: var(--r-lg); }
+.nws-rank { flex: none; font-family: var(--font-display); font-size: 26px; font-weight: 800; letter-spacing: -0.05em; line-height: 1; color: var(--label-4); font-variant-numeric: tabular-nums; }
+.nws-lead-text { display: grid; gap: 6px; min-width: 0; }
+.nws-lead-text strong { font-size: 15.5px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.32; }
+.nws-lead-text small { font-size: 12px; color: var(--label-3); font-weight: 600; }
+.nws-arrow { color: var(--label-3); transition: transform 0.4s var(--spring), color 0.2s; flex: none; }
+.nws-lead-item .nws-arrow { position: absolute; top: 18px; right: 16px; }
+.nws-lead-item:hover .nws-arrow, .nws-card:hover .nws-arrow { transform: translate(2px, -2px); color: var(--label); }
+
+/* ───────────────────────── Day groups ───────────────────────── */
+.nws-more .section-head { margin-bottom: 8px; }
+.nws-day { margin-top: 22px; }
+.nws-day-head { position: sticky; top: calc(var(--nav-h) + 20px); z-index: 4; display: inline-flex; align-items: baseline; gap: 10px; margin: 0 0 12px; padding: 7px 14px; border-radius: 99px; font-size: 15px; font-weight: 750; letter-spacing: -0.02em; background: var(--glass-strong); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); }
+.nws-day-head small { font-family: var(--font); font-size: 12px; font-weight: 600; color: var(--label-3); }
+.nws-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); }
+.nws-card { position: relative; display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding: 18px 20px; border-radius: var(--r-lg); min-height: 156px; }
+.nws-card-meta { display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--label-3); }
+.nws-card-meta time { color: var(--accent); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+.nws-card-title { font-size: 16.5px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.33; }
+.nws-card-title mark, .nws-lead-text mark { background: color-mix(in srgb, var(--yellow) 32%, transparent); color: inherit; border-radius: 4px; padding: 0 2px; }
+.nws-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12.5px; color: var(--label-3); font-weight: 550; }
+
+/* ───────────────────────── Credit ───────────────────────── */
+.nws-credit { display: flex; gap: 14px; align-items: flex-start; margin-top: 48px; padding: 18px 20px; border-radius: var(--r-lg); font-size: 13.5px; color: var(--label-2); line-height: 1.5; }
+.nws-credit > svg { width: 20px; height: 20px; flex: none; color: var(--orange); margin-top: 1px; }

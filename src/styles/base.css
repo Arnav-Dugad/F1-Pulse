@@ -1,0 +1,219 @@
+/* ───────────────────────── F1 Pulse · Design tokens ───────────────────────── */
+@font-face { font-family: "Inter"; font-weight: 400; font-display: swap; src: url(/assets/inter-400.woff) format("woff"); }
+@font-face { font-family: "Inter"; font-weight: 500; font-display: swap; src: url(/assets/inter-500.woff) format("woff"); }
+@font-face { font-family: "Inter"; font-weight: 600; font-display: swap; src: url(/assets/inter-600.woff) format("woff"); }
+@font-face { font-family: "Inter"; font-weight: 700; font-display: swap; src: url(/assets/inter-700.woff) format("woff"); }
+@font-face { font-family: "Inter"; font-weight: 800; font-display: swap; src: url(/assets/inter-800.woff) format("woff"); }
+@font-face { font-family: "Inter"; font-weight: 900; font-display: swap; src: url(/assets/inter-900.woff) format("woff"); }
+
+@property --ambient-a { syntax: "<color>"; inherits: true; initial-value: #e8002d; }
+@property --ambient-b { syntax: "<color>"; inherits: true; initial-value: #3671c6; }
+@property --glare-x { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
+@property --glare-y { syntax: "<percentage>"; inherits: true; initial-value: 0%; }
+
+:root {
+  color-scheme: dark;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI Variable Text", system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI Variable Display", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --bg: #040406;
+  --bg-elevated: #0d0d11;
+  --label: rgba(255, 255, 255, 0.96);
+  --label-2: rgba(235, 235, 245, 0.66);
+  --label-3: rgba(235, 235, 245, 0.42);
+  --label-4: rgba(235, 235, 245, 0.2);
+  --separator: rgba(255, 255, 255, 0.09);
+  --fill-1: rgba(120, 120, 128, 0.32);
+  --fill-2: rgba(120, 120, 128, 0.22);
+  --fill-3: rgba(118, 118, 128, 0.14);
+  --fill-4: rgba(118, 118, 128, 0.08);
+
+  --glass: rgba(30, 30, 36, 0.46);
+  --glass-strong: rgba(26, 26, 32, 0.72);
+  --glass-thin: rgba(255, 255, 255, 0.045);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-edge: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 24px 60px -28px rgba(0, 0, 0, 0.85);
+  --glass-blur: blur(28px) saturate(185%);
+
+  --accent: #ff3b30;
+  --accent-2: #ff6a3d;
+  --accent-ink: #fff;
+  --green: #30d158;
+  --yellow: #ffd60a;
+  --orange: #ff9f0a;
+  --blue: #0a84ff;
+  --purple: #bf5af2;
+  --teal: #64d2ff;
+  --gold: #f5c451;
+  --silver: #c7ccd6;
+  --bronze: #d4915c;
+
+  --r-2xl: 36px;
+  --r-xl: 28px;
+  --r-lg: 22px;
+  --r-md: 16px;
+  --r-sm: 11px;
+  --r-xs: 8px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --spring: linear(0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%, 0.937 38.1%, 0.968 41.8%, 0.991 45.7%, 1.006 50.1%, 1.015 55%, 1.017 63.9%, 1.001 85.9%, 1);
+  --spring-bouncy: linear(0, 0.004, 0.016, 0.035, 0.063, 0.098, 0.141 13.6%, 0.25, 0.391, 0.563, 0.765, 1, 0.891 40.9%, 0.848, 0.813, 0.785, 0.766, 0.754, 0.75, 0.754, 0.766, 0.785, 0.813, 0.848, 0.891 68.2%, 1 72.7%, 0.973, 0.953, 0.941, 0.938, 0.941, 0.953, 0.973, 1, 0.988, 0.984, 0.988, 1);
+
+  --page-max: 1360px;
+  --gutter: clamp(16px, 3.2vw, 40px);
+  --nav-h: 60px;
+
+  --ambient-a: #e8002d;
+  --ambient-b: #3671c6;
+  transition: --ambient-a 1.4s var(--ease), --ambient-b 1.4s var(--ease);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #eef0f5;
+  --bg-elevated: #ffffff;
+  --label: rgba(0, 0, 0, 0.9);
+  --label-2: rgba(60, 60, 67, 0.72);
+  --label-3: rgba(60, 60, 67, 0.5);
+  --label-4: rgba(60, 60, 67, 0.24);
+  --separator: rgba(0, 0, 0, 0.08);
+  --fill-1: rgba(120, 120, 128, 0.2);
+  --fill-2: rgba(120, 120, 128, 0.14);
+  --fill-3: rgba(118, 118, 128, 0.1);
+  --fill-4: rgba(118, 118, 128, 0.06);
+  --glass: rgba(255, 255, 255, 0.58);
+  --glass-strong: rgba(255, 255, 255, 0.82);
+  --glass-thin: rgba(255, 255, 255, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-edge: rgba(255, 255, 255, 0.95);
+  --glass-shadow: 0 1px 2px rgba(15, 20, 40, 0.06), 0 22px 50px -26px rgba(15, 20, 40, 0.28);
+  --accent: #e5261c;
+  --green: #1fa84a;
+  --yellow: #c99700;
+  --orange: #d97900;
+  --blue: #0066d6;
+  --purple: #9a37cf;
+  --gold: #b88700;
+  --silver: #7c8594;
+  --bronze: #a8622e;
+}
+
+/* ───────────────────────── Reset ───────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 96px; }
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--label);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: -0.008em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv11", "ss01", "ss03";
+  overflow-x: hidden;
+}
+img, svg, video { display: block; max-width: 100%; }
+img { user-select: none; -webkit-user-drag: none; }
+button, input, select, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
+button { cursor: pointer; border: 0; background: none; padding: 0; }
+a { color: inherit; text-decoration: none; }
+h1, h2, h3, h4, p { margin: 0; }
+h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; }
+p { text-wrap: pretty; }
+table { border-collapse: collapse; width: 100%; }
+::selection { background: color-mix(in srgb, var(--accent) 40%, transparent); }
+:focus-visible { outline: 2.5px solid var(--blue); outline-offset: 3px; border-radius: 8px; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.num, .tabular { font-variant-numeric: tabular-nums; }
+
+/* ───────────────────────── Ambient backdrop ───────────────────────── */
+.ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: var(--bg); }
+.ambient::before, .ambient::after, .ambient i {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.5;
+  will-change: transform;
+}
+.ambient::before {
+  width: 62vmax; height: 62vmax; left: -18vmax; top: -26vmax;
+  background: radial-gradient(circle at 50% 50%, var(--ambient-a), transparent 66%);
+  animation: drift-a 28s var(--ease-in-out) infinite alternate;
+}
+.ambient::after {
+  width: 58vmax; height: 58vmax; right: -20vmax; top: 12vh;
+  background: radial-gradient(circle at 50% 50%, var(--ambient-b), transparent 66%);
+  opacity: 0.38;
+  animation: drift-b 34s var(--ease-in-out) infinite alternate;
+}
+.ambient i {
+  width: 44vmax; height: 44vmax; left: 24vw; bottom: -30vmax;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ambient-a) 60%, var(--ambient-b)), transparent 68%);
+  opacity: 0.22;
+  animation: drift-c 40s var(--ease-in-out) infinite alternate;
+}
+.ambient b {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -10%, transparent 40%, var(--bg) 90%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+:root[data-theme="light"] .ambient::before { opacity: 0.26; }
+:root[data-theme="light"] .ambient::after { opacity: 0.2; }
+:root[data-theme="light"] .ambient i { opacity: 0.14; }
+@keyframes drift-a { to { transform: translate3d(14vw, 10vh, 0) scale(1.15); } }
+@keyframes drift-b { to { transform: translate3d(-12vw, 18vh, 0) scale(0.9); } }
+@keyframes drift-c { to { transform: translate3d(-18vw, -12vh, 0) scale(1.2); } }
+
+/* ───────────────────────── Glass material ───────────────────────── */
+.glass {
+  position: relative;
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 0 var(--glass-edge), inset 0 0 0 0.5px rgba(255, 255, 255, 0.03);
+  isolation: isolate;
+}
+.glass::before {
+  /* specular rim light */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.02) 30%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.08));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+:root[data-theme="light"] .glass::before { background: linear-gradient(160deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.3) 40%, rgba(255, 255, 255, 0.6)); }
+.glass-strong { background: var(--glass-strong); }
+.glass-thin { background: var(--glass-thin); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); }
+.tinted { background: linear-gradient(145deg, color-mix(in srgb, var(--tint, var(--accent)) 30%, transparent), color-mix(in srgb, var(--tint, var(--accent)) 6%, transparent) 60%), var(--glass); }
+
+/* ───────────────────────── Motion preferences ───────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) *, :root:not([data-motion="full"]) *::before, :root:not([data-motion="full"]) *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+:root[data-motion="reduced"] *, :root[data-motion="reduced"] *::before, :root[data-motion="reduced"] *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+
+/* View transitions between routes */
+::view-transition-old(root) { animation: vt-out 0.28s var(--ease) both; }
+::view-transition-new(root) { animation: vt-in 0.5s var(--ease) both; }
+::view-transition-group(*) { animation-duration: 0.55s; animation-timing-function: var(--ease); }
+@keyframes vt-out { to { opacity: 0; transform: scale(0.985); filter: blur(6px); } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(14px) scale(1.01); filter: blur(8px); } }
+::view-transition-group(site-nav), ::view-transition-group(tab-bar) { animation: none; }
+:root[data-motion="reduced"]::view-transition-group(*), :root[data-motion="reduced"]::view-transition-old(*), :root[data-motion="reduced"]::view-transition-new(*) { animation: none !important; }

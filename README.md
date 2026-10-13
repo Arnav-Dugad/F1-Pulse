@@ -1,108 +1,96 @@
 # F1 Pulse
 
-An independent, free Formula 1 fan platform with real photography, published results, and transparent historical analytics. This is a complete replacement of the former frontend, with the same Cloudflare Worker name (`f1-pulse`).
+**Feel every lap.** An independent, beautifully designed Formula 1 companion — live-season standings, race weekends, driver and team profiles with official photography, historical telemetry, replays and title maths.
+
+Live: https://f1-pulse.arnavrival12.workers.dev/
+
+Version 3 is a ground-up rebuild: new design system, new components, new pages, new media library and new animations. Only the Worker API layer and the tested data rules (`src/domain.mjs`, `src/math.mjs`) carry over.
+
+## Design
+
+- **Liquid glass.** Frosted, saturated translucent surfaces with specular rim lighting over a slowly drifting ambient backdrop that takes on the colours of whatever you're looking at — the championship leader on Home, the team on a driver or team page, the winner on a race page.
+- **Typography.** SF Pro on Apple devices (Inter elsewhere), tight-tracked display sizes, tabular numerals everywhere numbers line up.
+- **Motion.** Spring physics (via `motion`) for navigation pills, segmented controls, sheets, palettes and reordering; View Transitions between pages; self-drawing circuit outlines with cars lapping them; rolling countdown digits; 3D-tilt cards with parallax race numbers and pointer-tracked glare; scroll-revealed sections; counters that tick up. Everything honours *Reduce motion* (system or in-app).
+- **Navigation.** A floating "island" capsule on desktop with a Lab menu; an iOS-style floating tab bar plus a draggable sheet on phones; a ⌘K / `/` command palette that searches drivers, teams, races, circuits and jumps to any season by typing a year.
+- **Themes.** Dark and light, both first-class, applied before first paint.
+
+## Pages
+
+| Page | What it does |
+| --- | --- |
+| Home | Next-race hero with live countdown and animated circuit, weekend schedule in your time zone, latest podium with official portraits, both championships, title-fight chart, season-at-a-glance, the grid, upcoming races, headlines |
+| Calendar | Photo grid and month timeline of every round, filters, search, ICS export (races or every session) |
+| Race weekend | Hero with circuit, countdown/timetable or winner spotlight, race/qualifying/sprint classifications, lap chart, pit stops, movers, circuit weather forecast |
+| Standings | Drivers and constructors tables, animated season bar-chart race, bump chart, official round-by-round standings rewind |
+| Drivers / Driver | Tilt-card grid; cinematic profiles with season stats, race strip, teammate battle, career history, Wikipedia summary |
+| Teams / Team | Car parade; team profiles with line-up, race-by-race points, rivals, history |
+| Circuits / Circuit | Animated outlines; official circuit maps, winners history, weather |
+| Lab · Head to Head | Two-driver face-off with mirrored stat bars and charts, shareable URL |
+| Lab · Telemetry | Linked speed/throttle/brake/gear/RPM/DRS traces, estimated delta, speed map (OpenF1, 2023+) |
+| Lab · Race Replay | Archived lap playback on the circuit, position tower, race control, stints, radio |
+| Lab · Strategy | Editable one/two-stop race model with stint timelines and sensitivity |
+| Lab · Title Maths | Who can still win, and a finishing-order simulator |
+| News, Favourites, Settings | BBC Sport headlines; your saved drivers and teams; theme, motion, time zone, data export/import and full credits |
+
+Every season from 1950 works. Photography exists for the 2026 grid; other seasons use era-neutral monograms rather than reusing modern photos.
+
+## Data and accuracy
+
+| Source | Used for |
+| --- | --- |
+| [Jolpica](https://github.com/jolpica/jolpica-f1) (Ergast-compatible) | Calendars, results, qualifying, sprints, standings, laps, pit stops, careers |
+| [OpenF1](https://openf1.org) | Historical telemetry, location, positions, stints, race control, radio (2023+, archive only) |
+| [Open-Meteo](https://open-meteo.com) | Model weather at circuit coordinates |
+| BBC Sport RSS | Headlines (titles and links only) |
+| Wikipedia REST | Driver and team summaries, with attribution |
+
+Every data section shows its source and retrieval time. Nothing is fabricated: unavailable data gets an explicit empty state, and estimates (speed-integrated distance, strategy model, title bounds) are labelled as such.
+
+Round-by-round charts are derived from race and sprint classifications with each era's counting rules applied: dropped scores until 1990, best-car-only constructor scoring before 1979, and the Indianapolis 500 counting for drivers only. Run against the official final tables for every season since 1950, they match exactly in all but six seasons. Four of those are 1950s shared-drive cases, which the site flags as approximate. The other two are official decisions race results can't show (McLaren's 2007 exclusion, Racing Point's 2020 penalty), which are disclosed beside the charts. Tables always show official values. See [VERIFICATION.md](VERIFICATION.md).
+
+`npm run verify:accuracy [seasons… | all]` repeats that audit against live data. It also checks that every 2026 driver maps to a portrait of the team they last raced for, and that every 2026 circuit has an outline, map and photograph. Jolpica lists a driver's constructors in no particular order (Liam Lawson 2026 is listed `[rb, red_bull]` after three stand-in rounds at Red Bull), so the current team always comes from the latest race.
+
+Career and team histories use `public/data/history.json`, a snapshot of every completed season's final tables (Jolpica serves standings one season at a time). Regenerate it with `npm run data:history`; the running season is always fetched live.
+
+## Media
+
+Official Formula 1 imagery — driver portraits and number artwork, team logos, 2026 cars, circuit maps and outlines, race-hub photography — is used with the site owner's stated permission. Everything is self-hosted under `public/media/`, and every file's source URL is recorded in `public/media/sources.json`. Flags come from flagcdn.com (Flagpedia). Inter is bundled under the OFL.
+
+Refresh media with `npm run media:fetch` (Python 3 + Pillow): it downloads to `public/media/`, writes `src/data/media.json` and `public/data/tracks.json`, crops headshots and records provenance. Processing never re-encodes a photo twice.
 
 ## Run
 
 ```sh
 npm ci
-npm run dev
+npm run dev            # builds, then serves the app + Worker API at http://127.0.0.1:8787
 ```
 
-Open http://localhost:8787. This command builds the frontend and runs the same Worker request handler using a small Node static-asset adapter. For frontend hot reload, run `npm run preview` and `npm run dev:vite` in separate terminals. `npm run dev:worker` uses Wrangler's native local runtime.
+For hot reload run `npm run preview` and `npm run dev:vite` in two terminals. `PULSE_PORT` changes the port.
 
-## Build and deploy
+## Verify
 
 ```sh
-npm test
-npm run build
-npm run deploy
+npm test               # unit tests: data rules, maths, Worker, points progression
+npm run build          # strict TypeScript + production bundle
+npm run verify:accuracy
+npx playwright install chromium
+npm run preview &      # then:
+npm run test:e2e       # every route × desktop/tablet/phone × dark/light: errors, overflow, headings, images
 ```
 
-`npm run deploy` uses your authenticated Cloudflare account. Authenticate with `npx wrangler login`, or use scoped `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` environment variables. No secrets belong in this repository. A cleanup service worker retires the previous site’s offline shell caches without caching the replacement.
+## Deploy
 
-For an existing Cloudflare Workers Builds GitHub connection: keep build command `npm run build`, deploy command `npx wrangler deploy`, root directory `/`, and production branch `main`. The Worker name is unchanged, so a deployment to the correct existing account updates https://f1-pulse.arnavrival12.workers.dev/. A GitHub push alone is not proof that Cloudflare deployed it.
+```sh
+npm run deploy         # build + wrangler deploy (Worker name: f1-pulse)
+```
+
+Uses your authenticated Cloudflare account (`npx wrangler login`, or `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`). No secrets live in this repository.
 
 ## Architecture
 
-- React 19, strict TypeScript and Vite. Lazy-loaded fan, analytics and archive areas.
-- An original graphite/red design system; responsive sidebar, mobile navigation, dark/light modes, locally served open-license fonts and reduced motion.
-- Cloudflare Worker API adapters with source allowlists, validation, bounded telemetry windows, request deduplication, request timeouts and successful-response caching.
-- Browser request deduplication, API scheduling, memory/session cache, bounded retry and dated offline fallback.
-- Local official photographs and unmodified marks, with source URLs and the owner's stated permission recorded in `public/assets/sources.json`.
-- No accounts, third-party tracking, mandatory keys or paid API access.
+- React 19, strict TypeScript, Vite; pages are lazy-loaded chunks; `motion` and React are split into vendor chunks.
+- `src/app` — preferences and shell (nav, tab bar, sheet, command palette, footer). `src/ui` — design-system components, media, charts, cards. `src/lib` — router, media lookup, formatting, season maths. `src/pages` — one file (and stylesheet) per page.
+- `worker/index.mjs` — read-only API proxy with source allowlists, validation, bounded telemetry windows, request de-duplication, timeouts and edge caching. Legacy `.html` URLs redirect to their new destinations.
+- Browser request queue (rate-limit aware), memory/session caching, dated offline snapshot for core current-season data.
 
-## Implemented
-
-| Area              | Working behavior                                                                                                                                                                                   |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Overview          | Source-backed next event/countdown, latest classification/podium, driver/constructor standings                                                                                                     |
-| Calendar          | Season selection, event search, upcoming/past filters, timezone-aware times, ICS export                                                                                                            |
-| Championship      | Driver/constructor standings, filtering, sorting, leader gaps and CSV export                                                                                                                       |
-| Drivers           | Real 2026 portraits, search/favorites, season profiles, race record, career race entries/wins/recorded poles/prior-season title counts                                                             |
-| Teams             | Real 2026 logos/cars, profiles, season race records, race points by driver                                                                                                                         |
-| Circuits          | Real circuit photos where verified, coordinates, real OSM links, season results and model weather                                                                                                  |
-| Race hub          | Timetable, race/qualifying/sprint classification, grid changes, result sorting/export, measured lap chart and pit records                                                                          |
-| Comparison        | Race head-to-head, podiums, wins, race points, finish/gain metrics, cumulative progression, bar/trend view, reliability, saved comparison                                                          |
-| Telemetry         | Historical session/driver/lap selection; speed, throttle, brake, gear, RPM, DRS; linked crosshair/window controls; observed sectors and lap times; raw CSV export                                  |
-| Lap delta         | Explicitly **estimated** distance from speed integration, overlap-only alignment, gap rejection and derived time delta                                                                             |
-| Historical replay | Selected-lap window, actual reported location samples, shared absolute clock, interpolated markers, missing-sample hiding, scrubbing, speed/focus controls, position tower and race-control events |
-| Archive detail    | Actual stints, pit records, session weather, race control and external radio recording links                                                                                                       |
-| Strategy          | Documented one/two-stop model, editable assumptions, pit windows, time comparison and degradation sensitivity                                                                                      |
-| Title scenarios   | Full-points scoring from 2010, season-specific sprint scoring, 2019–2024 fastest-lap eligibility, duplicate validation                                                                             |
-| News              | BBC Sport RSS headlines and publisher links; source timestamps; search                                                                                                                             |
-| Preferences       | Theme, timezone, favorite drivers/teams, motion, JSON export/import and saved comparisons                                                                                                          |
-| Search            | Driver/team/race/circuit/tool discovery, fuzzy matching, season navigation, keyboard navigation and Ctrl/Cmd+K                                                                                     |
-
-## Latest development additions
-
-- **Your fan collection:** saved drivers and constructors together, real season standings, current photography, unsave controls and one-click comparison of favorites. Favorites without records in the selected season remain saved and are identified separately.
-- **Championship rewind:** choose a published round for driver or constructor standings. Inspect rank/points changes against the preceding round, leader gaps, a points ladder and CSV exports. Frames use actual provider standings, including recorded sprint points and adjustments; they are not reconstructed from race-only points.
-- **Weekend planning:** upcoming sessions on the overview, individual weekend downloads, and an option to export all published sessions for a season. ICS files preserve UTC starts, escape and fold fields, and use stable session IDs. Unpublished start times remain all-day dates.
-- **Sharing and navigation:** page links pin the selected season; comparisons retain both drivers and their metric; rewind links retain the round. Previous `.html` calendar, driver, team and race URLs redirect to the new matching destinations.
-- **Interaction quality:** position charts put P1 at the top, charts accept pointer and keyboard inspection, hidden mobile navigation cannot receive focus, and the open menu confines focus and background scrolling. The narrow 320px header keeps the official F1 TV link visible.
-- **Data integrity:** pagination never mutates cached result arrays, duplicate chunks do not duplicate drivers, fallback snapshots must match the current season, corrupt saved preferences recover safely, retry clears the browser memory cache, and changing selections hides stale records immediately.
-
-The [premium improvement roadmap](PREMIUM-ROADMAP.md) contains 60 proposed future upgrades across fan features, UI, data, analytics, visuals and animation. It distinguishes completed work from additions.
-
-## Provenance and availability
-
-Jolpica supplies schedules, standings, classifications, pit stops and lap records. Historical coverage starts in 1950, but individual datasets vary by era. Championship constructor data begins later. Queries use result pagination rather than silently truncating at the first page.
-
-OpenF1 supplies historical data from 2023 onward. Its live window is paid; this app filters out active/recent sessions and validates archive eligibility in the Worker. No authentication or payment restrictions are bypassed. Telemetry requests are one driver and at most three minutes. Browser scheduling respects 3 requests/second and a conservative 28/minute rolling limit. Cloudflare caching lowers shared upstream demand; production quotas still apply.
-
-Open-Meteo supplies current model conditions and seven-day forecasts at circuit coordinates. This is not circuit sensor data and is not a forecast for a race outside the forecast window.
-
-A dated, genuinely fetched `launch-snapshot.json` covers basic current-season data if the source is unavailable. It is never shown as current/live data; the UI marks the saved response and its retrieval time. Refresh manually with `python scripts/snapshot.py`. No telemetry is fabricated or bundled as fake live data.
-
-All local driver/car assets depict 2026. Historical seasons do not reuse a current portrait or team logo as an era-correct asset. An archival OpenF1 headshot covers Yuki Tsunoda where the 2026 roster source has no active-driver photo; its photograph date is unspecified and explicitly labeled. Circuit photography can predate the selected season and is labeled as source photography. Missing assets show explicit unavailable states. Wikipedia biography/photo fallback may be blocked by the provider. Official asset ownership/permission is documented separately from data-source terms. Inter and Barlow Condensed are locally hosted under their included OFL license files.
-
-## Honest boundaries
-
-- Replay covers a selected lap/time window and two spatially tracked drivers, with the session's reported position tower. It is **not** full-race spatial playback or a broadcast.
-- Telemetry distance is integrated from speed, not official distance/GPS. An exact FastF1 distance pipeline, corner/mini-sector analysis, elevation, 3D track geometry and full-race replay are not implemented.
-- Strategy defaults are user-editable assumptions, with no historical calibration or confidence intervals. Compound-specific physics, weather/safety-car traffic models and stochastic predictions are not implemented.
-- The championship simulator adds one full-points event. It does not recalculate official countback, model shortened-race points, double points or pre-2010 scoring.
-- Driver/constructor comparisons use race points, explicitly excluding sprints/adjustments. Career qualifying coverage varies; incomparable eras need context. Entry counts include all recorded classifications; non-finish status counts can include DNS and disqualification. Prior-season title counts exclude the current calendar year, so a midseason leader is never labeled a champion.
-- The historical explorer is season-driven. A dedicated all-time record database, qualifying head-to-head, cross-season comparison and automated FastF1 processing remain future work.
-- News includes linked titles, not copied full articles or unlicensed publisher imagery.
-- No Lighthouse or WCAG certification is claimed. Automated and visual checks are described in `VERIFICATION.md`.
-
-## Verification
-
-```sh
-npm test
-npm run build
-npm run verify:data
-npx playwright install --with-deps chromium firefox webkit
-npm run preview  # separate terminal
-npm run test:e2e
-npm run test:release
-node scripts/deep-e2e.mjs
-```
-
-`verify:data` exercises actual source requests. Browser tests capture screenshots and check navigation, overflow, themes, timezone persistence, search and mobile navigation. Deep tests exercise profiles, favorites, classification, comparisons, scenario validation and real archive telemetry/replay. Environment-specific browser support is recorded explicitly in test artifacts. GitHub Actions performs unit/build/browser checks; it does not silently deploy to a different account.
-
-`test:release` additionally checks published round standings, constructor switching, clipboard sharing, favorite comparisons, real ICS downloads, legacy links, keyboard chart controls, 390/320px layouts and corrupt-preference recovery. Set `PULSE_CHROMIUM_CHANNEL=chrome` to use an installed Chrome browser. `PULSE_TEST_URL` changes the target URL; `PULSE_PORT` changes the local verification server port. The preview server binds to localhost.
-
-F1 Pulse is an unofficial noncommercial fan site, not affiliated with Formula 1, the FIA, any team, or F1 TV. Formula 1 and related marks belong to their owners. The F1 TV header link opens the official service.
+F1 Pulse is unofficial and is not associated in any way with the Formula 1 companies. F1, FORMULA ONE, FORMULA 1 and related marks are trade marks of Formula One Licensing B.V.

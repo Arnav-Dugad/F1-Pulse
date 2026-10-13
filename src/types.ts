@@ -57,6 +57,8 @@ export type Race = {
   Qualifying?: { date: string; time: string };
   Sprint?: { date: string; time: string };
   SprintQualifying?: { date: string; time: string };
+  Laps?: { number: string; Timings: { driverId: string; position: string; time: string }[] }[];
+  PitStops?: { driverId: string; lap: string; stop: string; time: string; duration: string }[];
 };
 export type Standing = {
   position: string;

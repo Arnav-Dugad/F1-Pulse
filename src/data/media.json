@@ -1,0 +1,415 @@
+{
+ "teams": {
+  "mercedes": {
+   "slug": "mercedes",
+   "colour": "#27F4D2",
+   "accessible": "#067E6A",
+   "logo": "/media/teams/mercedes-logo.webp",
+   "logoWhite": "/media/teams/mercedes-logo-white.webp",
+   "car": "/media/teams/mercedes-car.webp",
+   "carFront": "/media/teams/mercedes-car-front.webp",
+   "drivers": [
+    "russell",
+    "antonelli"
+   ]
+  },
+  "ferrari": {
+   "slug": "ferrari",
+   "colour": "#E8002D",
+   "accessible": "#5C0012",
+   "logo": "/media/teams/ferrari-logo.webp",
+   "logoWhite": "/media/teams/ferrari-logo-white.webp",
+   "car": "/media/teams/ferrari-car.webp",
+   "carFront": "/media/teams/ferrari-car-front.webp",
+   "drivers": [
+    "leclerc",
+    "hamilton"
+   ]
+  },
+  "mclaren": {
+   "slug": "mclaren",
+   "colour": "#FF8000",
+   "accessible": "#804000",
+   "logo": "/media/teams/mclaren-logo.webp",
+   "logoWhite": "/media/teams/mclaren-logo-white.webp",
+   "car": "/media/teams/mclaren-car.webp",
+   "carFront": "/media/teams/mclaren-car-front.webp",
+   "drivers": [
+    "norris",
+    "piastri"
+   ]
+  },
+  "red_bull": {
+   "slug": "redbullracing",
+   "colour": "#3671C6",
+   "accessible": "#142948",
+   "logo": "/media/teams/redbullracing-logo.webp",
+   "logoWhite": "/media/teams/redbullracing-logo-white.webp",
+   "car": "/media/teams/redbullracing-car.webp",
+   "carFront": "/media/teams/redbullracing-car-front.webp",
+   "drivers": [
+    "max_verstappen",
+    "hadjar"
+   ]
+  },
+  "rb": {
+   "slug": "racingbulls",
+   "colour": "#6692FF",
+   "accessible": "#0038C2",
+   "logo": "/media/teams/racingbulls-logo.webp",
+   "logoWhite": "/media/teams/racingbulls-logo-white.webp",
+   "car": "/media/teams/racingbulls-car.webp",
+   "carFront": "/media/teams/racingbulls-car-front.webp",
+   "drivers": [
+    "lawson",
+    "arvid_lindblad"
+   ]
+  },
+  "alpine": {
+   "slug": "alpine",
+   "colour": "#00A1E8",
+   "accessible": "#004E70",
+   "logo": "/media/teams/alpine-logo.webp",
+   "logoWhite": "/media/teams/alpine-logo-white.webp",
+   "car": "/media/teams/alpine-car.webp",
+   "carFront": "/media/teams/alpine-car-front.webp",
+   "drivers": [
+    "gasly",
+    "colapinto"
+   ]
+  },
+  "haas": {
+   "slug": "haasf1team",
+   "colour": "#DEE1E2",
+   "accessible": "#667175",
+   "logo": "/media/teams/haasf1team-logo.webp",
+   "logoWhite": "/media/teams/haasf1team-logo-white.webp",
+   "car": "/media/teams/haasf1team-car.webp",
+   "carFront": "/media/teams/haasf1team-car-front.webp",
+   "drivers": [
+    "ocon",
+    "bearman"
+   ]
+  },
+  "audi": {
+   "slug": "audi",
+   "colour": "#FF2D00",
+   "accessible": "#751500",
+   "logo": "/media/teams/audi-logo.webp",
+   "logoWhite": "/media/teams/audi-logo-white.webp",
+   "car": "/media/teams/audi-car.webp",
+   "carFront": "/media/teams/audi-car-front.webp",
+   "drivers": [
+    "hulkenberg",
+    "bortoleto"
+   ]
+  },
+  "williams": {
+   "slug": "williams",
+   "colour": "#1868DB",
+   "accessible": "#082145",
+   "logo": "/media/teams/williams-logo.webp",
+   "logoWhite": "/media/teams/williams-logo-white.webp",
+   "car": "/media/teams/williams-car.webp",
+   "carFront": "/media/teams/williams-car-front.webp",
+   "drivers": [
+    "sainz",
+    "albon"
+   ]
+  },
+  "aston_martin": {
+   "slug": "astonmartin",
+   "colour": "#229971",
+   "accessible": "#0F4331",
+   "logo": "/media/teams/astonmartin-logo.webp",
+   "logoWhite": "/media/teams/astonmartin-logo-white.webp",
+   "car": "/media/teams/astonmartin-car.webp",
+   "carFront": "/media/teams/astonmartin-car-front.webp",
+   "drivers": [
+    "alonso",
+    "stroll"
+   ]
+  },
+  "cadillac": {
+   "slug": "cadillac",
+   "colour": "#AAAAAD",
+   "accessible": "#58585B",
+   "logo": "/media/teams/cadillac-logo.webp",
+   "logoWhite": "/media/teams/cadillac-logo-white.webp",
+   "car": "/media/teams/cadillac-car.webp",
+   "carFront": "/media/teams/cadillac-car-front.webp",
+   "drivers": [
+    "perez",
+    "bottas"
+   ]
+  }
+ },
+ "drivers": {
+  "russell": {
+   "team": "mercedes",
+   "front": "/media/drivers/georus01-front.webp",
+   "card": "/media/drivers/georus01-card.webp",
+   "number": "/media/drivers/georus01-number.webp",
+   "head": "/media/drivers/georus01-head.webp"
+  },
+  "antonelli": {
+   "team": "mercedes",
+   "front": "/media/drivers/andant01-front.webp",
+   "card": "/media/drivers/andant01-card.webp",
+   "number": "/media/drivers/andant01-number.webp",
+   "head": "/media/drivers/andant01-head.webp"
+  },
+  "leclerc": {
+   "team": "ferrari",
+   "front": "/media/drivers/chalec01-front.webp",
+   "card": "/media/drivers/chalec01-card.webp",
+   "number": "/media/drivers/chalec01-number.webp",
+   "head": "/media/drivers/chalec01-head.webp"
+  },
+  "hamilton": {
+   "team": "ferrari",
+   "front": "/media/drivers/lewham01-front.webp",
+   "card": "/media/drivers/lewham01-card.webp",
+   "number": "/media/drivers/lewham01-number.webp",
+   "head": "/media/drivers/lewham01-head.webp"
+  },
+  "norris": {
+   "team": "mclaren",
+   "front": "/media/drivers/lannor01-front.webp",
+   "card": "/media/drivers/lannor01-card.webp",
+   "number": "/media/drivers/lannor01-number.webp",
+   "head": "/media/drivers/lannor01-head.webp"
+  },
+  "piastri": {
+   "team": "mclaren",
+   "front": "/media/drivers/oscpia01-front.webp",
+   "card": "/media/drivers/oscpia01-card.webp",
+   "number": "/media/drivers/oscpia01-number.webp",
+   "head": "/media/drivers/oscpia01-head.webp"
+  },
+  "max_verstappen": {
+   "team": "red_bull",
+   "front": "/media/drivers/maxver01-front.webp",
+   "card": "/media/drivers/maxver01-card.webp",
+   "number": "/media/drivers/maxver01-number.webp",
+   "head": "/media/drivers/maxver01-head.webp"
+  },
+  "hadjar": {
+   "team": "red_bull",
+   "front": "/media/drivers/isahad01-front.webp",
+   "card": "/media/drivers/isahad01-card.webp",
+   "number": "/media/drivers/isahad01-number.webp",
+   "head": "/media/drivers/isahad01-head.webp"
+  },
+  "lawson": {
+   "team": "rb",
+   "front": "/media/drivers/lialaw01-front.webp",
+   "card": "/media/drivers/lialaw01-card.webp",
+   "number": "/media/drivers/lialaw01-number.webp",
+   "head": "/media/drivers/lialaw01-head.webp"
+  },
+  "arvid_lindblad": {
+   "team": "rb",
+   "front": "/media/drivers/arvlin01-front.webp",
+   "card": "/media/drivers/arvlin01-card.webp",
+   "number": "/media/drivers/arvlin01-number.webp",
+   "head": "/media/drivers/arvlin01-head.webp"
+  },
+  "gasly": {
+   "team": "alpine",
+   "front": "/media/drivers/piegas01-front.webp",
+   "card": "/media/drivers/piegas01-card.webp",
+   "number": "/media/drivers/piegas01-number.webp",
+   "head": "/media/drivers/piegas01-head.webp"
+  },
+  "colapinto": {
+   "team": "alpine",
+   "front": "/media/drivers/fracol01-front.webp",
+   "card": "/media/drivers/fracol01-card.webp",
+   "number": "/media/drivers/fracol01-number.webp",
+   "head": "/media/drivers/fracol01-head.webp"
+  },
+  "ocon": {
+   "team": "haas",
+   "front": "/media/drivers/estoco01-front.webp",
+   "card": "/media/drivers/estoco01-card.webp",
+   "number": "/media/drivers/estoco01-number.webp",
+   "head": "/media/drivers/estoco01-head.webp"
+  },
+  "bearman": {
+   "team": "haas",
+   "front": "/media/drivers/olibea01-front.webp",
+   "card": "/media/drivers/olibea01-card.webp",
+   "number": "/media/drivers/olibea01-number.webp",
+   "head": "/media/drivers/olibea01-head.webp"
+  },
+  "hulkenberg": {
+   "team": "audi",
+   "front": "/media/drivers/nichul01-front.webp",
+   "card": "/media/drivers/nichul01-card.webp",
+   "number": "/media/drivers/nichul01-number.webp",
+   "head": "/media/drivers/nichul01-head.webp"
+  },
+  "bortoleto": {
+   "team": "audi",
+   "front": "/media/drivers/gabbor01-front.webp",
+   "card": "/media/drivers/gabbor01-card.webp",
+   "number": "/media/drivers/gabbor01-number.webp",
+   "head": "/media/drivers/gabbor01-head.webp"
+  },
+  "sainz": {
+   "team": "williams",
+   "front": "/media/drivers/carsai01-front.webp",
+   "card": "/media/drivers/carsai01-card.webp",
+   "number": "/media/drivers/carsai01-number.webp",
+   "head": "/media/drivers/carsai01-head.webp"
+  },
+  "albon": {
+   "team": "williams",
+   "front": "/media/drivers/alealb01-front.webp",
+   "card": "/media/drivers/alealb01-card.webp",
+   "number": "/media/drivers/alealb01-number.webp",
+   "head": "/media/drivers/alealb01-head.webp"
+  },
+  "alonso": {
+   "team": "aston_martin",
+   "front": "/media/drivers/feralo01-front.webp",
+   "card": "/media/drivers/feralo01-card.webp",
+   "number": "/media/drivers/feralo01-number.webp",
+   "head": "/media/drivers/feralo01-head.webp"
+  },
+  "stroll": {
+   "team": "aston_martin",
+   "front": "/media/drivers/lanstr01-front.webp",
+   "card": "/media/drivers/lanstr01-card.webp",
+   "number": "/media/drivers/lanstr01-number.webp",
+   "head": "/media/drivers/lanstr01-head.webp"
+  },
+  "perez": {
+   "team": "cadillac",
+   "front": "/media/drivers/serper01-front.webp",
+   "card": "/media/drivers/serper01-card.webp",
+   "number": "/media/drivers/serper01-number.webp",
+   "head": "/media/drivers/serper01-head.webp"
+  },
+  "bottas": {
+   "team": "cadillac",
+   "front": "/media/drivers/valbot01-front.webp",
+   "card": "/media/drivers/valbot01-card.webp",
+   "number": "/media/drivers/valbot01-number.webp",
+   "head": "/media/drivers/valbot01-head.webp"
+  },
+  "tsunoda": {
+   "team": "rb",
+   "front": "/media/drivers/yuktsu01-front.webp",
+   "card": "/media/drivers/yuktsu01-card.webp",
+   "number": "/media/drivers/yuktsu01-number.webp",
+   "head": "/media/drivers/yuktsu01-head.webp"
+  }
+ },
+ "circuits": {
+  "albert_park": {
+   "map": "/media/circuits/albert_park-map.webp",
+   "hero": "/media/circuits/albert_park-hero.webp"
+  },
+  "shanghai": {
+   "map": "/media/circuits/shanghai-map.webp",
+   "hero": "/media/circuits/shanghai-hero.webp"
+  },
+  "suzuka": {
+   "map": "/media/circuits/suzuka-map.webp",
+   "hero": "/media/circuits/suzuka-hero.webp"
+  },
+  "miami": {
+   "map": "/media/circuits/miami-map.webp",
+   "hero": "/media/circuits/miami-hero.webp"
+  },
+  "villeneuve": {
+   "map": "/media/circuits/villeneuve-map.webp",
+   "hero": "/media/circuits/villeneuve-hero.webp"
+  },
+  "monaco": {
+   "map": "/media/circuits/monaco-map.webp",
+   "hero": "/media/circuits/monaco-hero.webp"
+  },
+  "catalunya": {
+   "map": "/media/circuits/catalunya-map.webp",
+   "hero": "/media/circuits/catalunya-hero.webp"
+  },
+  "red_bull_ring": {
+   "map": "/media/circuits/red_bull_ring-map.webp",
+   "hero": "/media/circuits/red_bull_ring-hero.webp"
+  },
+  "silverstone": {
+   "map": "/media/circuits/silverstone-map.webp",
+   "hero": "/media/circuits/silverstone-hero.webp"
+  },
+  "spa": {
+   "map": "/media/circuits/spa-map.webp",
+   "hero": "/media/circuits/spa-hero.webp"
+  },
+  "hungaroring": {
+   "map": "/media/circuits/hungaroring-map.webp",
+   "hero": "/media/circuits/hungaroring-hero.webp"
+  },
+  "zandvoort": {
+   "map": "/media/circuits/zandvoort-map.webp",
+   "hero": "/media/circuits/zandvoort-hero.webp"
+  },
+  "monza": {
+   "map": "/media/circuits/monza-map.webp",
+   "hero": "/media/circuits/monza-hero.webp"
+  },
+  "madring": {
+   "map": "/media/circuits/madring-map.webp",
+   "hero": "/media/circuits/madring-hero.webp"
+  },
+  "baku": {
+   "map": "/media/circuits/baku-map.webp",
+   "hero": "/media/circuits/baku-hero.webp"
+  },
+  "sepang": {
+   "map": "/media/circuits/sepang-map.webp",
+   "hero": "/media/circuits/sepang-hero.webp"
+  },
+  "marina_bay": {
+   "map": "/media/circuits/marina_bay-map.webp",
+   "hero": "/media/circuits/marina_bay-hero.webp"
+  },
+  "americas": {
+   "map": "/media/circuits/americas-map.webp",
+   "hero": "/media/circuits/americas-hero.webp"
+  },
+  "rodriguez": {
+   "map": "/media/circuits/rodriguez-map.webp",
+   "hero": "/media/circuits/rodriguez-hero.webp"
+  },
+  "interlagos": {
+   "map": "/media/circuits/interlagos-map.webp",
+   "hero": "/media/circuits/interlagos-hero.webp"
+  },
+  "vegas": {
+   "map": "/media/circuits/vegas-map.webp",
+   "hero": "/media/circuits/vegas-hero.webp"
+  },
+  "losail": {
+   "map": "/media/circuits/losail-map.webp",
+   "hero": "/media/circuits/losail-hero.webp"
+  },
+  "yas_marina": {
+   "map": "/media/circuits/yas_marina-map.webp",
+   "hero": "/media/circuits/yas_marina-hero.webp"
+  },
+  "bahrain": {
+   "map": "/media/circuits/bahrain-map.webp",
+   "hero": "/media/circuits/bahrain-hero.webp"
+  },
+  "jeddah": {
+   "map": "/media/circuits/jeddah-map.webp"
+  },
+  "imola": {
+   "map": "/media/circuits/imola-map.webp",
+   "hero": "/media/circuits/imola-hero.webp"
+  }
+ }
+}

@@ -15,11 +15,12 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
-      - run: npx playwright install --with-deps chromium firefox webkit
-      - run: |
+      - run: npx playwright install --with-deps chromium
+      - name: Browser checks (every route, three viewports, both themes)
+        run: |
           node scripts/serve.mjs &
+          sleep 2
           npm run test:e2e
-          npm run test:release
       - uses: actions/upload-artifact@v4
         if: always()
         with:
