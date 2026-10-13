@@ -89,10 +89,12 @@ export function resolveUpstream(url) {
     )
       throw Error("Invalid pagination");
     q.set("limit", String(Math.min(100, limit)));
+    // Completed seasons never change, so they can be cached at the edge for a day.
+    const year = Number(path.match(/^(\d{4})\//)?.[1]);
     return {
       kind,
       url: new URL("https://api.jolpi.ca/ergast/f1/" + path + "?" + q),
-      ttl: 600,
+      ttl: year && year < new Date().getUTCFullYear() ? 86400 : 600,
     };
   }
   if (kind === "openf1") {
@@ -224,13 +226,20 @@ async function getData(spec) {
       "This session is not available in the free historical archive.",
       403,
     );
-  const r = await fetch(spec.url, {
-    headers: {
-      Accept: spec.kind === "news" ? "application/xml" : "application/json",
-      "User-Agent": "F1Pulse/2.0 (independent noncommercial fan site)",
-    },
-    signal: AbortSignal.timeout(20000),
-  });
+  const upstream = () =>
+    fetch(spec.url, {
+      headers: {
+        Accept: spec.kind === "news" ? "application/xml" : "application/json",
+        "User-Agent": "F1Pulse/3.0 (independent noncommercial fan site)",
+      },
+      signal: AbortSignal.timeout(20000),
+    });
+  let r = await upstream();
+  // Ride out short upstream rate-limit bursts once before reporting them.
+  if (r.status === 429) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    r = await upstream();
+  }
   if (r.status === 404 && spec.kind === "openf1")
     return Response.json(
       {

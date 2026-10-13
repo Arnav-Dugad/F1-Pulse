@@ -47,14 +47,14 @@ export async function request<T>(
       saved = JSON.parse(sessionStorage.getItem(url) || "null");
     } catch {}
     let error: Error | undefined;
-    for (let attempt = 0; attempt < 2; attempt++) {
+    for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const r = await fetch(url, { signal: AbortSignal.timeout(25000) });
         const data = await r.json();
         if (!r.ok) {
           error = new Error(data.error || `Source returned ${r.status}`);
-          if (r.status === 429 && attempt === 0) {
-            await new Promise((r) => setTimeout(r, 2500));
+          if (r.status === 429 && attempt < 2) {
+            await new Promise((r) => setTimeout(r, attempt ? 7000 : 2500));
             continue;
           }
           throw error;

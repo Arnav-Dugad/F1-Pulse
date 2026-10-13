@@ -31,7 +31,8 @@ for (const [device, viewport] of Object.entries(viewports)) {
       await page.goto(`${base}/#/${route}`);
       await page.waitForSelector("h1", { timeout: 30000 }).catch(() => {});
       // Let data arrive; skeletons should resolve into content or explicit states.
-      await page.waitForFunction(() => !document.querySelector(".skeleton, .route-loading"), null, { timeout: 45000 }).catch(() => {});
+      // Poll with evaluate (CDP) rather than waitForFunction, which evaluates strings and trips the site's CSP.
+      for (let t = 0; t < 90 && (await page.evaluate(() => !!document.querySelector(".skeleton, .route-loading"))); t++) await page.waitForTimeout(500);
       await page.evaluate(async () => {
         for (let y = 0; y < document.body.scrollHeight; y += 600) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 60)); }
         document.querySelectorAll(".reveal").forEach((e) => e.classList.add("in"));
