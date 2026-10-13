@@ -44,6 +44,7 @@ function teamProfileEsc(value) {
             return;
         }
 
+        PulseUI.registerData({ drivers: driverStandings, teams: constructorStandings });
         const constructorIdRaw = item.Constructor.constructorId;
         const teamId = resolveTeamId(constructorIdRaw) || constructorIdRaw || '';
         const teamName = getTeamName(constructorIdRaw);
@@ -128,7 +129,7 @@ function teamProfileEsc(value) {
             subtitle.textContent = teamName;
         }
 
-        main.innerHTML = `
+        main.innerHTML = `${PulseUI.actions('team', constructorIdRaw, teamName)}
             <section class="team-car-hero" style="--team:${teamColor};--team-top:${teamProfileEsc(gradient.top)};--team-mid:${teamProfileEsc(gradient.mid)};--team-bottom:${teamProfileEsc(gradient.bottom)}">
                 <div class="team-car-hero-art">
                     <div class="team-car-hero-wrap">

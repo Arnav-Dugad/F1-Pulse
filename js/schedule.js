@@ -102,6 +102,7 @@ async function loadSeason(season) {
         const races = await F1API.getSchedule(season);
         if (loadToken !== scheduleLoadToken) return;
         allRaces = races;
+        PulseUI.registerData({ schedule: races });
 
         // Fetch circuit images in background (don't await - let them load as cards render)
         Promise.allSettled(allRaces.map(r => fetchCircuitImage(r.Circuit?.url, r.Circuit?.circuitName))).then(() => {
@@ -114,6 +115,7 @@ async function loadSeason(season) {
         if (select) select.value = season;
         document.getElementById('season-label').textContent = `${season === 'current' ? new Date().getFullYear() : season} Season — ${allRaces.length} Races`;
         renderScheduleAnalytics();
+        PulseUI.fold(document.getElementById('schedule-analytics'), 'Calendar distribution based on the published season schedule.');
         renderRaces();
     } catch (err) {
         if (loadToken !== scheduleLoadToken) return;
@@ -179,7 +181,12 @@ function renderRaces() {
 
     const now = new Date();
     const nowMs = now.getTime();
-    const races = allRaces;
+    const preferences = typeof PulseStore !== 'undefined' ? PulseStore.read('race-filters', {}) : {};
+    const races = allRaces.filter(race => {
+        const text = `${race.raceName} ${race.Circuit?.circuitName} ${race.Circuit?.Location?.country}`.toLowerCase();
+        const past = Date.parse(`${race.date}T${race.time || '23:59:59Z'}`) < nowMs - 4 * 3600000;
+        return (!preferences.query || text.includes(String(preferences.query).toLowerCase())) && (!preferences.status || (preferences.status === 'past' ? past : !past)) && (!preferences.sprint || !!race.Sprint);
+    });
 
     if (!races.length) {
         container.innerHTML = `<div class="error-state" style="grid-column:1/-1"><div class="error-icon">${SVG_ICONS.calendar}</div><div class="error-message">No races found for this season.</div></div>`;
@@ -214,7 +221,7 @@ function renderRaces() {
         const nextIdAttr = isNext ? ' id="next-race-card"' : '';
 
         return `
-        <a href="race-detail.html?season=${r.season}&round=${r.round}"${nextIdAttr} class="race-card ${isPast ? 'past' : ''} ${isNext ? 'next' : ''}">
+        <article${nextIdAttr} class="race-card ${isPast ? 'past' : ''} ${isNext ? 'next' : ''}"><a href="race-detail.html?season=${r.season}&round=${r.round}" class="race-card-link">
             <span class="race-card-round">R${r.round}</span>
             <div class="race-card-body">
                 <div class="race-card-flag">${flag}</div>
@@ -230,13 +237,23 @@ function renderRaces() {
                 ${isNext ? '<div style="margin-top:8px"><span class="badge badge-red">Next Race</span></div>' : ''}
                 ${isPast ? '<div style="margin-top:8px"><span class="badge badge-green">Completed</span></div>' : ''}
             </div>
-        </a>`;
+        </a>${typeof PulseUI !== 'undefined' ? PulseUI.actions('race', `${r.season}:${r.round}`, r.raceName) : ''}${isPast && Number(r.season) >= 2023 ? `<a class="section-link" href="replay.html?season=${r.season}&round=${r.round}">Replay this race →</a>` : ''}</article>`;
     }).join('');
 }
 
 (async function () {
     initPage('schedule');
     const controls = ensureScheduleFeatureControls();
+
+    const filter = document.createElement('div'); filter.className = 'filter-bar';
+    const savedFilters = PulseStore.read('race-filters', {});
+    filter.innerHTML = `<label class="field grow"><span>Search races</span><input id="race-search" type="search" placeholder="Grand Prix, circuit or country" value="${PulseLab.esc(savedFilters.query || '')}"></label><label class="field"><span>Race status</span><select id="race-filter-status"><option value="">All races</option><option value="upcoming">Upcoming</option><option value="past">Completed</option></select></label><label class="check-field"><input id="race-filter-sprint" type="checkbox" ${savedFilters.sprint ? 'checked' : ''}> Sprint weekends</label><button class="text-button" id="reset-race-filters">Reset filters</button><p id="race-active-filters" class="active-filters" aria-live="polite"></p>`;
+    document.getElementById('races-container').insertAdjacentElement('beforebegin', filter);
+    filter.querySelector('select').value = savedFilters.status || '';
+    const apply = () => { const values = { query: filter.querySelector('input[type="search"]').value, status: filter.querySelector('select').value, sprint: filter.querySelector('input[type="checkbox"]').checked }; PulseStore.write('race-filters', values); filter.querySelector('.active-filters').textContent = `${values.query ? `Search: ${values.query} · ` : ''}${values.status ? values.status === 'past' ? 'Completed · ' : 'Upcoming · ' : ''}${values.sprint ? 'Sprint weekends' : 'All weekend formats'}`; renderRaces(); };
+    filter.querySelectorAll('input,select').forEach(input => input.addEventListener(input.type === 'search' ? 'input' : 'change', apply));
+    filter.querySelector('button').addEventListener('click', () => { filter.querySelector('input[type="search"]').value = ''; filter.querySelector('select').value = ''; filter.querySelector('input[type="checkbox"]').checked = false; apply(); });
+    apply();
 
     // Populate season selector
     const select = document.getElementById('season-select');

@@ -6,6 +6,7 @@ let currentView = 'grid';
 let standingsData = [];
 let enriched = {};
 let openedModalFromQuery = false;
+let driverFilterController = null;
 
 function switchView(view) {
     currentView = view;
@@ -13,6 +14,7 @@ function switchView(view) {
         const active = button.dataset.view === view;
         button.classList.toggle('active', active);
         button.setAttribute('aria-selected', String(active));
+        button.setAttribute('tabindex', active ? '0' : '-1');
     });
     document.getElementById('drivers-grid').style.display = view === 'grid' ? '' : 'none';
     document.getElementById('drivers-table').style.display = view === 'table' ? '' : 'none';
@@ -61,18 +63,24 @@ function switchView(view) {
         }
 
         renderDriverAnalytics(standingsData);
-        renderGrid(standingsData);
-        renderTable(standingsData);
+        PulseUI.registerData({ drivers: standingsData, teams: constructorStandings });
+        driverFilterController = PulseUI.setupFilters('driver', standingsData, document.getElementById('view-tabs'), rows => {
+            renderGrid(rows); renderTable(rows);
+        });
         renderDriversCompareTool(standingsData);
         openDriverFromQueryIfNeeded(standingsData);
         renderDriverFormTrends(standingsData).catch(() => {});
+        PulseUI.fold(analytics, 'Published standings, points share and wins. These are descriptive statistics, not predictions.');
+        PulseUI.fold(compare, 'Compare two drivers using the same season totals.');
+        PulseUI.fold(formTrends, 'Recent classifications include retirements. Consistency is a descriptive score based on variation, not a probability.');
     } catch (err) {
         showError(grid, 'Failed to load driver standings. Please try again.', 'location.reload()');
         console.error(err);
     }
 
     function renderGrid(standings) {
-        const maxPoints = parseFloat(standings[0]?.points) || 1;
+        const maxPoints = parseFloat(standingsData[0]?.points) || 1;
+        if (!standings.length) { grid.innerHTML = '<p class="notice">No drivers match your filters. Reset filters to see the complete field.</p>'; return; }
 
         grid.innerHTML = standings.map((s, i) => {
             const d = s.Driver;
@@ -81,10 +89,10 @@ function switchView(view) {
             const teamCar = teamCarHTML(cId);
             const wins = parseInt(s.wins) || 0;
             const pctWidth = Math.round((parseFloat(s.points) / maxPoints) * 100);
-            const gap = i > 0 ? (parseFloat(s.points) - parseFloat(standings[0].points)).toFixed(0) : '';
+            const gap = i > 0 ? (parseFloat(s.points) - parseFloat(standingsData[0].points)).toFixed(0) : '';
 
             return `
-            <div class="driver-card" onclick="openDriverModal('${d.driverId}', '${cId}')" style="cursor:pointer">
+            <article class="driver-card">
                 <div class="team-stripe" style="background:${teamColor}"></div>
                 <span class="driver-position ${parseInt(s.position) <= 3 ? 'pos-top-' + s.position : ''}">${String(s.position).padStart(2, '0')}</span>
                 <div class="driver-card-img">
@@ -104,7 +112,7 @@ function switchView(view) {
                         ${teamLogoSmallHTML(cId)}
                         ${getTeamName(cId)}
                     </div>
-                    ${teamCar ? `<div class="driver-card-car">${teamCar}</div>` : ''}
+
                     <div class="driver-card-points">
                         <span class="points-value">${s.points}</span>
                         <span class="points-label">PTS</span>
@@ -114,15 +122,17 @@ function switchView(view) {
                         <div class="points-progress-fill" style="width:${pctWidth}%;background:${teamColor}"></div>
                     </div>
                     <div class="driver-card-meta">
-                        ${gap ? `<span class="driver-meta-item">${gap} pts to P1</span>` : '<span class="driver-meta-item" style="color:var(--f1-success)">Championship Leader</span>'}
+                        ${s.position !== '1' ? `<span class="driver-meta-item">${Math.max(0, Number(standingsData[0]?.points || 0) - Number(s.points))} pts behind the leader</span>` : '<span class="driver-meta-item">Championship leader</span>'}
                     </div>
+                    ${PulseUI.actions('driver', d.driverId, PulseLab.fullName(d))}
+                    <details class="card-details"><summary>Quick profile</summary><dl class="quick-facts"><div><dt>Born</dt><dd>${d.dateOfBirth ? formatDate(d.dateOfBirth) : 'Unknown'}</dd></div><div><dt>Number</dt><dd>#${d.permanentNumber || '—'}</dd></div><div><dt>Wins</dt><dd>${wins}</dd></div><div><dt>Code</dt><dd>${d.code || '—'}</dd></div></dl><button type="button" class="text-button" onclick="openDriverModal('${d.driverId}', '${cId}')">Full race statistics →</button><a class="section-link" href="driver-profile.html?driver=${encodeURIComponent(d.driverId)}">Biography →</a></details>
                 </div>
-            </div>`;
+            </article>`;
         }).join('');
     }
 
     function renderTable(standings) {
-        const leaderPts = parseFloat(standings[0]?.points) || 0;
+        const leaderPts = parseFloat(standingsData[0]?.points) || 0;
 
         table.innerHTML = `
             <div class="table-wrapper">
@@ -469,8 +479,9 @@ function switchView(view) {
             if (data?.length) {
                 standingsData = data;
                 renderDriverAnalytics(data);
-                renderGrid(data);
-                renderTable(data);
+                PulseUI.registerData({ drivers: data });
+                if (driverFilterController) driverFilterController.setRows(data);
+                else { renderGrid(data); renderTable(data); }
                 renderDriversCompareTool(data);
                 await renderDriverFormTrends(data);
                 openDriverFromQueryIfNeeded(data);

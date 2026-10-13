@@ -503,6 +503,9 @@ function switchTab(tab) {
 
         renderRaceHeader(raceInfo);
         renderRaceActions(raceInfo);
+        PulseUI.registerData({ schedule: [raceInfo], races: race ? [race] : [] });
+        const actions = document.querySelector('.race-action-buttons');
+        if (actions && !document.getElementById('race-replay-link') && hasRaceResults && Number(raceInfo.season) >= 2023) actions.insertAdjacentHTML('beforeend', `<a id="race-replay-link" class="ui-btn ui-btn-primary" href="replay.html?season=${raceInfo.season}&round=${raceInfo.round}">Replay this race</a>`);
         renderRaceCountdown(raceInfo, {
             includeWeekendSchedule: isUpcomingRace,
             includeUpcomingNotice: isUpcomingRace,
@@ -520,6 +523,8 @@ function switchTab(tab) {
         );
         renderHistoricalComparison(raceInfo);
         reorderRaceDetailSections();
+        PulseUI.fold(document.getElementById('gp-history-section'), 'Explore prior seasons for the same circuit or named Grand Prix.');
+        PulseUI.fold(document.getElementById('track-intel-section'), 'Published circuit details and contextual notes.');
 
         if (hasRaceResults || hasQualResults || hasSprintResults) {
             const tabs = document.getElementById('result-tabs');

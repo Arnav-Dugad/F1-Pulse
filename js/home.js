@@ -27,6 +27,7 @@
         enrichmentPromise,
     ]);
     const enrichedDrivers = safeValue(enrichedResult) || {};
+    PulseUI.registerData({ drivers: safeValue(driverStandings) || [], teams: safeValue(constructorStandings) || [], schedule: safeValue(schedule) || [], races: safeValue(lastRace) ? [safeValue(lastRace)] : [] });
     if (nextRace.status !== 'fulfilled') renderHero(null);
     renderQuickStats(safeValue(lastRace), safeValue(driverStandings), safeValue(schedule), enrichedDrivers, safeValue(finishingStatus));
     renderSeasonProgress(safeValue(schedule));

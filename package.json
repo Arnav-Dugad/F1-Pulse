@@ -6,7 +6,8 @@
     "build": "node scripts/build.mjs",
     "dev": "npm run build && wrangler dev",
     "deploy": "npm run build && wrangler deploy",
-    "test": "node tests/smoke.cjs && node --test tests/*.test.mjs tests/*.test.cjs"
+    "test": "node tests/smoke.cjs && node --test tests/*.test.mjs tests/*.test.cjs",
+    "test:local": "node --test tests/local-companion.check.cjs"
   },
   "devDependencies": {
     "wrangler": "4.149.0"

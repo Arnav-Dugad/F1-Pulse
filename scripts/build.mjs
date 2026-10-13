@@ -9,4 +9,6 @@ const files = (await readdir(root)).filter((file) => /\.(html|png|svg|webmanifes
 for (const file of [...files, 'css', 'js', 'icons', 'data']) {
     await cp(resolve(root, file), resolve(output, file), { recursive: true });
 }
+await mkdir(resolve(output, 'downloads'));
+await cp(resolve(root, 'downloads/f1-pulse-local.py'), resolve(output, 'downloads/f1-pulse-local.py'));
 console.log(`Built F1 Pulse: ${files.length} public files plus CSS, JavaScript and icons.`);

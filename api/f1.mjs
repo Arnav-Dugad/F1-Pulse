@@ -23,6 +23,9 @@ const OPENF1_ENDPOINTS = new Set([
     'team_radio',
     'location',
     'car_data',
+    'overtakes',
+    'session_result',
+    'starting_grid',
 ]);
 
 export const config = {

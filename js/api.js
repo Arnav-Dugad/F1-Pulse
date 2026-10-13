@@ -15,6 +15,7 @@ const F1API = (() => {
     const requestQueue = [];
     let activeRequests = 0;
     let nextJolpicaRequestAt = 0;
+    const openRequestTimes = [];
 
     // Keep navigation, optional analytics and telemetry from flooding the providers.
     async function withRequestSlot(task, url) {
@@ -24,6 +25,15 @@ const F1API = (() => {
             if (url.startsWith(JOLPICA_BASE)) {
                 const start = Math.max(Date.now(), nextJolpicaRequestAt);
                 nextJolpicaRequestAt = start + 350;
+                const delay = start - Date.now();
+                if (delay > 0) await new Promise(resolve => setTimeout(resolve, delay));
+            }
+            if (url.startsWith(OPENF1_BASE)) {
+                // Free archive: at most three requests/second and thirty/minute.
+                const start = Math.max(Date.now(), (openRequestTimes.at(-1) || 0) + 350,
+                    openRequestTimes.length >= 30 ? openRequestTimes[openRequestTimes.length - 30] + 60100 : 0);
+                openRequestTimes.push(start);
+                if (openRequestTimes.length > 30) openRequestTimes.shift();
                 const delay = start - Date.now();
                 if (delay > 0) await new Promise(resolve => setTimeout(resolve, delay));
             }
@@ -358,23 +368,29 @@ const F1API = (() => {
         return data?.MRData?.DriverTable?.Drivers?.[0] || null;
     }
 
-    async function getSeasonResults(season = 'current') {
-        const key = season;
+    async function getSeasonSessions(season = 'current', type = 'results') {
+        const field = { results: 'Results', sprint: 'SprintResults', qualifying: 'QualifyingResults' }[type];
+        if (!field) throw new Error('Unsupported season session');
         const races = new Map();
-        let offset = 0;
-        let total = 0;
+        let offset = 0, total = 0;
         do {
-            const data = await fetchJSON(`${JOLPICA_BASE}/${key}/results.json?limit=1000&offset=${offset}`, CACHE_DURATION);
-            for (const race of data?.MRData?.RaceTable?.Races || []) {
+            const data = await fetchJSON(`${JOLPICA_BASE}/${season}/${type}.json?limit=1000&offset=${offset}`, CACHE_DURATION);
+            const batch = data?.MRData?.RaceTable?.Races || [];
+            for (const race of batch) {
                 const existing = races.get(race.round);
-                if (existing) existing.Results.push(...race.Results);
-                else races.set(race.round, { ...race, Results: [...(race.Results || [])] });
+                if (existing) existing[field].push(...(race[field] || []));
+                else races.set(race.round, { ...race, [field]: [...(race[field] || [])] });
             }
             total = Number(data?.MRData?.total) || 0;
-            offset += Math.max(1, Number(data?.MRData?.limit) || 1000);
+            const step = Math.max(1, Number(data?.MRData?.limit) || 1000);
+            if (!batch.length && offset < total) throw new Error('The provider returned an incomplete season page');
+            offset += step;
         } while (offset < total);
         return [...races.values()].sort((a, b) => Number(a.round) - Number(b.round));
     }
+    async function getSeasonResults(season = 'current') { return getSeasonSessions(season, 'results'); }
+    async function getSeasonSprints(season = 'current') { return getSeasonSessions(season, 'sprint'); }
+    async function getSeasonQualifying(season = 'current') { return getSeasonSessions(season, 'qualifying'); }
 
     async function getDriverSeasonResults(season, driverId) {
         const races = await getSeasonResults(season);
@@ -533,6 +549,12 @@ const F1API = (() => {
         return data || [];
     }
 
+    async function getOpenF1Archive(endpoint, params = {}) {
+        if (!['drivers', 'laps', 'position', 'intervals', 'stints', 'pit', 'race_control', 'overtakes', 'location', 'weather', 'sessions', 'meetings'].includes(endpoint)) throw new Error('Unsupported archive endpoint');
+        const query = new URLSearchParams(params).toString();
+        return fetchJSON(`${OPENF1_BASE}/${endpoint}?${query}`, CACHE_DURATION_LONG);
+    }
+
     // ========================================
     // Wikipedia REST API (for team logos)
     // ========================================
@@ -680,6 +702,9 @@ const F1API = (() => {
         getDriverInfo,
         getDriverSeasonResults,
         getSeasonResults,
+        getSeasonSprints,
+        getSeasonQualifying,
+        getOpenF1Archive,
         getConstructors,
         getFinishingStatus,
         getOpenF1Drivers,

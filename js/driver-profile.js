@@ -46,6 +46,7 @@ function driverProfileEsc(value) {
             return;
         }
 
+        PulseUI.registerData({ drivers: driverStandings, teams: constructorStandings });
         const d = item.Driver;
         const constructorIdRaw = item.Constructors?.[0]?.constructorId || teamParam;
         const teamId = resolveTeamId(constructorIdRaw) || constructorIdRaw || '';
@@ -72,7 +73,7 @@ function driverProfileEsc(value) {
             subtitle.textContent = displayName;
         }
 
-        main.innerHTML = `
+        main.innerHTML = `${PulseUI.actions('driver', d.driverId, displayName)}
             <section class="driver-brand-hero" style="--team:${teamColor};--team-top:${driverProfileEsc(gradient.top)};--team-mid:${driverProfileEsc(gradient.mid)};--team-bottom:${driverProfileEsc(gradient.bottom)}">
                 <div class="driver-brand-left">
                     <p class="driver-brand-script">${driverProfileEsc(d.givenName || '')}</p>
