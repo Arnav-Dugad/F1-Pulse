@@ -6,3 +6,6 @@ dist/
 !*.example
 artifacts/
 .playwright-mcp/
+
+__pycache__/
+*.pyc

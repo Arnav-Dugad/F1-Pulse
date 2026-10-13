@@ -939,7 +939,7 @@ function formatLocalSessionStart(ts) {
 }
 
 function resolveActiveNavigationPage(activePage) {
-    return activePage === 'race' ? 'schedule' : activePage;
+    return activePage === 'race' ? 'schedule' : ['workspace', 'championship', 'replay', 'insights', 'about'].includes(activePage) ? 'explore' : activePage;
 }
 
 // --- Navigation ---
@@ -968,7 +968,7 @@ function buildNav(activePage) {
         { id: 'drivers', label: 'Drivers', href: 'drivers.html', icon: UI_ICONS.drivers },
         { id: 'teams', label: 'Teams', href: 'teams.html', icon: UI_ICONS.teams },
         { id: 'schedule', label: 'Schedule', href: 'schedule.html', icon: UI_ICONS.schedule },
-        { id: 'about', label: 'About', href: 'about.html', icon: UI_ICONS.about },
+        { id: 'explore', label: 'Explore', href: 'workspace.html', icon: UI_ICONS.about },
     ];
 
     const nav = document.getElementById('main-nav');
@@ -1013,7 +1013,7 @@ function createMobileNavigation(activePage) {
         { id: 'drivers', label: 'Drivers', href: 'drivers.html', icon: UI_ICONS.drivers },
         { id: 'schedule', label: 'Races', href: 'schedule.html', icon: UI_ICONS.flag },
         { id: 'teams', label: 'Teams', href: 'teams.html', icon: UI_ICONS.teams },
-        { id: 'about', label: 'Paddock', href: 'about.html', icon: UI_ICONS.about },
+        { id: 'explore', label: 'Explore', href: 'workspace.html', icon: UI_ICONS.about },
     ];
     const mobileNav = document.createElement('nav');
     mobileNav.id = 'mobile-nav';
@@ -1520,7 +1520,7 @@ function buildFooter() {
                 <a href="drivers.html">Drivers</a>
                 <a href="teams.html">Teams</a>
                 <a href="schedule.html">Schedule</a>
-                <a href="about.html">About</a>
+                <a href="workspace.html">Explore</a><a href="about.html">Profiles</a>
             </div>
         </div>`;
 }
@@ -2274,7 +2274,7 @@ function initPage(activePage) {
     buildNav(activePage);
     initPremiumExperience();
     createMobileNavigation(activePage);
-    createDriverBulletinStrip();
+    // The main navigation stays quiet; standings are available on their own page.
     buildFooter();
     injectGlobalPageVisualLayer(activePage);
     createPageBackButton(activePage);
@@ -2291,15 +2291,12 @@ function initPage(activePage) {
         notice.textContent = 'Showing previously saved data while the provider is unavailable. Rankings and results may be out of date.';
         document.querySelector('main')?.prepend(notice);
     });
-    if (desktopUtilities && activePage === 'home') {
-        createQuickActionsDock(activePage);
-    }
-    if (desktopUtilities) createFloatingStandingsWidget(activePage);
+    if (typeof PulseUI !== 'undefined') PulseUI.init(activePage);
     initConnectionStatus();
     registerF1PulseServiceWorker();
     initInteractiveCardAccessibility();
     initTabKeyboardNavigation();
-    initGlobalIconDecoration();
+    // Icons are explicit in each component, preventing duplicated labels.
     checkLiveSession();
     document.querySelectorAll('.nav-links a').forEach(link => {
         link.addEventListener('click', () => {

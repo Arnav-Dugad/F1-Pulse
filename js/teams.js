@@ -8,6 +8,7 @@
     const container = document.getElementById('teams-container');
     const tableSection = document.getElementById('table-section');
     const tableContainer = document.getElementById('teams-table');
+    let teamFilters = null;
 
     const TEAM_UI_ICONS = {
         leader: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M7 6H5a2 2 0 0 0 0 4h2"></path><path d="M17 6h2a2 2 0 0 1 0 4h-2"></path></svg>',
@@ -66,6 +67,10 @@
 
         state.constructorStandings = constructorStandings;
         state.teamDrivers = buildTeamDriversMap(driverStandings);
+        PulseUI.registerData({ drivers: driverStandings, teams: constructorStandings });
+        teamFilters = PulseUI.setupFilters('team', constructorStandings, container, renderCurrentView);
+        PulseUI.fold(tools.wrapper, 'Points distribution and recent race contributions. Missing results are never scored as zero.');
+        PulseUI.fold(tableSection, 'Published constructor standings in a compact table.');
         renderCurrentView();
         loadTeamFormData(true).then(renderCurrentView).catch(() => {});
     } catch (err) {
@@ -104,7 +109,7 @@
     }
 
     function getDisplayStandings() {
-        return [...state.constructorStandings].sort((a, b) => (parseFloat(b.points) || 0) - (parseFloat(a.points) || 0));
+        return PulseUI.filterRows('team', [...state.constructorStandings].sort((a, b) => Number(b.points) - Number(a.points)), PulseStore.read('filters:team', {}));
     }
 
     function getClosestBattle(standings) {
@@ -164,6 +169,7 @@
         renderTeamFormTrends(displayStandings);
         renderTeamCards(displayStandings, state.teamDrivers, state.constructorStandings);
         renderTable(displayStandings, state.constructorStandings);
+        if (!displayStandings.length) container.innerHTML = '<p class="notice">No teams match your filters. Reset filters to see all teams.</p>';
     }
 
     async function loadTeamFormData(force = false) {
@@ -373,6 +379,8 @@
                     <span class="team-metric-chip">${drivers.length} listed driver${drivers.length !== 1 ? 's' : ''}</span>
                 </div>
                 <div class="team-points-track"><span style="width:${progressWidth}%;background:${teamColor}"></span></div>
+                ${PulseUI.actions('team', cId, getTeamName(cId))}
+                <a class="section-link" href="team-profile.html?team=${encodeURIComponent(cId)}">Team profile →</a>
                 <div class="team-card-drivers">
                     ${displayDrivers.length ? displayDrivers.map(ds => {
                         const d = ds.Driver;
@@ -477,6 +485,8 @@
             if (cs?.length) {
                 await fetchTeamLogos(cs);
                 state.constructorStandings = cs;
+                PulseUI.registerData({ teams: cs, drivers: ds });
+                if (teamFilters) teamFilters.setRows(cs);
                 state.teamDrivers = buildTeamDriversMap(ds);
                 await loadTeamFormData(false);
                 renderCurrentView();

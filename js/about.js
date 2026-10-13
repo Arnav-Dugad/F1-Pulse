@@ -46,6 +46,7 @@ function aboutEsc(value) {
         state.season = driverStandings?.[0]?.season || constructorStandings?.[0]?.season || new Date().getFullYear();
 
         subtitle.textContent = `${state.season} visual index for all drivers and teams. Click any card to open full profile.`;
+        PulseUI.registerData({ drivers: state.drivers, teams: state.teams });
         renderOverview();
         if (!state.drivers.length) showError(driverGrid, 'Driver overview is temporarily unavailable.', 'location.reload()');
         if (!state.teams.length) showError(teamGrid, 'Team overview is temporarily unavailable.', 'location.reload()');

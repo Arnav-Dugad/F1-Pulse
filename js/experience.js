@@ -14,7 +14,11 @@ function initPremiumExperience() {
         ['Drivers', 'Driver standings, profiles and comparisons', 'drivers.html'],
         ['Teams', 'Constructor championship and team profiles', 'teams.html'],
         ['Schedule', 'Race calendar, session times and calendar exports', 'schedule.html'],
-        ['Paddock', 'Explore drivers, teams and the world of Formula 1', 'about.html'],
+        ['Explore', 'Replay, championship scenarios and personal insights', 'workspace.html'],
+        ['Race Replay', 'Historical circuit replay and synchronized comparisons', 'replay.html'],
+        ['Championship Lab', 'What-if scenarios, points history and title bounds', 'championship.html'],
+        ['Insights', 'Race briefings, explanations and forecast evaluation', 'insights.html'],
+        ['Profiles', 'Driver biographies and team stories', 'about.html'],
     ];
     const dialog = document.createElement('dialog');
     dialog.className = 'page-finder';

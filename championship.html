@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Pulse — Championship Lab</title>
+    <meta name="description" content="Published history, transparent title bounds and a sandbox for your own scenarios.">
+    <meta name="theme-color" content="#07080c">
+    <meta name="color-scheme" content="dark light">
+    <meta name="application-name" content="F1 Pulse">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="F1 Pulse — Championship Lab">
+    <meta property="og:description" content="Published history, transparent title bounds and a sandbox for your own scenarios.">
+    <meta property="og:image" content="/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="/og.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://flagcdn.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="js/preferences.js"></script>
+    <link rel="stylesheet" href="css/core.css">
+    <link rel="stylesheet" href="css/premium.css">
+    <link rel="stylesheet" href="css/mobile.css" media="(max-width: 760px)">
+    <link rel="stylesheet" href="css/finish.css">
+    <link rel="stylesheet" href="css/polish.css">
+</head>
+<body>
+    <nav id="main-nav"></nav>
+    <main class="page-content"><div class="container">
+        <header class="page-header"><p class="eyebrow">F1 Pulse / Explore</p><h1>Championship Lab</h1><p class="subtitle">Published history, transparent title bounds and a sandbox for your own scenarios.</p></header>
+        
+<form id="championship-form" class="lab-card controls-row"><label class="field"><span>Season</span><select id="lab-season" aria-label="Championship season"></select></label><button class="ui-btn ui-btn-primary" type="submit">Load championship</button><span class="status-pill">Historical records + scenarios</span></form>
+<p id="championship-status" class="notice" role="status">Loading the championship…</p>
+<div id="championship-content" hidden>
+    <div id="title-stats" class="stat-strip"></div>
+    <section class="lab-card"><div class="section-header"><h2>Championship through the season</h2><button class="text-button" data-open-glossary="Countback">How countback works</button></div><div class="controls-row"><button id="history-play" class="ui-btn ui-btn-secondary">Play history</button><label class="field grow"><span id="history-label">Round</span><input type="range" id="history-slider" min="0" value="0" step="1" aria-label="Championship event"></label></div><div id="history-chart"></div><p id="history-explanation" class="chart-explanation"></p><div id="history-standings" class="table-wrapper"></div><p class="muted small">History sums recorded race and sprint points. Provider corrections or penalties may differ from the published championship totals.</p></section>
+    <div class="lab-columns"><section class="lab-card"><h2>Title possibilities</h2><p class="muted small">Full-distance race and sprint awards. Equal points still require countback. Pending results are not treated as future races.</p><div id="title-bounds" class="table-wrapper"></div></section><section class="lab-card"><h2>Lead changes</h2><div id="lead-history"></div><details class="method-note"><summary>What does the largest lead measure?</summary><p>The points gap between first and second after each published race or sprint. Unrecorded championship adjustments are excluded.</p></details></section></div>
+    <section class="lab-card"><div class="section-header"><h2>Scenario sandbox</h2><span class="status-pill">Hypothetical · not a prediction</span></div><p class="muted small">Assign unique finishing positions in the remaining sessions. “No points” can be used for multiple drivers. Untouched sessions award nobody additional points.</p><div class="controls-row"><label class="field wide-field"><span>Session to edit</span><select id="scenario-session"></select></label><button class="ui-btn ui-btn-secondary" id="scenario-fill">Use current standings order</button><button class="text-button" id="scenario-clear">Reset scenario</button></div><p id="scenario-errors" class="notice error-notice" role="status" hidden></p><div class="lab-columns"><div id="scenario-editor" class="table-wrapper scenario-table"></div><div><h3>Projected standings</h3><div id="scenario-output" class="table-wrapper"></div><p class="muted small">Race countback is applied. An unresolved tie is shown as a tie; qualifying countback has not been loaded.</p></div></div></section>
+    <section class="lab-card"><div class="section-header"><h2>Where the points came from</h2><button class="text-button" id="show-point-ledger">View source rows</button></div><div id="points-breakdown" class="table-wrapper"></div><p class="muted small">“Difference” means published total minus the race and sprint rows retrieved. It is not automatically a penalty.</p></section>
+    <section class="lab-card"><h2>Constructor contributions</h2><p class="muted small">Points are assigned to the constructor recorded in each result, including drivers who changed teams.</p><div id="constructor-contributions"></div></section>
+</div>
+    </div></main>
+    <footer id="main-footer"></footer>
+    <script src="js/api.js"></script><script src="js/experience.js"></script><script src="js/lab-core.js"></script><script src="js/pulse-ui.js"></script><script src="js/components.js"></script><script src="js/race-data.js"></script><script src="js/championship.js"></script>
+</body></html>
