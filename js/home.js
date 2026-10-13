@@ -415,7 +415,9 @@
         const section = document.getElementById('latest-results-section');
         const container = document.getElementById('latest-results');
         const link = document.getElementById('latest-results-link');
-        if (!race?.Results?.length) return;
+        if (!race?.Results?.length) {
+            section.style.display = ''; container.innerHTML = '<p class="notice">The latest classification is temporarily unavailable. Open the calendar to browse published race results.</p>'; link.href = 'schedule.html'; return;
+        }
 
         section.style.display = '';
         link.href = `race-detail.html?season=${race.season}&round=${race.round}`;

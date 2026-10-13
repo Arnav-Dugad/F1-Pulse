@@ -140,3 +140,18 @@ option { color:var(--f1-white); background:var(--f1-surface); }
 .session-time { font-size:14px!important; line-height:1.65!important; }.setup-steps { list-style:decimal; padding-left:20px; display:grid; gap:8px; margin-block:14px; }.setup-steps code { background:var(--f1-surface-2); padding:3px 5px; border-radius:4px; font-size:11px; }.about-hero-metrics { grid-template-columns:repeat(3,minmax(0,1fr)); }.about-hero-metric:nth-child(n+4) { display:none; }.page-about-detail .entity-actions { margin-bottom:24px; }
 .page-race .container>.section { padding:22px; background:var(--f1-surface); border:1px solid var(--f1-border); border-radius:14px; }.page-race .container>.section:has(.analysis-fold) { padding:0; border:0; background:none; }.page-race .container>.section:has(.analysis-fold) .analysis-fold { margin-top:0; }
 @media(max-width:760px){.team-card-name{font-size:18px}.page-race .container>.section{padding:16px}.about-hero-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.about-hero-metric{padding:12px}.about-hero-metric strong{font-size:21px}.about-hero-metric .label{font-size:10px}}
+/* Remove legacy decoration that still exceeded its panel or obscured text. */
+.hero-speed-trails,.hero-neon-orb,.home-section-beam,.page-header::before,.page-header::after { display:none!important; }
+body .logo-f1 { background:var(--f1-red); box-shadow:none; }
+body :is(.driver-card,.team-card,.race-card,.battle-card,.h2h-card,.table-wrapper,.section,.country-flag,.team-logo-sm) { box-shadow:none!important; }
+body .page-back-row { position:static; inset:auto; z-index:auto; margin:20px 0 0; pointer-events:auto; }
+body .page-back-btn { background:var(--f1-surface); color:var(--f1-gray); border-color:var(--f1-border-light); box-shadow:none; text-transform:none; letter-spacing:0; border-radius:8px; font-size:12px; }
+body .page-back-btn:hover { color:var(--f1-white); background:var(--f1-surface-2); }
+body .countdown { background:none; border:0; padding:0; box-shadow:none; }
+.countdown-separator { display:none!important; }
+body .driver-position { color:var(--f1-light-gray)!important; text-shadow:none; }
+body .driver-card-points .points-value { background:none; -webkit-text-fill-color:currentColor; color:var(--f1-white); }
+body .driver-card .points-progress-bar,body .driver-card .points-progress-fill { box-shadow:none; }
+body .driver-card-wins { color:var(--f1-gray); }
+.nav-links a:hover { transform:none; }
+.section-link::after { content:none!important; }

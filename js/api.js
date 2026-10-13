@@ -285,11 +285,13 @@ const F1API = (() => {
     }
 
     async function getLastRaceResults() {
-        const data = await fetchJSON(
-            `${JOLPICA_BASE}/current/last/results.json?limit=30`,
-            CACHE_DURATION_LONG
-        );
-        return data?.MRData?.RaceTable?.Races?.[0] || null;
+        try {
+            const data = await fetchJSON(`${JOLPICA_BASE}/current/last/results.json?limit=30`, CACHE_DURATION);
+            const race = data?.MRData?.RaceTable?.Races?.[0];
+            if (race?.Results?.length) return race;
+        } catch { /* Recover the latest classification from the complete season archive. */ }
+        const races = await getSeasonResults(new Date().getUTCFullYear());
+        return races.filter(race => race.Results?.length).at(-1) || null;
     }
 
     async function getRaceResults(season, round) {

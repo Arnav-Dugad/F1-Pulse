@@ -2,6 +2,7 @@
 var PulseStore = (() => {
     const memory = new Map(), prefix = 'f1pulse_v3:';
     const read = (key, fallback) => {
+        if (memory.has(key)) return memory.get(key);
         try { const raw = localStorage.getItem(prefix + key); if (raw !== null) return JSON.parse(raw); } catch { /* Private storage may be unavailable. */ }
         return memory.has(key) ? memory.get(key) : fallback;
     };

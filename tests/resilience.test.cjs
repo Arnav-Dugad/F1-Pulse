@@ -270,3 +270,13 @@ test('missing sprint and qualifying data are labeled unavailable rather than imp
     assert.match(section.innerHTML, /Unavailable/);
     assert.doesNotMatch(section.innerHTML, /No sprint/);
 });
+
+test('latest-race alias outage recovers the final published round from the current-year archive', async () => {
+    const year=String(new Date().getUTCFullYear());
+    const context=apiContext(async url=>{
+        if(String(url).includes('/current/last/')) throw Error('alias unavailable');
+        assert.ok(String(url).includes(`/${year}/results.json`));
+        return response({MRData:{total:'2',RaceTable:{Races:[{season:year,round:'1',Results:[{Driver:driver}]},{season:year,round:'2',Results:[{Driver:driver}]}]}}});
+    });
+    assert.equal((await context.api.getLastRaceResults()).round,'2');
+});

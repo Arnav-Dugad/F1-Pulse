@@ -116,7 +116,7 @@ function switchView(view) {
                     <div class="driver-card-points">
                         <span class="points-value">${s.points}</span>
                         <span class="points-label">PTS</span>
-                        ${wins > 0 ? `<span style="margin-left:auto;font-size:0.8rem;color:#FFD700">${wins} win${wins > 1 ? 's' : ''}</span>` : ''}
+                        ${wins > 0 ? `<span class="driver-card-wins" style="margin-left:auto;font-size:0.8rem">${wins} win${wins > 1 ? 's' : ''}</span>` : ''}
                     </div>
                     <div class="points-progress-bar">
                         <div class="points-progress-fill" style="width:${pctWidth}%;background:${teamColor}"></div>
