@@ -1,6 +1,5 @@
 import { ProgressNote } from "../ui/progress-note";
 import { useMemo, useState, type CSSProperties } from "react";
-import { AnimatePresence, motion } from "motion/react";
 import { ArrowRight, CalendarPlus, Check, Clock, Flag as FlagIcon, Timer, Trophy, Zap } from "lucide-react";
 import { allResults, news, standings, teamStandings, useData } from "../api";
 import { usePrefs } from "../app/prefs";
@@ -8,12 +7,15 @@ import { Link, type Route } from "../lib/router";
 import { buildCalendar, weekendSessions } from "../domain.mjs";
 import { shortRace, splitCalendar, useCalendar, useSeasonProgress } from "../lib/season";
 import { circuitMedia, driverMedia, fullName, teamColor, teamOf, teamShortName } from "../lib/media";
-import { countdown, download, formatClock, formatDateRange, formatWeekday, hasStarted, plural, pts, relativeTime, sessionDate, timezoneLabel } from "../lib/format";
+import { download, formatClock, formatDateRange, formatWeekday, hasStarted, plural, pts, relativeTime, sessionDate, timezoneLabel } from "../lib/format";
 import { Counter, Glass, Img, Page, Section, Skeleton, Source, StateView, cx, useAmbient, useNow, useTitle } from "../ui/core";
 import { DriverAvatar, DriverPortrait, Flag, NumberArt, TeamLogo, TrackMap } from "../ui/media";
 import { DriverCard, RaceCard } from "../ui/cards";
 import { Bar, LineChart, Ring } from "../ui/charts";
 import type { Race, Result } from "../types";
+import { Countdown } from "../ui/countdown";
+import { RaceWeekHub } from "./_fanweek";
+import { inRaceWeek, useLastVisit } from "./_fan";
 import "./home.css";
 
 export default function Home(_: { route: Route }) {
@@ -25,8 +27,11 @@ export default function Home(_: { route: Route }) {
   const results = useData(() => allResults(season), [season]);
   const progress = useSeasonProgress(season, year);
   const now = useNow(60_000);
+  const lastVisit = useLastVisit();
   const list = cal.value?.data || [];
   const { next } = splitCalendar(list, now);
+  // Race week (Thursday → shortly after the flag) turns the hero into a live weekend hub.
+  const weekRace = year === String(new Date(now).getFullYear()) ? list.find((r) => inRaceWeek(r, now)) : undefined;
   const latestRace = [...(results.value?.data || [])].reverse().find((r) => r.Results?.length);
   const latest = useMemo(() => new Map((progress.value?.data.drivers || []).map((d) => [d.driver.driverId, d.team.constructorId])), [progress.value]);
   const top = ds.value?.data || [];
@@ -47,13 +52,15 @@ export default function Home(_: { route: Route }) {
         <Skeleton h="min(78vh, 720px)" r={36} />
       ) : cal.error ? (
         <StateView error={cal.error} onRetry={cal.reload} />
+      ) : weekRace ? (
+        <RaceWeekHub race={weekRace} total={list.length} season={season} last={lastVisit} />
       ) : next ? (
         <NextRaceHero race={next} total={list.length} cars={topColors} />
       ) : (
         <SeasonHero year={year} leader={ds.value?.data[0]} latestTeams={latest} latest={latestRace} complete={!!list.length} />
       )}
 
-      {next && <WeekendStrip race={next} />}
+      {next && !weekRace && <WeekendStrip race={next} />}
 
       <Section title={latestRace ? "Latest result" : "Results"} subtitle={latestRace ? `${latestRace.raceName} · Round ${latestRace.round}` : undefined}
         action={latestRace && <Link className="btn sm" to={"race/" + latestRace.round}>Full classification<ArrowRight /></Link>}>
@@ -128,7 +135,7 @@ function NextRaceHero({ race, total, cars }: { race: Race; total: number; cars: 
             <span>{race.Circuit.circuitName}<small>{race.Circuit.Location.locality} · {formatDateRange(start, race.date)}</small></span>
           </p>
           <div className="rise" style={{ "--i": 3 } as CSSProperties}>
-            <Countdown target={target} />
+            <Countdown target={target} label="Lights out" doneText="Lights out — race underway or complete" />
             <p className="hero-start">
               <Clock size={14} />Lights out {formatWeekday(race.date, race.time, timezone)} {formatClock(race.date, race.time, timezone)} · {timezoneLabel(timezone)}
             </p>
@@ -146,35 +153,6 @@ function NextRaceHero({ race, total, cars }: { race: Race; total: number; cars: 
         </Link>
       </div>
     </section>
-  );
-}
-
-function Digit({ value }: { value: string }) {
-  return (
-    <span className="digit">
-      <AnimatePresence initial={false} mode="popLayout">
-        <motion.span key={value} initial={{ y: "-70%", opacity: 0, filter: "blur(4px)" }} animate={{ y: 0, opacity: 1, filter: "blur(0px)" }} exit={{ y: "70%", opacity: 0, filter: "blur(4px)" }} transition={{ type: "spring", stiffness: 380, damping: 30 }}>
-          {value}
-        </motion.span>
-      </AnimatePresence>
-    </span>
-  );
-}
-
-function Countdown({ target }: { target: number }) {
-  const now = useNow(1000);
-  const c = countdown(target, now);
-  if (c.done) return <div className="countdown done"><span className="chip accent"><span className="live-dot" />Lights out — race underway or complete</span></div>;
-  const units: [number, string][] = [[c.days, "days"], [c.hours, "hrs"], [c.minutes, "min"], [c.seconds, "sec"]];
-  return (
-    <div className="countdown" role="timer" aria-label={`${c.days} days, ${c.hours} hours, ${c.minutes} minutes until lights out`}>
-      {units.map(([v, label]) => (
-        <div className="cd-unit" key={label}>
-          <span className="cd-value" aria-hidden>{String(v).padStart(2, "0").split("").map((d, i) => <Digit key={i} value={d} />)}</span>
-          <span className="cd-label">{label}</span>
-        </div>
-      ))}
-    </div>
   );
 }
 

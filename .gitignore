@@ -5,3 +5,4 @@ dist/
 .dev.vars*
 artifacts/
 .playwright-mcp/
+.lighthouseci/

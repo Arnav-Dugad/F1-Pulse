@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { AlertTriangle, Flag as FlagIcon, GitBranch, Info, Minus, Plus, RotateCcw, Scale, Sparkles, Timer, X } from "lucide-react";
+import { AlertTriangle, FlaskConical, Flag as FlagIcon, GitBranch, Info, Minus, Plus, RotateCcw, Scale, Sparkles, Timer, X } from "lucide-react";
 import { circuitWinners, useData } from "../api";
 import { usePrefs } from "../app/prefs";
 import { Link, setQuery, type Route } from "../lib/router";
@@ -11,6 +11,7 @@ import { Glass, Img, Page, Section, Source, cx, useAmbient, useTitle } from "../
 import { Flag } from "../ui/media";
 import { LineChart } from "../ui/charts";
 import { emptyEnvelope } from "./_champ";
+import { DegradationLab, type FitValues } from "./_labdeg";
 import type { Race } from "../types";
 import "./strategy.css";
 
@@ -91,6 +92,8 @@ export default function Strategy({ route }: { route: Route }) {
   const [a, setA] = useState<Assumptions>(initial.a);
   const [plans, setPlans] = useState<Plan[]>(initial.plans || defaultPlans(initial.a.laps));
   const touched = useRef(initial.fromUrl || !!initial.plans);
+  const [fromFit, setFromFit] = useState<string | null>(null);
+  const assumeRef = useRef<HTMLDivElement>(null);
   const palette = COLORS[theme === "light" ? "light" : "dark"];
   const color = (id: string) => palette[IDS.indexOf(id as (typeof IDS)[number])] || palette[0];
 
@@ -122,6 +125,7 @@ export default function Strategy({ route }: { route: Route }) {
 
   const set = (key: keyof Assumptions, v: number) => {
     touched.current = true;
+    if (key === "base" || key === "deg") setFromFit((f) => (f && !f.endsWith(" (edited)") ? f + " (edited)" : f));
     if (key === "laps") applyLaps(v);
     else setA((x) => ({ ...x, [key]: v }));
   };
@@ -131,7 +135,19 @@ export default function Strategy({ route }: { route: Route }) {
     setPlans((ps) => (ps.length >= 3 ? ps : [...ps, { id: IDS.find((x) => !ps.some((p) => p.id === x))!, stops: evenStops(a.laps, 3) }].sort((x, y) => x.id.localeCompare(y.id))));
   };
   const removePlan = (id: string) => { touched.current = true; setPlans((ps) => (ps.length <= 2 ? ps : ps.filter((p) => p.id !== id))); };
+  const applyFit = (v: FitValues) => {
+    touched.current = true;
+    applyLaps(v.laps);
+    setA((x) => ({ ...x, base: clamp(v.base, LIMITS.base.min, LIMITS.base.max), deg: clamp(v.deg, LIMITS.deg.min, LIMITS.deg.max) }));
+    setFromFit(v.label);
+    const el = assumeRef.current;
+    if (el) {
+      const reduce = document.documentElement.dataset.motion === "reduced" || matchMedia("(prefers-reduced-motion: reduce)").matches;
+      el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+    }
+  };
   const reset = () => {
+    setFromFit(null);
     const l = suggested ? clamp(suggested, LIMITS.laps.min, LIMITS.laps.max) : DEFAULTS.laps;
     setA({ ...DEFAULTS, laps: l });
     setPlans(defaultPlans(l));
@@ -149,16 +165,25 @@ export default function Strategy({ route }: { route: Route }) {
 
       <div className="notice sg-disclaimer reveal">
         <AlertTriangle />
-        <p><b>A simplified, deterministic model — not a race prediction.</b> Every number below comes from the assumptions you set. It ignores tyre compounds and warm-up, fuel burn, safety cars, weather, track position and overtaking difficulty. Defaults are <b>editable assumptions, not historical calibration</b>.</p>
+        <p><b>A simplified, deterministic model — not a race prediction.</b> Every number below comes from the assumptions you set. It ignores tyre compounds and warm-up, fuel burn, safety cars, weather, track position and overtaking difficulty. Defaults are <b>editable assumptions, not historical calibration</b> — you can optionally <button type="button" className="link" onClick={() => document.getElementById("empirical-fit")?.scrollIntoView({ behavior: "smooth" })}>fit them from a real race</button>.</p>
       </div>
 
       <div className="sg-layout">
         <aside className="sg-side">
           <Glass className="card sg-assume reveal">
-            <div className="card-title">
+            <div className="card-title" ref={assumeRef}>
               <h3>Assumptions</h3>
               <button className="btn sm plain" onClick={reset}><RotateCcw />Reset</button>
             </div>
+            <AnimatePresence initial={false}>
+              {fromFit && (
+                <motion.div className="lab-fit-chip" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ type: "spring", stiffness: 320, damping: 30 }}>
+                  <FlaskConical size={14} />
+                  <span><b>Base, degradation and laps from an empirical fit</b><small>{fromFit} · one race, estimated</small></span>
+                  <button className="icon-btn" onClick={() => setFromFit(null)} aria-label="Dismiss fit note"><X /></button>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <Knob label="Race laps" value={a.laps} onChange={(v) => set("laps", v)} {...LIMITS.laps} format={(v) => String(v)}
               hint={suggested && lastEdition ? (
                 <>
@@ -202,21 +227,25 @@ export default function Strategy({ route }: { route: Route }) {
             )}
           </div>
 
-          <Section title="Stint timeline" subtitle="Each bar is one stint; the shading deepens as the tyres age. Pins mark pit stops.">
+          <Section id="stint-timeline" title="Stint timeline" subtitle="Each bar is one stint; the shading deepens as the tyres age. Pins mark pit stops.">
             <Timeline outcomes={outcomes} laps={a.laps} deg={a.deg} color={color} />
           </Section>
         </div>
       </div>
 
-      <Section title="The virtual gap, lap by lap" subtitle={best ? `Cumulative time relative to Plan ${best.plan.id}, the quickest overall. Above zero = behind on the road clock (track position is not modelled).` : undefined}>
+      <Section id="empirical-fit" title="Calibrate from a real race" subtitle={<>Fit tyre degradation from an archived race's measured laps, then feed the result into the model above. <span className="chip yellow">Empirical fit · one race</span></>}>
+        <DegradationLab season={season} onUse={applyFit} />
+      </Section>
+
+      <Section id="virtual-gap" title="The virtual gap, lap by lap" subtitle={best ? `Cumulative time relative to Plan ${best.plan.id}, the quickest overall. Above zero = behind on the road clock (track position is not modelled).` : undefined}>
         <GapChart valid={valid} best={best} laps={a.laps} color={color} />
       </Section>
 
-      <Section title="How sensitive is the verdict?" subtitle="The quickest plan as degradation and pit-lane loss change around your values. A parameter sweep, not a confidence interval.">
+      <Section id="sensitivity" title="How sensitive is the verdict?" subtitle="The quickest plan as degradation and pit-lane loss change around your values. A parameter sweep, not a confidence interval.">
         <Heatmap a={a} plans={plans} color={color} />
       </Section>
 
-      <Section title="How this model works">
+      <Section id="how-it-works" title="How this model works">
         <Glass className="card sg-how reveal">
           <div className="sg-formula">
             <span className="eyebrow"><Scale size={13} />Per stint of n laps</span>
@@ -225,7 +254,7 @@ export default function Strategy({ route }: { route: Route }) {
           </div>
           <div className="sg-how-text">
             <p>Each stint starts at base pace and every lap of tyre age adds the degradation value. All compounds behave identically and fuel effect is ignored, so with these assumptions equal-length stints are always the most efficient way to use a given number of stops — the real trade-off is pit-lane loss versus degradation.</p>
-            <p>Nothing here is calibrated against historical races. For measured pace and pit-stop data, explore a <Link className="link" to="calendar">race weekend</Link> or the <Link className="link" to="telemetry">telemetry lab</Link>. A stationary stop time is not the same as net pit-lane loss.</p>
+            <p>The defaults are not calibrated against historical races; the optional empirical fit above estimates base pace and degradation from one archived race's clean laps. For measured pace and pit-stop data, explore a <Link className="link" to="calendar">race weekend</Link> or the <Link className="link" to="telemetry">telemetry lab</Link>. A stationary stop time is not the same as net pit-lane loss.</p>
           </div>
         </Glass>
       </Section>

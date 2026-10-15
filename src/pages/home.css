@@ -24,14 +24,6 @@
 .hero-track .track { filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.25)); }
 .hero-track-label { position: absolute; bottom: 14px; right: 18px; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 650; color: rgba(255, 255, 255, 0.72); }
 
-/* Countdown */
-.countdown { display: flex; gap: 10px; }
-.cd-unit { display: grid; justify-items: center; gap: 4px; min-width: 76px; padding: 12px 10px 10px; border-radius: 20px; background: rgba(255, 255, 255, 0.08); -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%); border: 1px solid rgba(255, 255, 255, 0.14); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22); }
-.cd-value { display: flex; font-family: var(--font-display); font-size: clamp(30px, 3.4vw, 44px); font-weight: 750; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
-.digit { position: relative; display: inline-block; width: 0.62em; height: 1.05em; overflow: hidden; text-align: center; }
-.digit > span { position: absolute; inset: 0; display: grid; place-items: center; }
-.cd-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
-
 /* Season hero */
 .season-hero .hero-champion { position: relative; align-self: end; justify-self: center; height: min(66vh, 600px); aspect-ratio: 0.42; margin-bottom: calc(-1 * clamp(26px, 4vw, 52px)); }
 .hero-champion-photo { position: absolute; bottom: 0; left: 50%; translate: -50% 0; height: 100%; width: auto; max-width: none; filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.5)); animation: rise 1.2s var(--ease) both 0.2s; }
@@ -43,8 +35,6 @@
   .hero-inner { grid-template-columns: 1fr; padding-top: 90px; }
   .hero-track { justify-self: stretch; width: 100%; max-width: 440px; order: -1; padding: 18px; }
   .season-hero .hero-champion { display: none; }
-  .countdown { gap: 7px; }
-  .cd-unit { min-width: 0; flex: 1; padding: 10px 4px 8px; border-radius: 16px; }
 }
 
 /* ───────────────────────── Weekend strip ───────────────────────── */

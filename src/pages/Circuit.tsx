@@ -2,17 +2,19 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerE
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
 import {
-  ArrowLeft, ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, Droplets, ExternalLink, Flag as FlagIcon,
-  History, MapPin, RotateCcw, Thermometer, Trophy, Umbrella, Wind, X, ZoomIn, ZoomOut,
+  ArrowLeft, ArrowLeftRight, ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, Clock, Compass, Droplets, ExternalLink, Flag as FlagIcon,
+  Globe, History, MapPin, RotateCcw, Sunrise, Sunset, Thermometer, Trophy, Umbrella, Wind, X, ZoomIn, ZoomOut,
 } from "lucide-react";
-import { circuitRaces, circuitWinners, useData, weather, type Weather } from "../api";
+import { circuitRaces, circuitWinners, climate, useData, weather, type Climate, type Weather } from "../api";
 import { usePrefs } from "../app/prefs";
 import { Link, type Route } from "../lib/router";
 import { useCalendar } from "../lib/season";
 import { circuitMedia, fullName, loadTracks, teamColor, teamShortName } from "../lib/media";
-import { formatDateRange, formatSession, plural, relativeTime, sessionDate } from "../lib/format";
+import { formatClock, formatDateRange, formatSession, formatWeekday, hasStarted, plural, relativeTime, sessionDate, timezoneLabel } from "../lib/format";
 import { Counter, Glass, Img, Page, Section, Skeleton, Source, StateView, cx, useAmbient, useNow, useTitle } from "../ui/core";
-import { DriverAvatar, Flag, TeamLogo, TrackMap } from "../ui/media";
+import { DriverAvatar, Flag, TeamLogo } from "../ui/media";
+import { Track3D } from "../ui/track3d";
+import { emptyEnv, localClock, offsetLabel, prefZone, useSeen, weekendDates, zoneOffset } from "./_fan";
 import { Bar } from "../ui/charts";
 import type { Circuit as CircuitT, Driver, Race, Result, Team } from "../types";
 import "./circuit.css";
@@ -80,7 +82,7 @@ export default function Circuit({ route }: { route: Route }) {
         seasonRace={seasonRaces.find((r) => !finished(r, now)) || seasonRaces.at(-1)}
       />
 
-      <Section title={`${year} at ${circuit.circuitName}`} subtitle={seasonRaces.length ? `${plural(seasonRaces.length, "Grand Prix", "Grands Prix")} on the ${year} calendar` : undefined}>
+      <Section id="this-season" title={`${year} at ${circuit.circuitName}`} subtitle={seasonRaces.length ? `${plural(seasonRaces.length, "Grand Prix", "Grands Prix")} on the ${year} calendar` : undefined}>
         <div className="ckt-now">
           <div className="stack">
             {cal.loading ? (
@@ -101,13 +103,17 @@ export default function Circuit({ route }: { route: Route }) {
         </div>
       </Section>
 
+      <Section id="travel-guide" title="Grand Prix travel guide" subtitle="Local time, daylight and what the weather has typically done on race weekend — all computed from open data for these coordinates.">
+        <TravelGuide circuit={circuit} race={seasonRaces.find((r) => !finished(r, now)) || seasonRaces.at(-1) || held.at(-1)} />
+      </Section>
+
       {media.map && (
-        <Section title="Circuit map" subtitle="Official Formula 1 map of the current layout — sectors, corner numbers and 2026 aero zones. Click to zoom.">
+        <Section id="circuit-map" title="Circuit map" subtitle="Official Formula 1 map of the current layout — sectors, corner numbers and 2026 aero zones. Click to zoom.">
           <MapFigure src={media.map} name={circuit.circuitName} />
         </Section>
       )}
 
-      <Section title="History" subtitle="Every world championship Grand Prix held here, from the published classification.">
+      <Section id="history" title="History" subtitle="Every world championship Grand Prix held here, from the published classification.">
         <HistoryBlock history={history} wins={wins} winList={winList} held={held} />
       </Section>
     </Page>
@@ -176,8 +182,7 @@ function CircuitHero({ circuit, hero, cars, held, winners, seasonRace }: {
         </div>
         {hasOutline !== false && (
           <div className="ckt-hero-track rise" style={{ "--i": 2 } as CSSProperties}>
-            <TrackMap circuitId={circuit.circuitId} mode="draw" cars={cars} lap={10} label={`${circuit.circuitName} layout`} />
-            <span className="ckt-hero-track-label">Layout outline · {cars.length > 1 ? "recent winners' colours" : "lap animation"}</span>
+            <Track3D circuitId={circuit.circuitId} cars={cars} lap={11} label={`${circuit.circuitName} layout`} note={cars.length > 1 ? "cars in recent winners' colours" : undefined} />
           </div>
         )}
       </div>
@@ -650,6 +655,206 @@ function WinnersTable({ list }: { list: Win[] }) {
           </AnimatePresence>
         </table>
       </div>
+    </Glass>
+  );
+}
+
+/* ───────────────────────── Grand Prix travel guide ───────────────────────── */
+const isoDay = (t: number) => new Date(t).toISOString().slice(0, 10);
+const shiftYear = (d: string, by: number) => `${+d.slice(0, 4) + by}${d.slice(4)}`;
+const minutesOf = (stamp?: string) => (stamp && /T\d{2}:\d{2}/.test(stamp) ? +stamp.slice(11, 13) * 60 + +stamp.slice(14, 16) : null);
+const dayName = (d: string) => new Date(d + "T12:00:00Z").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+const dayMonth = (d: string) => new Date(d + "T12:00:00Z").toLocaleDateString(undefined, { day: "numeric", month: "short", timeZone: "UTC" });
+
+function TravelGuide({ circuit, race }: { circuit: CircuitT; race?: Race }) {
+  const { lat, long } = circuit.Location;
+  const w = useData(() => weather(lat, long), [lat, long]);
+  const tz = w.value?.data.timezone;
+  return (
+    <div className="ckt-guide">
+      <ClocksCard circuit={circuit} race={race} tz={tz} loading={w.loading} error={w.error} onRetry={w.reload} />
+      {race && <SunCard circuit={circuit} race={race} forecast={w.value?.data} forecastLoading={w.loading} />}
+      {race && <TypicalCard circuit={circuit} race={race} />}
+      <OrientCard circuit={circuit} tz={tz} />
+      <Source value={w.value} label="Time zone & forecast" />
+    </div>
+  );
+}
+
+function ClocksCard({ circuit, race, tz, loading, error, onRetry }: { circuit: CircuitT; race?: Race; tz?: string; loading: boolean; error?: string; onRetry: () => void }) {
+  const { timezone } = usePrefs();
+  const now = useNow(1000);
+  const mine = prefZone(timezone);
+  const clock = (zone?: string) => new Date(now).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit", timeZone: zone });
+  const day = (zone?: string) => new Date(now).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "short", timeZone: zone });
+  const diff = tz ? zoneOffset(tz, now) - zoneOffset(mine, now) : 0;
+  const abs = Math.abs(diff);
+  const diffText = !tz ? "" : diff === 0 ? "Same time as you" : `${Math.floor(abs / 60) ? `${Math.floor(abs / 60)} h` : ""}${abs % 60 ? ` ${abs % 60} min` : ""} ${diff > 0 ? "ahead of" : "behind"} you`.trim();
+  const upcoming = race && race.time && !hasStarted(race.date, race.time, now);
+  return (
+    <Glass className="card ckt-clocks reveal">
+      <div className="card-title"><h3>Local time</h3><span className="eyebrow"><Clock size={13} />Live</span></div>
+      {loading ? <Skeleton h={150} r={20} /> : error || !tz ? (
+        <StateView error={error || "The circuit's time zone couldn't be determined."} onRetry={onRetry} />
+      ) : (
+        <>
+          <div className="ckt-clock-pair">
+            <div className="ckt-clock">
+              <small><MapPin size={12} />{circuit.Location.locality}</small>
+              <b>{clock(tz)}</b>
+              <span>{day(tz)} · {offsetLabel(zoneOffset(tz, now))}</span>
+            </div>
+            <span className="ckt-clock-diff" aria-label={diffText}><ArrowLeftRight size={14} />{diffText}</span>
+            <div className="ckt-clock you">
+              <small><Globe size={12} />You · {timezoneLabel(timezone)}</small>
+              <b>{clock(mine)}</b>
+              <span>{day(mine)} · {offsetLabel(zoneOffset(mine, now))}</span>
+            </div>
+          </div>
+          {upcoming && race && (
+            <p className="ckt-clock-race"><FlagIcon size={14} />Lights out <b>{formatWeekday(race.date, race.time, tz)} {formatClock(race.date, race.time, tz)}</b> local · <b>{formatWeekday(race.date, race.time, timezone)} {formatClock(race.date, race.time, timezone)}</b> for you</p>
+          )}
+          <p className="source">Circuit time zone {tz.replace(/_/g, " ")}, resolved by Open-Meteo from the coordinates.</p>
+        </>
+      )}
+    </Glass>
+  );
+}
+
+type SunDay = { date: string; sunrise?: string; sunset?: string };
+function SunCard({ circuit, race, forecast, forecastLoading }: { circuit: CircuitT; race: Race; forecast?: Weather; forecastLoading: boolean }) {
+  const { lat, long } = circuit.Location;
+  const dates = weekendDates(race);
+  const today = isoDay(Date.now());
+  const fDays = forecast?.daily?.time || [];
+  const inForecast = dates.filter((d) => fDays.includes(d)).length > 0;
+  const past = dates.at(-1)! < isoDay(Date.now() - 7 * 864e5);
+  // Source: forecast when the weekend is within range; otherwise the ERA5 archive — the actual dates if
+  // they're far enough in the past, or the same calendar dates one year earlier.
+  const mode: "forecast" | "actual" | "lastyear" = inForecast ? "forecast" : past ? "actual" : "lastyear";
+  const archiveDates = mode === "actual" ? dates : dates.map((d) => shiftYear(d, -1));
+  const arch = useData(() => (forecastLoading || mode === "forecast" ? Promise.resolve(emptyEnv<Climate>({})) : climate(lat, long, archiveDates[0], archiveDates.at(-1)!, "daily")),
+    [lat, long, mode, archiveDates[0], archiveDates.at(-1), forecastLoading]);
+  const days: SunDay[] = mode === "forecast"
+    ? dates.map((d) => { const i = fDays.indexOf(d); return { date: d, sunrise: forecast?.daily?.sunrise[i], sunset: forecast?.daily?.sunset[i] }; }).filter((d) => d.sunrise)
+    : archiveDates.map((d) => { const a = arch.value?.data.daily; const i = a?.time.indexOf(d) ?? -1; return { date: d, sunrise: i >= 0 ? a?.sunrise[i] : undefined, sunset: i >= 0 ? a?.sunset[i] : undefined }; }).filter((d) => d.sunrise);
+  const label = mode === "forecast" ? "Forecast" : mode === "actual" ? `Archive · ${race.season}` : `Same dates, ${+race.season - 1}`;
+  return (
+    <Glass className="card ckt-sun reveal" style={{ "--i": 1 } as CSSProperties}>
+      <div className="card-title"><h3>Race-weekend daylight</h3><span className="chip blue">{label}</span></div>
+      {forecastLoading || arch.loading ? <Skeleton h={160} r={20} /> : arch.error ? <StateView error={arch.error} onRetry={arch.reload} /> : !days.length ? (
+        <StateView empty emptyTitle="No sunrise data" emptyText="The model didn't return sunrise and sunset for these dates." />
+      ) : (
+        <ul className="ckt-sun-list">
+          {days.map((d) => {
+            const a = minutesOf(d.sunrise), b = minutesOf(d.sunset);
+            const len = a !== null && b !== null ? b - a : null;
+            return (
+              <li key={d.date}>
+                <span className="ckt-sun-day">{dayName(d.date)}</span>
+                <span className="ckt-sun-arc" aria-hidden>
+                  <i style={{ left: `${((a ?? 0) / 1440) * 100}%`, width: `${((len ?? 0) / 1440) * 100}%` }} />
+                </span>
+                <span className="ckt-sun-times"><Sunrise size={13} />{localClock(d.sunrise)}<Sunset size={13} />{localClock(d.sunset)}</span>
+                <span className="ckt-sun-len">{len !== null ? `${Math.floor(len / 60)} h ${String(len % 60).padStart(2, "0")}` : "—"}</span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      <p className="source">
+        {mode === "forecast" ? "Open-Meteo forecast" : "Open-Meteo historical archive"} at the circuit coordinates, in circuit local time.
+        {mode === "lastyear" && ` The ${race.season} weekend is beyond the seven-day forecast, so these are the same calendar dates in ${+race.season - 1}.`}
+        {dates.includes(today) && " Includes today."}
+      </p>
+      {mode !== "forecast" && <Source value={arch.value} label="Archive" />}
+    </Glass>
+  );
+}
+
+function TypicalCard({ circuit, race }: { circuit: CircuitT; race: Race }) {
+  const { lat, long } = circuit.Location;
+  const [ref, seen] = useSeen<HTMLDivElement>();
+  const Y = +race.season;
+  const first = Y - 10, last = Y - 1;
+  const md = weekendDates(race).map((d) => d.slice(5));
+  const c = useData(() => (seen ? climate(lat, long, `${first}-01-01`, `${last}-12-31`, "daily") : Promise.resolve(emptyEnv<Climate>({}))), [lat, long, first, last, seen]);
+  const stats = useMemo(() => {
+    const d = c.value?.data.daily;
+    if (!d?.time?.length) return null;
+    const years = new Map<number, { max: number[]; min: number[]; rain: number[] }>();
+    d.time.forEach((t, i) => {
+      if (!md.includes(t.slice(5))) return;
+      const y = +t.slice(0, 4);
+      const e = years.get(y) || { max: [], min: [], rain: [] };
+      if (Number.isFinite(d.temperature_2m_max[i])) e.max.push(d.temperature_2m_max[i]);
+      if (Number.isFinite(d.temperature_2m_min[i])) e.min.push(d.temperature_2m_min[i]);
+      if (Number.isFinite(d.precipitation_sum[i])) e.rain.push(d.precipitation_sum[i]);
+      years.set(y, e);
+    });
+    const all = [...years.values()];
+    const flat = (k: "max" | "min" | "rain") => all.flatMap((e) => e[k]);
+    const mean = (a: number[]) => (a.length ? a.reduce((s, v) => s + v, 0) / a.length : NaN);
+    const rainDays = flat("rain").filter((v) => v >= 1).length;
+    return {
+      max: mean(flat("max")), min: mean(flat("min")), days: flat("rain").length, rainDays, rainShare: flat("rain").length ? rainDays / flat("rain").length : 0,
+      years: [...years.entries()].sort((a, b) => a[0] - b[0]).map(([y, e]) => ({ y, max: mean(e.max), min: mean(e.min), rain: e.rain.reduce((s, v) => s + v, 0), wet: e.rain.filter((v) => v >= 1).length })),
+    };
+  }, [c.value, md.join()]); // eslint-disable-line react-hooks/exhaustive-deps
+  const window = `${dayMonth(weekendDates(race)[0])} – ${dayMonth(race.date)}`;
+  const lo = stats ? Math.min(...stats.years.map((y) => y.min)) : 0, hi = stats ? Math.max(...stats.years.map((y) => y.max)) : 1;
+  return (
+    <Glass className="card ckt-typical reveal" style={{ "--i": 2 } as CSSProperties}>
+      <div ref={ref} className="card-title"><h3>Typical race-weekend conditions</h3><span className="chip purple">ERA5 · modelled</span></div>
+      <p className="muted small ckt-typical-lede">{window} in each of the ten years {first}–{last}, at the circuit coordinates.</p>
+      {!seen || c.loading ? <Skeleton h={220} r={20} /> : c.error ? <StateView error={c.error} onRetry={c.reload} /> : !stats || !stats.days ? (
+        <StateView empty emptyTitle="No historical data" emptyText="The reanalysis archive returned no days for this window." />
+      ) : (
+        <>
+          <div className="ckt-typical-kpis">
+            <span><small><Thermometer size={12} />Avg high</small><b>{stats.max.toFixed(1)}°</b></span>
+            <span><small><Thermometer size={12} />Avg low</small><b>{stats.min.toFixed(1)}°</b></span>
+            <span><small><Umbrella size={12} />Rain days</small><b>{Math.round(stats.rainShare * 100)}%</b><em>{stats.rainDays} of {stats.days} days</em></span>
+          </div>
+          <ol className="ckt-typical-years" aria-label="Weekend temperature range and rainfall by year">
+            {stats.years.map((y, i) => (
+              <li key={y.y} style={{ "--i": i } as CSSProperties} title={`${y.y}: high ${y.max.toFixed(1)}°, low ${y.min.toFixed(1)}°, ${y.rain.toFixed(1)} mm rain`}>
+                <span className="ckt-ty-year">{String(y.y).slice(2)}′</span>
+                <span className="ckt-ty-range"><i style={{ bottom: `${((y.min - lo) / (hi - lo || 1)) * 100}%`, height: `${Math.max(4, ((y.max - y.min) / (hi - lo || 1)) * 100)}%` }} /></span>
+                <span className={cx("ckt-ty-rain", y.wet > 0 && "wet")}>{y.wet > 0 ? <Droplets size={11} /> : "·"}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="source">Modelled historical weather (ERA5 reanalysis), not trackside measurements. Daily highs and lows averaged across the window; a rain day has at least 1 mm of modelled precipitation. Bars show each year's low-to-high range; droplets mark years with a rain day.</p>
+        </>
+      )}
+      {seen && <Source value={c.value} label="Climate" />}
+    </Glass>
+  );
+}
+
+function OrientCard({ circuit, tz }: { circuit: CircuitT; tz?: string }) {
+  const { Location: loc } = circuit;
+  const dms = (v: string, pos: string, neg: string) => {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return "—";
+    const a = Math.abs(n), d = Math.floor(a), m = Math.floor((a - d) * 60), s = Math.round(((a - d) * 60 - m) * 60);
+    return `${d}° ${m}′ ${s}″ ${n >= 0 ? pos : neg}`;
+  };
+  return (
+    <Glass className="card ckt-orient reveal" style={{ "--i": 3 } as CSSProperties}>
+      <div className="card-title"><h3>Getting oriented</h3><span className="eyebrow"><Compass size={13} />From the data</span></div>
+      <dl className="ckt-orient-list">
+        <div><dt>Venue</dt><dd>{circuit.circuitName}</dd></div>
+        <div><dt>Location</dt><dd><Flag country={loc.country} />{loc.locality}, {loc.country}</dd></div>
+        <div><dt>Coordinates</dt><dd className="tabular">{Number(loc.lat).toFixed(4)}, {Number(loc.long).toFixed(4)}<small>{dms(loc.lat, "N", "S")} · {dms(loc.long, "E", "W")}</small></dd></div>
+        {tz && <div><dt>Time zone</dt><dd>{tz.replace(/_/g, " ")}</dd></div>}
+      </dl>
+      <div className="ckt-orient-links">
+        <a className="btn sm" href={osm(circuit)} target="_blank" rel="noopener noreferrer"><MapPin />OpenStreetMap<ExternalLink /></a>
+        <a className="btn sm" href={circuit.url} target="_blank" rel="noopener noreferrer"><BookOpen />Wikipedia<ExternalLink /></a>
+      </div>
+      <p className="source">Venue details and coordinates from the Jolpica circuit record. Map data © OpenStreetMap contributors.</p>
     </Glass>
   );
 }

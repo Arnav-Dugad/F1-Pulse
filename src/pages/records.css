@@ -1,0 +1,66 @@
+/* ───────────────────────── Record Book ───────────────────────── */
+.rb-leader { position: relative; display: grid; justify-items: center; gap: 10px; width: min(100%, 340px); padding: 26px 22px 22px; border-radius: 32px; color: #fff; text-align: center;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04)); border: 1px solid rgba(255, 255, 255, 0.18); -webkit-backdrop-filter: blur(26px) saturate(160%); backdrop-filter: blur(26px) saturate(160%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 40px 80px -40px rgba(0, 0, 0, 0.8); transition: transform 0.7s var(--spring); }
+.rb-leader:hover { transform: translateY(-6px) rotate(-0.6deg); }
+.rb-leader-crown { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); }
+.rb-leader-face { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.14), 0 0 0 10px color-mix(in srgb, var(--tint) 30%, transparent), 0 30px 60px -20px var(--tint); }
+.rb-leader-name { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: -0.035em; }
+.rb-leader-value { display: grid; font-family: var(--font-display); font-size: 64px; font-weight: 850; letter-spacing: -0.06em; line-height: 0.9; }
+.rb-leader-value small { font-family: var(--font); font-size: 12.5px; font-weight: 600; letter-spacing: 0; color: rgba(255, 255, 255, 0.65); margin-top: 6px; }
+.rb-leader-sub { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255, 255, 255, 0.7); font-weight: 600; }
+
+
+.rb-scope { margin: 0 0 4px; }
+.rb-metrics { margin-bottom: 16px; }
+.rb-metrics .seg { max-width: 100%; }
+.rb-list { padding: 14px 12px 10px; }
+.rb-list ol { list-style: none; margin: 0; padding: 0; }
+.rb-side { align-content: start; }
+.rb-spot { display: grid; gap: 6px; overflow: hidden; background: linear-gradient(160deg, color-mix(in srgb, var(--tint) 22%, var(--glass)), var(--glass)); }
+.rb-spot-value { font-family: var(--font-display); font-size: clamp(56px, 6vw, 88px); font-weight: 850; letter-spacing: -0.06em; line-height: 0.95; font-variant-numeric: tabular-nums; }
+.rb-note span { line-height: 1.5; }
+.rb-year { font-weight: 600; color: var(--label-3); }
+
+.rb-ages { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 16px; }
+.rb-age { padding: 18px 14px 10px; }
+.rb-age .card-title { padding: 0 6px; }
+.rb-age ol { list-style: none; margin: 0; padding: 0; }
+.rb-age-row { gap: 10px; padding: 8px 6px; }
+.rb-age-main { flex: 1; min-width: 0; display: grid; }
+.rb-age-main strong { font-size: 14px; font-weight: 650; letter-spacing: -0.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rb-age-main small { font-size: 11.5px; color: var(--label-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rb-age-value { font-family: var(--font-display); font-size: 20px; font-weight: 780; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rb-age-value small { font-size: 12px; font-weight: 600; color: var(--label-3); letter-spacing: 0; }
+
+.rb-circuit-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 16px; }
+.rb-ch { position: relative; overflow: hidden; display: grid; gap: 6px; padding: 20px; border-radius: var(--r-xl); isolation: isolate; }
+.rb-ch-photo { position: absolute; inset: 0; z-index: -1; background-size: cover; background-position: center; opacity: 0.18; filter: blur(2px) saturate(1.2); transform: scale(1.06); transition: opacity 0.4s, transform 1.2s var(--ease); }
+.rb-ch:hover .rb-ch-photo { opacity: 0.28; transform: scale(1); }
+.rb-ch-value { font-family: var(--font-display); font-size: 44px; font-weight: 820; letter-spacing: -0.05em; line-height: 1; }
+.rb-ch-name { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; font-size: 14.5px; }
+.rb-circuits .tbl { width: 100%; }
+.rb-circuit-name { display: flex; align-items: center; gap: 10px; }
+.rb-circuit-name strong { display: block; font-weight: 650; font-size: 14px; }
+.rb-circuit-name small { display: block; font-size: 11.5px; color: var(--label-3); }
+.rb-circuits .table-wrap { max-height: 560px; }
+.rb-circuits th { background: var(--bg-elevated); z-index: 1; }
+.rb-gain { display: inline-flex; align-items: center; gap: 10px; justify-content: flex-end; min-width: 120px; }
+.rb-gain-bar { display: inline-block; width: 64px; height: 6px; border-radius: 99px; background: var(--fill-3); position: relative; overflow: hidden; }
+.rb-gain-bar::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w); border-radius: inherit; background: var(--green); }
+.rb-gain-bar[data-neg]::after { background: var(--orange); }
+
+.rb-dom-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 16px; }
+.rb-dom-head { margin-bottom: 14px; flex-wrap: wrap; }
+.rb-swatch-dash { background: repeating-linear-gradient(90deg, var(--c) 0 3px, transparent 3px 5px) !important; }
+.rb-dom-sub { font-size: 14px; font-weight: 650; color: var(--label-2); margin: 22px 0 6px; letter-spacing: -0.01em; }
+.rb-dom-table { max-height: 520px; }
+.rb-dom-table th { background: var(--bg-elevated); }
+.rb-inline { margin-left: 8px; }
+
+@media (max-width: 640px) {
+
+  .rb-controls .seg.lg { width: 100%; }
+  .rb-controls .seg.lg button { flex: 1; }
+  .rb-ch-value { font-size: 36px; }
+}

@@ -1,6 +1,6 @@
 {
   "name": "f1-pulse",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,7 +15,14 @@
     "dev:worker": "wrangler dev",
     "verify:accuracy": "node scripts/verify-accuracy.mjs",
     "media:fetch": "python scripts/fetch-media.py && python scripts/process-media.py",
-    "data:history": "node scripts/fetch-history.mjs"
+    "data:history": "node scripts/fetch-history.mjs",
+    "test:visual": "node scripts/visual.mjs",
+    "test:visual:update": "node scripts/visual.mjs --update",
+    "test:visual:record": "node scripts/visual.mjs --record --update",
+    "lighthouse": "npx --yes @lhci/cli@0.15.1 autorun",
+    "media:images": "python scripts/images.py",
+    "media:icons": "node scripts/icons.mjs",
+    "data:archive": "node scripts/fetch-archive.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
@@ -27,6 +34,8 @@
     "@playwright/test": "^1.51.1",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "pixelmatch": "^7.2.0",
+    "pngjs": "^7.0.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
     "vite": "^7.2.2",

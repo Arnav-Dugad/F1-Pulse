@@ -235,3 +235,54 @@ export function useParallax<T extends HTMLElement>() {
   }, []);
   return ref;
 }
+
+/* ─────────── Championship snapshot (teammates per season) ─────────── */
+type HistoryLite = {
+  lastSeason: number;
+  drivers: Record<string, [string, string, number, number, string[]][]>;
+  names: { drivers: Record<string, [string, string, string]> };
+};
+let historyLite: Promise<HistoryLite> | null = null;
+/** The static 1950–last-season standings snapshot (same file the API layer uses; HTTP-cached). */
+export const loadHistoryLite = () =>
+  (historyLite ??= fetch("/data/history.json")
+    .then((r) => { if (!r.ok) throw Error("Championship history unavailable"); return r.json() as Promise<HistoryLite>; })
+    .catch((e) => { historyLite = null; throw e; }));
+
+export type Mate = { driverId: string; givenName: string; familyName: string };
+/**
+ * Team-mates per season: other drivers classified in that season's standings for a constructor
+ * the driver also drove for (one-off stand-ins included).
+ */
+export function seasonTeammates(h: HistoryLite, id: string): Map<string, Map<string, Mate[]>> {
+  const out = new Map<string, Map<string, Mate[]>>();
+  for (const [season, rows] of Object.entries(h.drivers)) {
+    const me = rows.find((r) => r[0] === id);
+    if (!me) continue;
+    const byTeam = new Map<string, Mate[]>();
+    for (const team of me[4] || []) {
+      const mates = rows
+        .filter((r) => r[0] !== id && (r[4] || []).includes(team))
+        .map((r) => {
+          const [givenName, familyName] = h.names.drivers[r[0]] || ["", r[0]];
+          return { driverId: r[0], givenName, familyName };
+        });
+      byTeam.set(team, mates);
+    }
+    out.set(season, byTeam);
+  }
+  return out;
+}
+/** Team-mates from a season's race results (for the live season, which the snapshot doesn't cover). */
+export function resultTeammates(races: Race[], id: string): Map<string, Mate[]> {
+  const out = new Map<string, Map<string, Mate>>();
+  for (const race of races) {
+    const me = race.Results?.find((r) => r.Driver.driverId === id);
+    if (!me) continue;
+    const team = me.Constructor.constructorId;
+    const m = out.get(team) || new Map<string, Mate>();
+    for (const r of race.Results || []) if (r.Driver.driverId !== id && r.Constructor.constructorId === team) m.set(r.Driver.driverId, r.Driver);
+    out.set(team, m);
+  }
+  return new Map([...out].map(([k, v]) => [k, [...v.values()]]));
+}

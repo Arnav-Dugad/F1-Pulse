@@ -15,6 +15,7 @@ import { Counter, Glass, Img, Page, Section, Segmented, Skeleton, Source, StateV
 import { DriverAvatar, Flag } from "../ui/media";
 import { Ring } from "../ui/charts";
 import { RankDelta, Tween } from "./_champ";
+import { ChampionshipDecider } from "./_season-decider";
 import type { Envelope, Race, Standing } from "../types";
 import "./scenarios.css";
 
@@ -97,7 +98,14 @@ export default function Scenarios(_: { route: Route }) {
 
       {!loading && !error && sc && rem && (
         <>
+          {list.length > 0 && (
+            <Section id="decider" title="Championship decider" subtitle="Exactly what each title contender needs — next weekend and beyond — from the official standings and the points still on offer.">
+              <ChampionshipDecider list={list} calendar={calendar} standingsRound={standingsRound} year={year} />
+              <Source value={official.value} />
+            </Section>
+          )}
           <Section
+            id="contention"
             title="Who can still win?"
             subtitle={rem.max > 0 ? `A driver stays in contention while their points plus everything still available (${pts(rem.max)}) reaches the leader's current total.` : "No points remain — the championship is settled."}
           >
@@ -110,7 +118,7 @@ export default function Scenarios(_: { route: Route }) {
           </Section>
 
           {list.length > 1 && (
-            <Section title="Simulate the next event" subtitle="Drag drivers into a finishing order and watch the table respond. Your scenario is separate from official results.">
+            <Section id="simulator" title="Simulate the next event" subtitle="Drag drivers into a finishing order and watch the table respond. Your scenario is separate from official results.">
               <Simulator list={list} year={year} sc={sc} rem={rem} next={next} />
             </Section>
           )}

@@ -16,6 +16,8 @@ import { Counter, Glass, Img, Page, Section, Segmented, Skeleton, Source, StateV
 import { CarImage, DriverAvatar, DriverPortrait, Flag, NumberArt, TeamLogo } from "../ui/media";
 import { Bar, LineChart } from "../ui/charts";
 import { RankDelta, Tween, emptyEnvelope, reducedMotionNow } from "./_champ";
+import { ConsistencyBoard, Lazy, PointsHeatmap, useOfficialRound, useSprints } from "./_season";
+import { ChampionshipModel } from "./_season-model";
 import type { Driver, Envelope, Standing, Team, TeamStanding } from "../types";
 import "./standings.css";
 
@@ -38,6 +40,8 @@ export default function Standings({ route }: { route: Route }) {
   const results = useData(() => allResults(season), [season]);
   const progress = useSeasonProgress(season, year);
   const cal = useCalendar(season);
+  const sprints = useSprints(season, year);
+  const official = useOfficialRound(season);
 
   /** Each driver's constructor at their most recent classified round (Constructors[] is not chronological). */
   const latest = useMemo(() => new Map((progress.value?.data.drivers || []).map((d) => [d.driver.driverId, d.team.constructorId])), [progress.value]);
@@ -67,6 +71,26 @@ export default function Standings({ route }: { route: Route }) {
   const p = progress.value?.data;
   const total = cal.value?.data.length || 0;
   const done = p?.rounds.length || 0;
+  const remaining = total > done;
+  const modelReady = !ds.loading && !cs.loading && !results.loading && !cal.loading && !official.loading;
+  const model = (initial: Kind) =>
+    modelReady ? (
+      <ChampionshipModel year={year} list={ds.value?.data || []} teams={cs.value?.data || []} races={results.value?.data || []} calendar={cal.value?.data || []}
+        standingsRound={official.value?.data || 0} latest={latest} hasTeams={hasTeams} initial={initial} />
+    ) : <Skeleton h={420} r={28} />;
+  const heatmap = (initial: Kind) => (
+    <Section id="points-heatmap" title="Points heatmap" subtitle="Every round at a glance — darker cells scored more. Hover, tap or tab through a cell for the result.">
+      {results.error ? <StateView error={results.error} onRetry={results.reload} /> : <Lazy height={440}>{() => <PointsHeatmap results={results.value} sprints={sprints.value} year={year} hasTeams={hasTeams} progress={p} initial={initial} />}</Lazy>}
+      <Source value={results.value} />
+    </Section>
+  );
+  const odds = (initial: Kind) =>
+    remaining && done > 0 ? (
+      <Section id="title-odds" title="Championship probability" subtitle="Thousands of simulated season finishes from current form. A model, not a prediction.">
+        <Lazy height={480}>{() => model(initial)}</Lazy>
+        <Source value={results.value} label="Form from" />
+      </Section>
+    ) : null;
 
   return (
     <Page className="st">
@@ -98,7 +122,8 @@ export default function Standings({ route }: { route: Route }) {
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         >
           {view === "drivers" && (
-            <Section title="Drivers' Championship" subtitle="Official standings. Podiums are counted from Grand Prix classifications.">
+            <>
+            <Section id="drivers-table" title="Drivers' Championship" subtitle="Official standings. Podiums are counted from Grand Prix classifications.">
               {ds.loading || ds.error || !ds.value?.data.length ? (
                 <StateView loading={ds.loading} error={ds.error} onRetry={ds.reload} empty emptyTitle="No standings yet" emptyText="The championship table appears after the first Grand Prix of the season." skeleton={<TableSkeleton />} />
               ) : (
@@ -106,9 +131,17 @@ export default function Standings({ route }: { route: Route }) {
               )}
               <Source value={ds.value} />
             </Section>
+            {odds("drivers")}
+            {heatmap("drivers")}
+            <Section id="consistency" title="Consistency" subtitle="Who delivers week in, week out — the spread of Grand Prix finishes and how often a race ends early.">
+              {results.error ? <StateView error={results.error} onRetry={results.reload} /> : <Lazy height={520}>{() => (results.value ? <ConsistencyBoard races={results.value.data} year={year} /> : <Skeleton h={520} r={28} />)}</Lazy>}
+              <Source value={results.value} />
+            </Section>
+            </>
           )}
           {view === "constructors" && (
-            <Section title="Constructors' Championship" subtitle="Official standings. Podiums count every Grand Prix top-three finish by the team's cars.">
+            <>
+            <Section id="constructors-table" title="Constructors' Championship" subtitle="Official standings. Podiums count every Grand Prix top-three finish by the team's cars.">
               {!hasTeams ? (
                 <StateView empty emptyTitle="No constructors' championship" emptyText={`The constructors' championship was first awarded in ${CONSTRUCTORS_FROM}. Choose a later season to see team standings.`} />
               ) : cs.loading || cs.error || !cs.value?.data.length ? (
@@ -118,6 +151,9 @@ export default function Standings({ route }: { route: Route }) {
               )}
               <Source value={cs.value} />
             </Section>
+            {hasTeams && odds("constructors")}
+            {heatmap(hasTeams ? "constructors" : "drivers")}
+            </>
           )}
           {view === "story" && <SeasonStory route={route} progress={progress} hasTeams={hasTeams} latest={latest} teamByRound={teamByRound} />}
         </motion.div>
@@ -594,9 +630,19 @@ function SeasonStory({ route, progress, hasTeams, latest, teamByRound }: { route
   return (
     <>
       <Section
-        title="The race for the title"
-        subtitle={`Cumulative points after every round — race and sprint classifications summed.${hasTeams ? "" : " The constructors' championship began in 1958."}`}
+        id="scroll-story"
+        title="Scroll through the season"
+        subtitle="Keep scrolling — the championship advances one round at a time."
         action={kindToggle}
+      >
+        <ScrollStory key={kind} p={p} kind={kind} />
+        <ProgressNote progress={progress.value?.data} kind="both" />
+      </Section>
+
+      <Section
+        id="title-race"
+        title="Replay the title race"
+        subtitle={`Cumulative points after every round — race and sprint classifications summed.${hasTeams ? "" : " The constructors' championship began in 1958."}`}
       >
         <BarRace
           key={kind}
@@ -608,12 +654,12 @@ function SeasonStory({ route, progress, hasTeams, latest, teamByRound }: { route
         <Source value={progress.value} />
       </Section>
 
-      <Section title="Every position, every round" subtitle="Championship rank after each round for the current top ten. Hover or use the arrow keys to scrub.">
+      <Section id="bump" title="Every position, every round" subtitle="Championship rank after each round for the current top ten. Hover or use the arrow keys to scrub.">
         <BumpChart p={p} kind={kind} />
       </Section>
 
       <div ref={rewindRef} className="st-anchor" />
-      <Section title="Official round-by-round rewind" subtitle="The provider's published table after the round you choose — loaded on demand." action={<span className="chip blue"><History />Official data</span>}>
+      <Section id="rewind" title="Official round-by-round rewind" subtitle="The provider's published table after the round you choose — loaded on demand." action={<span className="chip blue"><History />Official data</span>}>
         <RoundRewind rounds={p.rounds} kind={kind} round={selected} setRound={setRound} teamMap={teamByRound.get(selected) || latest} />
       </Section>
     </>
@@ -706,44 +752,7 @@ function BarRace({ p, kind, onOfficial }: { p: SeasonProgress; kind: Kind; onOff
         </div>
       </div>
 
-      <ol className="st-race-list" aria-label={`Top ${rows.length} after round ${r.round}`}>
-        <AnimatePresence initial={false}>
-          {rows.map((e, i) => {
-            const pct = Math.max(1.5, (e.value / max) * 100);
-            return (
-              <motion.li
-                key={e.id}
-                layout="position"
-                initial={{ opacity: 0, x: -12 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, transition: { duration: 0.2 } }}
-                transition={{ layout: { type: "spring", stiffness: 210, damping: 28, mass: 0.9 }, default: { duration: 0.3 } }}
-                className={cx("st-race-row", i === 0 && "first")}
-                style={{ "--tint": e.color } as CSSProperties}
-              >
-                <span className="st-race-pos">{i + 1}</span>
-                <span className="st-race-who">
-                  {kind === "drivers" ? (
-                    <DriverAvatar id={e.id} name={e.name} year={year} team={e.teamId} size={34} />
-                  ) : (
-                    <TeamLogo id={e.id} name={e.name} year={year} size={34} />
-                  )}
-                  <span className="st-race-name">
-                    <b className="st-race-full">{kind === "drivers" ? e.driver?.familyName : teamShortName(e.team.name, year)}</b>
-                    <b className="st-race-short">{kind === "drivers" ? e.short : initials(teamShortName(e.team.name, year))}</b>
-                    {kind === "drivers" && <small>{teamShortName(e.team.name, year)}</small>}
-                  </span>
-                </span>
-                <span className="st-race-track">
-                  <motion.span className="st-race-bar" initial={false} animate={{ width: pct + "%" }} transition={{ duration: dur, ease: [0.33, 1, 0.68, 1] }}>
-                    <span className="st-race-value"><Tween value={e.value} duration={dur} /></span>
-                  </motion.span>
-                </span>
-              </motion.li>
-            );
-          })}
-        </AnimatePresence>
-      </ol>
+      <RaceRows rows={rows} kind={kind} year={year} max={max} dur={dur} label={`Top ${rows.length} after round ${r.round}`} />
 
       <div className="st-race-controls">
         <div className="st-transport">
@@ -787,6 +796,160 @@ function BarRace({ p, kind, onOfficial }: { p: SeasonProgress; kind: Kind; onOff
         </div>
       </div>
       <p className="st-foot inset"><Info size={13} />Summed from published race and sprint classifications. Post-race penalties or points adjustments may make this differ slightly from the official table below. <span className="kbd">Space</span> play/pause · <span className="kbd">←</span><span className="kbd">→</span> step</p>
+    </div>
+  );
+}
+
+
+/** The bar rows shared by the replay and the scroll-scrubbed story. */
+function RaceRows({ rows, kind, year, max, dur, label }: { rows: Entry[]; kind: Kind; year: string; max: number; dur: number; label: string }) {
+  return (
+    <ol className="st-race-list" aria-label={label}>
+      <AnimatePresence initial={false}>
+        {rows.map((e, i) => {
+          const pct = Math.max(1.5, (e.value / max) * 100);
+          return (
+            <motion.li
+              key={e.id}
+              layout="position"
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, transition: { duration: 0.2 } }}
+              transition={{ layout: { type: "spring", stiffness: 210, damping: 28, mass: 0.9 }, default: { duration: 0.3 } }}
+              className={cx("st-race-row", i === 0 && "first")}
+              style={{ "--tint": e.color } as CSSProperties}
+            >
+              <span className="st-race-pos">{i + 1}</span>
+              <span className="st-race-who">
+                {kind === "drivers" ? (
+                  <DriverAvatar id={e.id} name={e.name} year={year} team={e.teamId} size={34} />
+                ) : (
+                  <TeamLogo id={e.id} name={e.name} year={year} size={34} />
+                )}
+                <span className="st-race-name">
+                  <b className="st-race-full">{kind === "drivers" ? e.driver?.familyName : teamShortName(e.team.name, year)}</b>
+                  <b className="st-race-short">{kind === "drivers" ? e.short : initials(teamShortName(e.team.name, year))}</b>
+                  {kind === "drivers" && <small>{teamShortName(e.team.name, year)}</small>}
+                </span>
+              </span>
+              <span className="st-race-track">
+                <motion.span className="st-race-bar" initial={false} animate={{ width: pct + "%" }} transition={{ duration: dur, ease: [0.33, 1, 0.68, 1] }}>
+                  <span className="st-race-value"><Tween value={e.value} duration={dur} /></span>
+                </motion.span>
+              </span>
+            </motion.li>
+          );
+        })}
+      </AnimatePresence>
+    </ol>
+  );
+}
+
+/* ── Scroll-scrubbed story ── */
+function ScrollStory({ p, kind }: { p: SeasonProgress; kind: Kind }) {
+  const { year } = usePrefs();
+  const n = p.rounds.length;
+  const reduced = reducedMotionNow();
+  const [frame, setFrame] = useState(reduced ? n - 1 : 0);
+  const track = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = track.current;
+    if (!el || reduced) return;
+    let raf = 0, active = false;
+    const measure = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      const span = r.height - window.innerHeight;
+      const prog = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 1;
+      el.style.setProperty("--p", prog.toFixed(4));
+      setFrame(Math.min(n - 1, Math.floor(prog * n)));
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(measure); };
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !active) {
+        active = true;
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+      } else if (!e.isIntersecting && active) {
+        active = false;
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+      }
+      measure();
+    });
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [n, reduced]);
+
+  const all = useMemo(() => entriesAt(p, kind, frame), [p, kind, frame]);
+  const rows = all.filter((e) => e.rank !== 999 || e.value > 0).slice(0, 10);
+  const max = Math.max(1, rows[0]?.value || 0);
+  const r = p.rounds[frame];
+  const leader = rows[0], second = rows[1];
+  const skip = () => {
+    const el = track.current;
+    if (!el) return;
+    window.scrollTo({ top: window.scrollY + el.getBoundingClientRect().bottom - window.innerHeight * 0.4, behavior: "auto" });
+  };
+
+  const stage = (
+    <div className="glass st-ss-stage">
+      <div className="st-race-head">
+        <div className="st-race-round" aria-live="polite">
+          <span className="st-race-r">
+            <small>Round</small>
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.b key={r.round} initial={{ y: "60%", opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: "-60%", opacity: 0 }} transition={{ type: "spring", stiffness: 420, damping: 34 }}>{r.round}</motion.b>
+            </AnimatePresence>
+          </span>
+          <span className="st-race-event">
+            <span className="row" style={{ "--gap": "10px" } as CSSProperties}><Flag country={r.country} large /><strong>{shortRace(r.raceName)}</strong></span>
+            <small>{formatDay(r.date, { year: "numeric" })} · {frame + 1} of {n}</small>
+          </span>
+        </div>
+        {leader && (
+          <span className="st-race-lead" style={{ "--tint": leader.color } as CSSProperties}>
+            <Trophy size={14} />
+            <span><small>Leader</small><b>{kind === "drivers" ? leader.driver?.familyName : teamShortName(leader.team.name, year)}</b></span>
+            {second && <span className="st-race-margin">+<Tween value={leader.value - second.value} duration={0.4} /></span>}
+          </span>
+        )}
+      </div>
+      <RaceRows rows={rows} kind={kind} year={year} max={max} dur={0.45} label={`Top ${rows.length} after round ${r.round}`} />
+      <div className="st-ss-rail" aria-hidden>
+        <span className="st-ss-rail-fill" style={reduced ? ({ "--p": n > 1 ? frame / (n - 1) : 1 } as CSSProperties) : undefined} />
+        {p.rounds.map((x, i) => <i key={x.round} className={cx(i <= frame && "on")} style={{ left: `${n > 1 ? (i / (n - 1)) * 100 : 50}%` }} />)}
+      </div>
+    </div>
+  );
+
+  if (reduced)
+    return (
+      <div className="st-ss-static reveal">
+        {stage}
+        <label className="st-ss-slider">
+          <span className="small muted">Round {r.round} · {shortRace(r.raceName)}</span>
+          <input type="range" className="st-range" min={0} max={n - 1} value={frame} onChange={(e) => setFrame(+e.target.value)} aria-label="Round" aria-valuetext={`Round ${r.round}: ${r.raceName}`}
+            style={{ "--p": (n > 1 ? (frame / (n - 1)) * 100 : 100) + "%" } as CSSProperties} />
+        </label>
+      </div>
+    );
+
+  return (
+    <div className="st-ss" ref={track} style={{ "--n": n } as CSSProperties}>
+      <motion.div layoutRoot className="st-ss-sticky">
+        {stage}
+        <div className="st-ss-hint">
+          <span className={cx("st-ss-cue", frame > 0 && "gone")}><ChevronDown size={14} />Scroll to advance</span>
+          <button className="btn sm plain" onClick={skip}>Skip to the end<SkipForward /></button>
+        </div>
+      </motion.div>
     </div>
   );
 }

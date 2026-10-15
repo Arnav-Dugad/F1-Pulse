@@ -1,14 +1,15 @@
+import { sharedTransition } from "../ui/cards";
 import { ProgressNote } from "../ui/progress-note";
 import { useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import {
-  ArrowLeft, ArrowRight, BookOpen, CircleSlash, Crown, ExternalLink, Gauge, Medal, Swords, Target, Trophy, Users, Zap,
+  ArrowLeft, ArrowRight, BookOpen, CircleSlash, Crown, ExternalLink, GitBranch, Gauge, Medal, Swords, Target, Trophy, Users, Zap,
 } from "lucide-react";
 import { paginate, standings, standingsHistory, teamSeasonResults, teamStandings, teams, useData, wiki, wikiTitle, type StandingsList } from "../api";
 import { usePrefs } from "../app/prefs";
 import { Link, type Route } from "../lib/router";
 import { shortRace, useSeasonProgress } from "../lib/season";
-import { driverMedia, fullName, initials, isLightColor, teamColor, teamMedia, teamShortName } from "../lib/media";
+import { driverMedia, fullName, initials, isLightColor, MEDIA_SEASON, teamColor, teamGallery, teamMedia, teamShortName } from "../lib/media";
 import { plural, pts } from "../lib/format";
 import { headToHead } from "../math.mjs";
 import { Counter, Glass, Img, Page, Section, Skeleton, Source, StateView, cx, useAmbient, useTitle } from "../ui/core";
@@ -16,6 +17,7 @@ import { CarImage, DriverAvatar, DriverPortrait, Flag, NumberArt, TeamLogo } fro
 import { FavoriteButton } from "../ui/cards";
 import { LineChart } from "../ui/charts";
 import type { Driver, Envelope, Race, Standing, Team as TeamT, TeamStanding } from "../types";
+import { Gallery } from "../ui/gallery";
 import "./team.css";
 
 const EMPTY = { data: [] as Race[], meta: undefined } as unknown as Envelope<Race[]>;
@@ -181,7 +183,13 @@ export default function Team({ route }: { route: Route }) {
           </>
         )}
 
+        <TeamGallery id={id} name={name} />
         <History id={id} name={name} hist={hist} year={year} />
+        <Link to={`lineage?team=${id}`} className="tm-lineage glass interactive reveal">
+          <span className="tm-lineage-icon" aria-hidden><GitBranch size={20} /></span>
+          <span className="tm-lineage-text"><strong>Team history &amp; lineage</strong><small>How {name} connects to the teams that came before and after it.</small></span>
+          <ArrowRight size={18} className="tm-lineage-arrow" />
+        </Link>
         <About team={team} name={name} />
       </div>
     </Page>
@@ -252,7 +260,7 @@ function Hero({ id, team, year, standing, count, points, wins }: {
       {media && (
         <motion.div className="tm-hero-car" style={still ? undefined : { x: carX }}>
           <span className="tm-hero-car-streak" aria-hidden />
-          <CarImage id={id} name={name} year={year} view="side" eager className="tm-hero-car-img" />
+          <CarImage id={id} name={name} year={year} view="side" eager className="tm-hero-car-img" style={sharedTransition("team", id)} />
           <span className="tm-hero-car-shadow" aria-hidden />
         </motion.div>
       )}
@@ -823,6 +831,17 @@ function About({ team, name }: { team: TeamT; name: string }) {
           </div>
         </Glass>
       )}
+    </Section>
+  );
+}
+
+/* ───────────────────────── Gallery ───────────────────────── */
+function TeamGallery({ id, name }: { id: string; name: string }) {
+  const images = teamGallery(id);
+  if (!images.length) return null;
+  return (
+    <Section id="gallery" title="Trackside gallery" subtitle={`${name} on track · ${MEDIA_SEASON} season photography`}>
+      <Gallery images={images} label={`${name} trackside photos`} />
     </Section>
   );
 }

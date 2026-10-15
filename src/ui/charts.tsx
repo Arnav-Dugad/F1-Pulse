@@ -70,6 +70,7 @@ export function LineChart({
 }) {
   const [ref, width] = useWidth<HTMLDivElement>();
   const [hover, setHover] = useState<number | null>(null);
+  const [hot, setHot] = useState<string | null>(null);
   const pad = { l: 44, r: 16, t: 14, b: 30 };
   const w = Math.max(0, width - pad.l - pad.r), h = height - pad.t - pad.b;
   const all = series.flatMap((s) => s.values.filter((v): v is number => v !== null && Number.isFinite(v)));
@@ -108,7 +109,7 @@ export function LineChart({
       aria-label={ariaLabel}
       onPointerMove={(e) => pick(e.clientX)}
       onPointerDown={(e) => pick(e.clientX)}
-      onPointerLeave={() => setHover(null)}
+      onPointerLeave={() => { setHover(null); setHot(null); }}
       onBlur={() => setHover(null)}
       onKeyDown={(e) => {
         if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
@@ -140,8 +141,15 @@ export function LineChart({
           {series.map((s) => {
             const segs = segments(s.values, x, y);
             const dim = focus && focus !== s.id;
+            const lifted = (focus || hot) === s.id;
             return (
-              <g key={s.id + drawKey} onPointerEnter={() => onFocus?.(s.id)} onPointerLeave={() => onFocus?.(null)}>
+              <g
+                key={s.id + drawKey}
+                className={cx("series-group", lifted && "lifted")}
+                style={{ color: s.color } as CSSProperties}
+                onPointerEnter={() => { setHot(s.id); onFocus?.(s.id); }}
+                onPointerLeave={() => { setHot((h) => (h === s.id ? null : h)); onFocus?.(null); }}
+              >
                 {area && segs.map((seg, k) => (
                   <path key={"a" + k} className="area" fill={`url(#fill-${s.id})`} d={(curve ? smoothPath(seg) : "M" + seg.join("L")) + `L${seg.at(-1)![0]},${pad.t + h}L${seg[0][0]},${pad.t + h}Z`} style={{ opacity: dim ? 0.04 : undefined }} />
                 ))}
@@ -155,6 +163,9 @@ export function LineChart({
                     style={{ strokeWidth: focus === s.id ? 3.4 : undefined }}
                   />
                 ))}
+                {segs.map((seg, k) => seg.length > 1 ? (
+                  <path key={"h" + k} className="series-hit" d={curve ? smoothPath(seg) : "M" + seg.join("L")} />
+                ) : null)}
                 {segs.map((seg, k) => seg.length === 1 ? <circle key={"p" + k} cx={seg[0][0]} cy={seg[0][1]} r={3} fill={s.color} /> : null)}
               </g>
             );

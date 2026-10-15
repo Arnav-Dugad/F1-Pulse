@@ -2,27 +2,50 @@ import media from "../data/media.json";
 import { useEffect, useState } from "react";
 import type { Driver, Team } from "../types";
 
-/** Official imagery exists for the 2026 grid only; other seasons get era-neutral treatments. */
+/**
+ * Official imagery: the full modern set (portraits, number art, logos, cars) for 2024–2026, and
+ * official driver photos, cars and logos for 2019–2023 (`seasons` in media.json). Seasons without
+ * imagery get era-neutral treatments — a modern photo is never shown for an older season.
+ */
 export const MEDIA_SEASON = "2026";
-export const isMediaSeason = (year: string) => year === MEDIA_SEASON;
+export const isMediaSeason = (year: string) => year === MEDIA_SEASON || !!(media as MediaFile).seasons?.[year];
 
-type DriverMedia = { team: string; front: string | null; card: string | null; number: string | null; head?: string };
-type TeamMedia = { slug: string; colour: string; accessible: string; logo: string; logoWhite: string; car: string; carFront: string; drivers: string[] };
+/** `front`/`card` are transparent full-length cut-outs (2024+); `photo` is a framed studio portrait (2019–2023). */
+export type DriverMedia = { team: string; front: string | null; card: string | null; number: string | null; head?: string; photo?: string };
+export type TeamMedia = { slug?: string; colour?: string; accessible?: string; logo: string; logoWhite?: string; car?: string; carFront?: string; carLeft?: string; drivers?: string[] };
+export type GalleryImage = { src: string; caption?: string; credit?: string };
+type MediaFile = {
+  drivers: Record<string, DriverMedia>;
+  teams: Record<string, TeamMedia>;
+  circuits: Record<string, { hero?: string; map?: string }>;
+  seasons?: Record<string, { drivers: Record<string, DriverMedia>; teams: Record<string, TeamMedia> }>;
+  galleries?: { drivers?: Record<string, GalleryImage[]>; teams?: Record<string, GalleryImage[]> };
+};
+const file = media as MediaFile;
 
 const driverAliases: Record<string, string> = { lindblad: "arvid_lindblad" };
 const teamAliases: Record<string, string> = { racing_bulls: "rb", haas_f1_team: "haas" };
 
 export function driverMedia(driverId: string | undefined, year: string): DriverMedia | null {
-  if (!driverId || !isMediaSeason(year)) return null;
-  return (media.drivers as Record<string, DriverMedia>)[driverAliases[driverId] || driverId] || null;
+  if (!driverId) return null;
+  const id = driverAliases[driverId] || driverId;
+  if (year === MEDIA_SEASON) return file.drivers[id] || null;
+  return file.seasons?.[year]?.drivers[id] || null;
 }
 export function teamMedia(constructorId: string | undefined, year: string): TeamMedia | null {
-  if (!constructorId || !isMediaSeason(year)) return null;
-  return (media.teams as Record<string, TeamMedia>)[teamAliases[constructorId] || constructorId] || null;
+  if (!constructorId) return null;
+  const id = teamAliases[constructorId] || constructorId;
+  if (year === MEDIA_SEASON) return file.teams[id] || null;
+  return file.seasons?.[year]?.teams[constructorId] || file.seasons?.[year]?.teams[id] || null;
 }
+/** Trackside action photography for a driver or team (current season). */
+export const driverGallery = (driverId?: string): GalleryImage[] =>
+  (driverId && file.galleries?.drivers?.[driverAliases[driverId] || driverId]) || [];
+export const teamGallery = (constructorId?: string): GalleryImage[] =>
+  (constructorId && file.galleries?.teams?.[teamAliases[constructorId] || constructorId]) || [];
 
 export function circuitMedia(circuitId?: string): { hero?: string; map?: string } {
-  return (circuitId && (media.circuits as Record<string, { hero?: string; map?: string }>)[circuitId]) || {};
+  return (circuitId && file.circuits[circuitId]) || {};
 }
 type Outline = { viewBox: string; paths: string[] };
 let tracks: Record<string, Outline> | null = null;
@@ -53,7 +76,7 @@ const historical: Record<string, string> = {
   virgin: "#C51D23", alphatauri_honda: "#5E8FAA", prost: "#1F3F9A", march: "#CC0000", wolf: "#1C2B4B",
 };
 const official: Record<string, string> = Object.fromEntries(
-  Object.entries(media.teams).map(([id, t]) => [id, (t as TeamMedia).colour]),
+  Object.entries(file.teams).map(([id, t]) => [id, t.colour || ""]),
 );
 export function teamColor(team?: Pick<Team, "constructorId"> | string): string {
   const id = typeof team === "string" ? team : team?.constructorId || "";

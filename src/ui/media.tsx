@@ -40,11 +40,11 @@ export function DriverPortrait({ id, name, year, variant = "front", className, e
 }
 
 /* ─────────── Race number artwork ─────────── */
-export function NumberArt({ id, number, year, className, style }: {
-  id?: string; number?: string; year: string; className?: string; style?: CSSProperties;
+export function NumberArt({ id, number, year, className, style, eager }: {
+  id?: string; number?: string; year: string; className?: string; style?: CSSProperties; eager?: boolean;
 }) {
   const m = driverMedia(id, year);
-  if (m?.number) return <Img src={m.number} alt={number ? `Number ${number}` : ""} className={cx("number-art", className)} style={style} />;
+  if (m?.number) return <Img src={m.number} alt={number ? `Number ${number}` : ""} className={cx("number-art", className)} style={style} eager={eager} />;
   if (!number) return null;
   return <span className={cx("number-art number-text", className)} style={style} aria-label={`Number ${number}`}>{number}</span>;
 }
@@ -58,7 +58,7 @@ export function TeamLogo({ id, name, year, size = 40, variant = "badge", classNa
   const light = isLightColor(tint);
   if (variant !== "badge")
     return m ? (
-      <Img src={variant === "white" ? m.logoWhite : m.logo} alt={`${name} logo`} className={className} style={{ width: size, height: size, objectFit: "contain" }} />
+      <Img src={variant === "white" ? m.logoWhite || m.logo : m.logo} alt={`${name} logo`} className={className} style={{ width: size, height: size, objectFit: "contain" }} />
     ) : (
       <span className={cx("logo-badge", light && "light-tint", className)} style={{ "--s": size + "px", "--tint": tint } as CSSProperties}>
         <span className="initials">{initials(name)}</span>
@@ -71,7 +71,7 @@ export function TeamLogo({ id, name, year, size = 40, variant = "badge", classNa
       role="img"
       aria-label={`${name} logo`}
     >
-      {m ? <Img src={light ? m.logo : m.logoWhite} alt="" /> : <span className="initials" aria-hidden>{initials(name)}</span>}
+      {m ? <Img src={light || !m.logoWhite ? m.logo : m.logoWhite} alt="" /> : <span className="initials" aria-hidden>{initials(name)}</span>}
     </span>
   );
 }
@@ -80,8 +80,9 @@ export function CarImage({ id, name, year, view = "side", className, eager, styl
   id?: string; name: string; year: string; view?: "side" | "front"; className?: string; eager?: boolean; style?: CSSProperties;
 }) {
   const m = teamMedia(id, year);
-  if (!m) return null;
-  return <Img src={view === "front" ? m.carFront : m.car} alt={`${name} ${year} car`} className={className} eager={eager} style={style} />;
+  const src = view === "front" ? m?.carFront : m?.car;
+  if (!src) return null;
+  return <Img src={src} alt={`${name} ${year} car`} className={className} eager={eager} style={style} />;
 }
 
 /* ─────────── Flags ─────────── */

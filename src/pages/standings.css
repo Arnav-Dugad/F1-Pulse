@@ -227,3 +227,35 @@ a.st-ident-name:hover, a.st-ident:hover .st-ident-name { text-decoration: none; 
   .st-rewind-nav { width: 100%; }
   .st-rewind-select { flex: 1; min-width: 0; }
 }
+
+/* ───────────────────────── Scroll-scrubbed story ───────────────────────── */
+.st-ss { --ss-step: 26vh; position: relative; height: calc(100vh + var(--n, 10) * var(--ss-step)); height: calc(100svh + var(--n, 10) * var(--ss-step)); view-timeline: --st-ss block; }
+.st-ss-sticky { position: sticky; top: calc(var(--nav-h) + 10px); height: calc(100vh - var(--nav-h) - 24px); height: calc(100svh - var(--nav-h) - 24px); display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 10px; }
+.st-ss-stage { --ss-row: clamp(26px, calc((100svh - var(--nav-h) - 270px) / 10 - 7px), 46px); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; padding: clamp(16px, 2.2vw, 28px); border-radius: var(--r-2xl); min-height: 0; overflow: hidden; }
+.st-ss-stage .st-race-head { margin-bottom: 12px; }
+.st-ss-stage .st-race-list { align-content: start; gap: 6px; }
+.st-ss-stage .st-race-row { height: var(--ss-row); }
+.st-ss-stage .st-race-r b { font-size: clamp(44px, 5vw, 72px); }
+.st-ss-rail { position: relative; height: 4px; margin: 16px 6px 4px; border-radius: 99px; background: var(--fill-2); }
+.st-ss-rail-fill { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), var(--accent)); transform-origin: left; transform: scaleX(var(--p, 0)); }
+.st-ss .st-ss-rail-fill { transform: scaleX(var(--p, 0)); }
+.st-ss-rail i { position: absolute; top: 50%; width: 6px; height: 6px; border-radius: 50%; translate: -50% -50%; background: var(--fill-1); transition: background-color 0.3s, transform 0.4s var(--spring); }
+.st-ss-rail i.on { background: var(--label); }
+/* Native scroll-driven progress where the browser supports it; the JS sets --p everywhere else. */
+@supports (animation-timeline: view()) {
+  .st-ss .st-ss-rail-fill { transform: none; animation: st-ss-fill linear both; animation-timeline: --st-ss; animation-range: contain 0% contain 100%; }
+}
+@keyframes st-ss-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.st-ss-hint { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 6px; }
+.st-ss-cue { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 650; color: var(--label-3); transition: opacity 0.5s var(--ease); animation: st-ss-bob 2.2s var(--ease) infinite; }
+.st-ss-cue.gone { opacity: 0; }
+@keyframes st-ss-bob { 50% { transform: translateY(3px); } }
+.st-ss-static { display: grid; gap: 14px; }
+.st-ss-slider { display: grid; gap: 8px; padding: 0 6px; }
+@media (max-width: 640px) {
+  .st-ss { --ss-step: 22vh; }
+  .st-ss-stage { --ss-row: clamp(24px, calc((100svh - var(--nav-h) - 330px) / 10 - 6px), 40px); padding: 14px; }
+  .st-ss-stage .st-race-head { gap: 10px; }
+  .st-ss-stage .st-race-lead { padding: 6px 10px; }
+  .st-ss-sticky { height: calc(100svh - var(--nav-h) - 110px); }
+}

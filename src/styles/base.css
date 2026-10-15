@@ -1,10 +1,13 @@
 /* ───────────────────────── F1 Pulse · Design tokens ───────────────────────── */
-@font-face { font-family: "Inter"; font-weight: 400; font-display: swap; src: url(/assets/inter-400.woff) format("woff"); }
-@font-face { font-family: "Inter"; font-weight: 500; font-display: swap; src: url(/assets/inter-500.woff) format("woff"); }
-@font-face { font-family: "Inter"; font-weight: 600; font-display: swap; src: url(/assets/inter-600.woff) format("woff"); }
-@font-face { font-family: "Inter"; font-weight: 700; font-display: swap; src: url(/assets/inter-700.woff) format("woff"); }
-@font-face { font-family: "Inter"; font-weight: 800; font-display: swap; src: url(/assets/inter-800.woff) format("woff"); }
-@font-face { font-family: "Inter"; font-weight: 900; font-display: swap; src: url(/assets/inter-900.woff) format("woff"); }
+/* Inter 4 variable (rsms/inter v4.1, SIL OFL 1.1 — see /assets/Inter-OFL.txt): one file covers weights
+   100–900 and the optical-size axis (opsz 14–32), so display type tightens automatically. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/assets/InterVariable.woff2) format("woff2");
+}
 
 @property --ambient-a { syntax: "<color>"; inherits: true; initial-value: #e8002d; }
 @property --ambient-b { syntax: "<color>"; inherits: true; initial-value: #3671c6; }
@@ -66,6 +69,11 @@
   --gutter: clamp(16px, 3.2vw, 40px);
   --nav-h: 60px;
 
+  /* Motion choreography tokens: hero copy → stats → cards, never more than ~600 ms of delay. */
+  --rise-step: 70ms;
+  --reveal-step: 60ms;
+  --reveal-dur: 0.9s;
+
   --ambient-a: #e8002d;
   --ambient-b: #3671c6;
   transition: --ambient-a 1.4s var(--ease), --ambient-b 1.4s var(--ease);
@@ -73,23 +81,26 @@
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #eef0f5;
+  --bg: #f1f2f7;
   --bg-elevated: #ffffff;
   --label: rgba(0, 0, 0, 0.9);
-  --label-2: rgba(60, 60, 67, 0.72);
-  --label-3: rgba(60, 60, 67, 0.5);
-  --label-4: rgba(60, 60, 67, 0.24);
-  --separator: rgba(0, 0, 0, 0.08);
+  /* Stronger secondary/tertiary labels so 11–13px text keeps ≥4.5:1 / ≥3.5:1 on glass. */
+  --label-2: rgba(50, 50, 58, 0.8);
+  --label-3: rgba(50, 50, 58, 0.64);
+  --label-4: rgba(60, 60, 67, 0.28);
+  --separator: rgba(0, 0, 0, 0.085);
   --fill-1: rgba(120, 120, 128, 0.2);
   --fill-2: rgba(120, 120, 128, 0.14);
   --fill-3: rgba(118, 118, 128, 0.1);
   --fill-4: rgba(118, 118, 128, 0.06);
-  --glass: rgba(255, 255, 255, 0.58);
-  --glass-strong: rgba(255, 255, 255, 0.82);
-  --glass-thin: rgba(255, 255, 255, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.7);
-  --glass-edge: rgba(255, 255, 255, 0.95);
-  --glass-shadow: 0 1px 2px rgba(15, 20, 40, 0.06), 0 22px 50px -26px rgba(15, 20, 40, 0.28);
+  --glass: rgba(255, 255, 255, 0.6);
+  --glass-strong: rgba(255, 255, 255, 0.84);
+  --glass-thin: rgba(255, 255, 255, 0.42);
+  --glass-border: rgba(255, 255, 255, 0.85);
+  --glass-edge: #fff;
+  /* A hairline of ink keeps white glass defined against the pale backdrop. */
+  --glass-shadow: 0 0 0 0.5px rgba(20, 24, 40, 0.07), 0 1px 2px rgba(15, 20, 40, 0.06), 0 22px 50px -26px rgba(30, 36, 70, 0.3);
+  --glass-blur: blur(30px) saturate(190%) brightness(1.04);
   --accent: #e5261c;
   --green: #1fa84a;
   --yellow: #c99700;
@@ -115,6 +126,7 @@ body {
   letter-spacing: -0.008em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
   font-feature-settings: "cv11", "ss01", "ss03";
   overflow-x: hidden;
 }
@@ -166,9 +178,12 @@ table { border-collapse: collapse; width: 100%; }
     radial-gradient(ellipse 120% 80% at 50% -10%, transparent 40%, var(--bg) 90%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-:root[data-theme="light"] .ambient::before { opacity: 0.26; }
-:root[data-theme="light"] .ambient::after { opacity: 0.2; }
-:root[data-theme="light"] .ambient i { opacity: 0.14; }
+/* Light: pastel, luminous washes instead of dim blobs, plus a soft top light source. */
+:root[data-theme="light"] .ambient { background: radial-gradient(120% 70% at 50% -10%, #fff 0%, transparent 60%), linear-gradient(180deg, #f6f7fb, var(--bg) 60%); }
+:root[data-theme="light"] .ambient::before { opacity: 0.2; background: radial-gradient(circle, color-mix(in srgb, var(--ambient-a) 70%, #fff), transparent 66%); }
+:root[data-theme="light"] .ambient::after { opacity: 0.18; background: radial-gradient(circle, color-mix(in srgb, var(--ambient-b) 70%, #fff), transparent 66%); }
+:root[data-theme="light"] .ambient i { opacity: 0.12; }
+:root[data-theme="light"] .ambient b { background: radial-gradient(ellipse 120% 80% at 50% -10%, transparent 45%, color-mix(in srgb, var(--bg) 70%, transparent) 95%); }
 @keyframes drift-a { to { transform: translate3d(14vw, 10vh, 0) scale(1.15); } }
 @keyframes drift-b { to { transform: translate3d(-12vw, 18vh, 0) scale(0.9); } }
 @keyframes drift-c { to { transform: translate3d(-18vw, -12vh, 0) scale(1.2); } }
@@ -198,7 +213,8 @@ table { border-collapse: collapse; width: 100%; }
   pointer-events: none;
   z-index: 1;
 }
-:root[data-theme="light"] .glass::before { background: linear-gradient(160deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.3) 40%, rgba(255, 255, 255, 0.6)); }
+:root[data-theme="light"] .glass::before { padding: 1.25px; background: linear-gradient(160deg, #fff, rgba(255, 255, 255, 0.45) 35%, rgba(255, 255, 255, 0.15) 60%, rgba(255, 255, 255, 0.85)); }
+:root[data-theme="light"] .glass { box-shadow: var(--glass-shadow), inset 0 1px 0 0 var(--glass-edge), inset 0 -1px 0 0 rgba(255, 255, 255, 0.5); }
 .glass-strong { background: var(--glass-strong); }
 .glass-thin { background: var(--glass-thin); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); }
 .tinted { background: linear-gradient(145deg, color-mix(in srgb, var(--tint, var(--accent)) 30%, transparent), color-mix(in srgb, var(--tint, var(--accent)) 6%, transparent) 60%), var(--glass); }
@@ -215,5 +231,15 @@ table { border-collapse: collapse; width: 100%; }
 ::view-transition-group(*) { animation-duration: 0.55s; animation-timing-function: var(--ease); }
 @keyframes vt-out { to { opacity: 0; transform: scale(0.985); filter: blur(6px); } }
 @keyframes vt-in { from { opacity: 0; transform: translateY(14px) scale(1.01); filter: blur(8px); } }
-::view-transition-group(site-nav), ::view-transition-group(tab-bar) { animation: none; }
+::view-transition-group(site-nav), ::view-transition-group(tab-bar), ::view-transition-group(live-pill) { animation: none; }
+
+/* Shared elements: card portrait → profile hero, team car → team hero. */
+::view-transition-group(.driver-photo), ::view-transition-group(.team-car) { animation-duration: 0.68s; animation-timing-function: var(--spring); z-index: 2; }
+::view-transition-image-pair(.driver-photo), ::view-transition-image-pair(.team-car) { isolation: isolate; }
+::view-transition-old(.driver-photo), ::view-transition-old(.team-car) { animation: vt-shared-out 0.32s var(--ease) both; }
+::view-transition-new(.driver-photo), ::view-transition-new(.team-car) { animation: vt-shared-in 0.5s 0.06s var(--ease) both; }
+::view-transition-old(.driver-photo), ::view-transition-new(.driver-photo) { height: 100%; width: auto; left: 50%; translate: -50% 0; object-fit: contain; }
+::view-transition-old(.team-car), ::view-transition-new(.team-car) { width: 100%; height: auto; top: 50%; translate: 0 -50%; object-fit: contain; }
+@keyframes vt-shared-out { to { opacity: 0; filter: blur(4px); } }
+@keyframes vt-shared-in { from { opacity: 0; filter: blur(6px); } }
 :root[data-motion="reduced"]::view-transition-group(*), :root[data-motion="reduced"]::view-transition-old(*), :root[data-motion="reduced"]::view-transition-new(*) { animation: none !important; }

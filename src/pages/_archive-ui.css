@@ -1,0 +1,103 @@
+/* ───────────────────────── Archive · shared hero ───────────────────────── */
+.arx-hero { position: relative; min-height: min(68vh, 640px); border-radius: var(--r-2xl); overflow: hidden; isolation: isolate; display: flex; color: #fff; margin-top: -14px;
+  box-shadow: 0 40px 100px -50px rgba(0, 0, 0, 0.9), 0 30px 80px -60px var(--tint), inset 0 0 0 1px rgba(255, 255, 255, 0.1); }
+.arx-hero-media { position: absolute; inset: 0; z-index: -1; background:
+  radial-gradient(80% 110% at 85% 70%, color-mix(in srgb, var(--tint) 58%, #0b0b0f) 0%, #07070b 72%); }
+.arx-hero-media img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); filter: saturate(0.85) contrast(1.05); animation: arx-zoom 24s var(--ease) forwards; }
+@keyframes arx-zoom { to { transform: scale(1); } }
+.arx-hero-grain { position: absolute; inset: 0; opacity: 0.5; mix-blend-mode: overlay; background:
+  repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 7px); }
+.arx-hero-scrim { position: absolute; inset: 0; background:
+  radial-gradient(70% 90% at 80% 80%, color-mix(in srgb, var(--tint) 50%, transparent), transparent 70%),
+  linear-gradient(90deg, rgba(4, 4, 8, 0.92) 0%, rgba(4, 4, 8, 0.62) 48%, rgba(4, 4, 8, 0.28) 100%),
+  linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 30%, transparent 65%, rgba(0, 0, 0, 0.55)); }
+.arx-hero-inner { position: relative; flex: 1; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); align-items: end; gap: 28px; padding: clamp(96px, 12vh, 132px) clamp(22px, 4vw, 56px) clamp(26px, 4vw, 48px); }
+.arx-hero-copy { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-content: end; min-width: 0; }
+.arx-hero-eyebrow { color: rgba(255, 255, 255, 0.82); }
+.arx-hero-eyebrow svg { color: var(--gold); }
+.arx-hero-title { display: grid; color: #fff; text-shadow: 0 10px 50px rgba(0, 0, 0, 0.35); overflow-wrap: anywhere; }
+.arx-hero-title span { font-size: 0.48em; font-weight: 600; letter-spacing: -0.035em; color: rgba(255, 255, 255, 0.62); margin-top: 0.12em; }
+.arx-hero-lede { max-width: 58ch; font-size: clamp(15px, 1.4vw, 18px); line-height: 1.5; color: rgba(255, 255, 255, 0.74); letter-spacing: -0.012em; }
+.arx-hero-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 10px; max-width: 680px; }
+.arx-hero-stat { display: grid; gap: 4px; padding: 14px 16px 12px; border-radius: 20px; min-width: 0; background: rgba(255, 255, 255, 0.08); -webkit-backdrop-filter: blur(22px) saturate(160%); backdrop-filter: blur(22px) saturate(160%); border: 1px solid rgba(255, 255, 255, 0.14); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22); }
+.arx-hero-stat-value { font-family: var(--font-display); font-size: clamp(24px, 2.8vw, 38px); font-weight: 780; letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.arx-hero-stat-value small { font-size: 0.5em; font-weight: 600; color: rgba(255, 255, 255, 0.55); letter-spacing: -0.02em; }
+.arx-hero-stat-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.arx-hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.arx-hero .btn.primary { background: #fff; color: #000; }
+.arx-hero .btn.glass-btn { color: #fff; background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.2); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+.arx-hero .btn.glass-btn:hover { background: rgba(255, 255, 255, 0.2); }
+.arx-hero .chip { background: rgba(255, 255, 255, 0.12); color: #fff; }
+.arx-hero-figure { position: relative; align-self: stretch; display: grid; place-items: center; min-height: 0; min-width: 0; }
+
+.arx-monogram { position: relative; width: min(100%, 320px); aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; animation: rise 1.1s var(--ease) both 0.15s;
+  background: radial-gradient(circle at 50% 110%, var(--tint), color-mix(in srgb, var(--tint) 28%, #0a0a0e) 72%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 40px 90px -30px var(--tint); }
+.arx-monogram-ring { position: absolute; inset: -14px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.16); }
+.arx-monogram-ring::after { content: ""; position: absolute; inset: -16px; border-radius: 50%; border: 1px dashed rgba(255, 255, 255, 0.1); animation: spin 60s linear infinite; }
+.arx-monogram-text { font-family: var(--font-display); font-size: clamp(72px, 9vw, 130px); font-weight: 850; letter-spacing: -0.06em; color: rgba(255, 255, 255, 0.95); text-shadow: 0 10px 40px rgba(0, 0, 0, 0.35); }
+.arx-monogram-sub { position: absolute; bottom: 15%; font-size: 13px; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255, 255, 255, 0.72); }
+
+@media (max-width: 900px) {
+  .arx-hero { min-height: auto; margin-top: -24px; }
+  .arx-hero-inner { grid-template-columns: minmax(0, 1fr); padding-top: 96px; }
+  .arx-hero-title { font-size: clamp(38px, 11.5vw, 64px); }
+  .arx-hero-figure { display: none; }
+  .arx-hero-figure.keep { display: grid; order: -1; }
+}
+
+/* ───────────────────────── Loading ───────────────────────── */
+.arx-loading { display: grid; gap: 22px; }
+.arx-loading-hero { position: relative; margin-top: -14px; }
+.arx-progress { position: absolute; left: clamp(18px, 4vw, 48px); bottom: clamp(18px, 4vw, 44px); width: min(420px, calc(100% - 36px)); display: grid; gap: 10px; padding: 20px 22px; border-radius: var(--r-xl); }
+.arx-progress strong { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+.arx-progress-track { height: 6px; border-radius: 99px; background: var(--fill-3); overflow: hidden; }
+.arx-progress-fill { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 50%, transparent), var(--accent)); transition: width 0.3s var(--ease); }
+.arx-progress-fill.indeterminate { width: 36%; animation: arx-indeterminate 1.3s var(--ease-in-out, ease-in-out) infinite; }
+@keyframes arx-indeterminate { from { transform: translateX(-110%); } to { transform: translateX(300%); } }
+.arx-loading-rows { display: grid; gap: 18px; }
+.arx-error { margin-top: 12px; }
+@media (max-width: 900px) { .arx-loading-hero { margin-top: -24px; } }
+
+/* ───────────────────────── Controls ───────────────────────── */
+.arx-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; margin: 28px 0 8px; }
+.arx-controls .seg { max-width: 100%; }
+.arx-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.arx-chip { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px 0 6px; border-radius: 999px; font-size: 13px; font-weight: 650; background: var(--fill-3); border: 1px solid var(--separator); color: var(--label); transition: transform 0.4s var(--spring), background-color 0.2s; }
+.arx-chip:hover { background: var(--fill-2); transform: translateY(-2px); }
+.arx-chip[aria-pressed="true"] { background: color-mix(in srgb, var(--accent) 18%, var(--fill-3)); border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+.arx-chip .arx-chip-faces { display: inline-flex; }
+.arx-chip .arx-chip-faces > * + * { margin-left: -8px; box-shadow: 0 0 0 2px var(--bg-elevated); }
+
+/* Driver picker */
+.arx-pick { position: relative; display: grid; gap: 8px; min-width: 0; }
+.arx-pick-current { display: inline-flex; align-items: center; gap: 8px; justify-self: start; max-width: 100%; height: 34px; padding: 0 12px 0 4px; border-radius: 999px; background: var(--fill-3); font-size: 13px; font-weight: 650; }
+.arx-pick-current span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arx-pick-current svg { color: var(--label-3); flex: none; }
+.arx-pick-list { position: absolute; z-index: 30; top: 74px; left: 0; right: 0; list-style: none; margin: 0; padding: 6px; border-radius: 20px; max-height: 360px; overflow-y: auto; }
+.arx-pick-list li { display: flex; align-items: center; gap: 10px; padding: 7px 9px; border-radius: 14px; cursor: pointer; }
+.arx-pick-list li.active { background: var(--fill-3); }
+.arx-pick-list strong { display: block; font-size: 14px; font-weight: 650; letter-spacing: -0.01em; }
+.arx-pick-list small { display: block; font-size: 11.5px; color: var(--label-3); }
+
+/* Ranked rows */
+.arx-rank { gap: 12px; padding: 9px 8px; }
+.arx-rank-main { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.arx-rank-name { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.arx-rank-name strong { font-size: 14.5px; font-weight: 650; letter-spacing: -0.015em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arx-rank-name small { font-size: 12px; color: var(--label-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.arx-rank .bar-track { height: 5px; }
+.arx-rank-value { display: grid; justify-items: end; min-width: 56px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.arx-rank-value b { font-size: 16px; font-weight: 750; letter-spacing: -0.02em; }
+.arx-rank-value small { font-size: 11px; color: var(--label-3); font-weight: 600; }
+
+/* Columns chart */
+.arx-columns .arx-col { transition: opacity 0.2s; transform-origin: bottom; transform-box: fill-box; animation: arx-grow 0.9s var(--ease) both; animation-delay: calc(min(var(--i, 0), 80) * 8ms); }
+.arx-columns .arx-col.dim { opacity: 0.35; }
+@keyframes arx-grow { from { transform: scaleY(0); } }
+
+/* Generic note */
+.arx-note { display: flex; gap: 10px; align-items: flex-start; margin-top: 12px; font-size: 12.5px; color: var(--label-3); line-height: 1.5; }
+.arx-note svg { width: 15px; height: 15px; flex: none; margin-top: 2px; }
+.arx-badge { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.02em; background: color-mix(in srgb, var(--orange) 18%, transparent); color: var(--orange); white-space: nowrap; }
+.arx-badge svg { width: 12px; height: 12px; }

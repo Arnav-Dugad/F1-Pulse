@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import { useLayoutEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { Check, ChevronRight, Heart } from "lucide-react";
 import { Link } from "../lib/router";
 import { usePrefs } from "../app/prefs";
@@ -9,19 +9,85 @@ import { formatDateRange, hasStarted } from "../lib/format";
 import type { Driver, Race, Team } from "../types";
 import "../styles/cards.css";
 
+/* ─────────── Shared-element transitions ─────────── */
+/*
+ * Cards and profile heroes share a view-transition name (`driver-<id>` / `team-<id>`) so the card's
+ * portrait or car morphs into the profile hero. Repeated items must never carry a name
+ * permanently (duplicates abort the transition), so a card only claims its name on the pointerdown
+ * / click that starts the navigation, and releases it shortly after. When returning from a profile,
+ * the card that launched it re-claims the name once as it mounts, so the hero morphs back.
+ */
+export type SharedKind = "driver" | "team";
+const sharedClass: Record<SharedKind, string> = { driver: "driver-photo", team: "team-car" };
+
+/** Inline style for a page's single primary hero portrait / car: `style={sharedTransition("driver", id)}`. */
+export function sharedTransition(kind: SharedKind, id: string): CSSProperties {
+  return { viewTransitionName: `${kind}-${id}`, viewTransitionClass: sharedClass[kind] };
+}
+
+let claimed: HTMLElement | null = null;
+let releaseTimer = 0;
+let launched = { name: "", at: 0 };
+
+function releaseShared() {
+  clearTimeout(releaseTimer);
+  if (claimed) {
+    claimed.style.removeProperty("view-transition-name");
+    claimed.style.removeProperty("view-transition-class");
+  }
+  claimed = null;
+}
+
+function claimShared(el: Element | null | undefined, kind: SharedKind, id: string, hold = 1400) {
+  releaseShared();
+  if (!(el instanceof HTMLElement) || !("startViewTransition" in document)) return;
+  const name = `${kind}-${id}`;
+  // Never create a duplicate: another element (e.g. this page's hero) already owns the name.
+  if (document.querySelector(`[style*="view-transition-name: ${name};"], [style*="view-transition-name:${name};"]`)) return;
+  el.style.setProperty("view-transition-name", name);
+  el.style.setProperty("view-transition-class", sharedClass[kind]);
+  claimed = el;
+  releaseTimer = window.setTimeout(releaseShared, hold);
+}
+
+/** Wire a card link so its media morphs into the profile hero. */
+function useSharedLaunch(kind: SharedKind, id: string, media: string, ref: { current: HTMLElement | null }) {
+  const name = `${kind}-${id}`;
+  useLayoutEffect(() => {
+    // Coming back from the profile this card opened: morph the hero back into the card.
+    if (launched.name === name && Date.now() - launched.at < 10 * 60 * 1000) {
+      launched = { name: "", at: 0 };
+      claimShared(ref.current?.querySelector(media), kind, id, 900);
+    }
+  }, [name]); // eslint-disable-line react-hooks/exhaustive-deps
+  const launch = () => {
+    launched = { name, at: Date.now() };
+    claimShared(ref.current?.querySelector(media), kind, id);
+  };
+  return { onPointerDown: launch, onClickCapture: launch };
+}
+
 /* ─────────── Favourite toggle ─────────── */
+const BURST = Array.from({ length: 10 }, (_, i) => i);
 export function FavoriteButton({ id, label, className }: { id: string; label: string; className?: string }) {
   const { favorites, toggleFavorite } = usePrefs();
   const on = favorites.includes(id);
+  const [burst, setBurst] = useState(0);
   return (
     <button
       type="button"
       className={cx("fav-btn", on && "on", className)}
       aria-pressed={on}
       aria-label={on ? `Remove ${label} from favourites` : `Add ${label} to favourites`}
-      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(id); }}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (!on) setBurst((b) => b + 1); toggleFavorite(id); }}
+      onPointerDown={(e) => e.stopPropagation()}
     >
       <Heart size={17} fill={on ? "currentColor" : "none"} />
+      {burst > 0 && on && (
+        <span key={burst} className="fav-burst" aria-hidden>
+          {BURST.map((i) => <i key={i} style={{ "--a": `${i * 36}deg`, "--d": `${16 + (i % 3) * 5}px` } as CSSProperties} />)}
+        </span>
+      )}
     </button>
   );
 }
@@ -31,6 +97,7 @@ export function DriverCard({ driver, team, year, stat, statLabel, rank, index = 
   driver: Driver; team?: Team; year: string; stat?: ReactNode; statLabel?: string; rank?: number; index?: number; className?: string;
 }) {
   const tilt = useTilt<HTMLAnchorElement>(7);
+  const shared = useSharedLaunch("driver", driver.driverId, ".dc-photo, .dc-monogram", tilt.ref);
   const tint = teamColor(team?.constructorId || driverMedia(driver.driverId, year)?.team);
   const hasPhoto = !!driverMedia(driver.driverId, year)?.card;
   const name = fullName(driver);
@@ -40,6 +107,7 @@ export function DriverCard({ driver, team, year, stat, statLabel, rank, index = 
       ref={tilt.ref}
       onPointerMove={tilt.onPointerMove}
       onPointerLeave={tilt.onPointerLeave}
+      {...shared}
       className={cx("driver-card tilt reveal", isLightColor(tint) && "light", className)}
       style={{ "--tint": tint, "--i": index % 8 } as CSSProperties}
       aria-label={`${name}${team ? ", " + team.name : ""}`}
@@ -76,6 +144,7 @@ export function TeamCard({ team, year, drivers = [], position, points, index = 0
   team: Team; year: string; drivers?: Driver[]; position?: string; points?: string; index?: number;
 }) {
   const tilt = useTilt<HTMLAnchorElement>(4);
+  const shared = useSharedLaunch("team", team.constructorId, ".tc-car, .tc-head .logo-badge", tilt.ref);
   const tint = teamColor(team);
   const name = teamShortName(team.name, year);
   return (
@@ -84,6 +153,7 @@ export function TeamCard({ team, year, drivers = [], position, points, index = 0
       ref={tilt.ref}
       onPointerMove={tilt.onPointerMove}
       onPointerLeave={tilt.onPointerLeave}
+      {...shared}
       className={cx("team-card tilt reveal", isLightColor(tint) && "light")}
       style={{ "--tint": tint, "--i": index % 6 } as CSSProperties}
     >

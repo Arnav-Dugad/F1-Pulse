@@ -11,7 +11,8 @@
    "drivers": [
     "russell",
     "antonelli"
-   ]
+   ],
+   "carLeft": "/media/teams/mercedes-car-left.webp"
   },
   "ferrari": {
    "slug": "ferrari",
@@ -24,7 +25,8 @@
    "drivers": [
     "leclerc",
     "hamilton"
-   ]
+   ],
+   "carLeft": "/media/teams/ferrari-car-left.webp"
   },
   "mclaren": {
    "slug": "mclaren",
@@ -37,7 +39,8 @@
    "drivers": [
     "norris",
     "piastri"
-   ]
+   ],
+   "carLeft": "/media/teams/mclaren-car-left.webp"
   },
   "red_bull": {
    "slug": "redbullracing",
@@ -50,7 +53,8 @@
    "drivers": [
     "max_verstappen",
     "hadjar"
-   ]
+   ],
+   "carLeft": "/media/teams/redbullracing-car-left.webp"
   },
   "rb": {
    "slug": "racingbulls",
@@ -63,7 +67,8 @@
    "drivers": [
     "lawson",
     "arvid_lindblad"
-   ]
+   ],
+   "carLeft": "/media/teams/racingbulls-car-left.webp"
   },
   "alpine": {
    "slug": "alpine",
@@ -76,7 +81,8 @@
    "drivers": [
     "gasly",
     "colapinto"
-   ]
+   ],
+   "carLeft": "/media/teams/alpine-car-left.webp"
   },
   "haas": {
    "slug": "haasf1team",
@@ -89,7 +95,8 @@
    "drivers": [
     "ocon",
     "bearman"
-   ]
+   ],
+   "carLeft": "/media/teams/haasf1team-car-left.webp"
   },
   "audi": {
    "slug": "audi",
@@ -102,7 +109,8 @@
    "drivers": [
     "hulkenberg",
     "bortoleto"
-   ]
+   ],
+   "carLeft": "/media/teams/audi-car-left.webp"
   },
   "williams": {
    "slug": "williams",
@@ -115,7 +123,8 @@
    "drivers": [
     "sainz",
     "albon"
-   ]
+   ],
+   "carLeft": "/media/teams/williams-car-left.webp"
   },
   "aston_martin": {
    "slug": "astonmartin",
@@ -128,7 +137,8 @@
    "drivers": [
     "alonso",
     "stroll"
-   ]
+   ],
+   "carLeft": "/media/teams/astonmartin-car-left.webp"
   },
   "cadillac": {
    "slug": "cadillac",
@@ -141,7 +151,8 @@
    "drivers": [
     "perez",
     "bottas"
-   ]
+   ],
+   "carLeft": "/media/teams/cadillac-car-left.webp"
   }
  },
  "drivers": {
@@ -410,6 +421,2599 @@
   "imola": {
    "map": "/media/circuits/imola-map.webp",
    "hero": "/media/circuits/imola-hero.webp"
+  }
+ },
+ "seasons": {
+  "2025": {
+   "drivers": {
+    "albon": {
+     "team": "williams",
+     "front": "/media/seasons/2025/drivers/albon-front.webp",
+     "card": "/media/seasons/2025/drivers/albon-card.webp",
+     "number": "/media/seasons/2025/drivers/albon-number.webp",
+     "head": "/media/seasons/2025/drivers/albon-head.webp"
+    },
+    "alonso": {
+     "team": "aston_martin",
+     "front": "/media/seasons/2025/drivers/alonso-front.webp",
+     "card": "/media/seasons/2025/drivers/alonso-card.webp",
+     "number": "/media/seasons/2025/drivers/alonso-number.webp",
+     "head": "/media/seasons/2025/drivers/alonso-head.webp"
+    },
+    "antonelli": {
+     "team": "mercedes",
+     "front": "/media/seasons/2025/drivers/antonelli-front.webp",
+     "card": "/media/seasons/2025/drivers/antonelli-card.webp",
+     "number": "/media/seasons/2025/drivers/antonelli-number.webp",
+     "head": "/media/seasons/2025/drivers/antonelli-head.webp"
+    },
+    "bearman": {
+     "team": "haas",
+     "front": "/media/seasons/2025/drivers/bearman-front.webp",
+     "card": "/media/seasons/2025/drivers/bearman-card.webp",
+     "number": "/media/seasons/2025/drivers/bearman-number.webp",
+     "head": "/media/seasons/2025/drivers/bearman-head.webp"
+    },
+    "bortoleto": {
+     "team": "sauber",
+     "front": "/media/seasons/2025/drivers/bortoleto-front.webp",
+     "card": "/media/seasons/2025/drivers/bortoleto-card.webp",
+     "number": "/media/seasons/2025/drivers/bortoleto-number.webp",
+     "head": "/media/seasons/2025/drivers/bortoleto-head.webp"
+    },
+    "colapinto": {
+     "team": "alpine",
+     "front": "/media/seasons/2025/drivers/colapinto-front.webp",
+     "card": "/media/seasons/2025/drivers/colapinto-card.webp",
+     "number": "/media/seasons/2025/drivers/colapinto-number.webp",
+     "head": "/media/seasons/2025/drivers/colapinto-head.webp"
+    },
+    "doohan": {
+     "team": "alpine",
+     "front": "/media/seasons/2025/drivers/doohan-front.webp",
+     "card": "/media/seasons/2025/drivers/doohan-card.webp",
+     "number": "/media/seasons/2025/drivers/doohan-number.webp",
+     "head": "/media/seasons/2025/drivers/doohan-head.webp"
+    },
+    "gasly": {
+     "team": "alpine",
+     "front": "/media/seasons/2025/drivers/gasly-front.webp",
+     "card": "/media/seasons/2025/drivers/gasly-card.webp",
+     "number": "/media/seasons/2025/drivers/gasly-number.webp",
+     "head": "/media/seasons/2025/drivers/gasly-head.webp"
+    },
+    "hadjar": {
+     "team": "rb",
+     "front": "/media/seasons/2025/drivers/hadjar-front.webp",
+     "card": "/media/seasons/2025/drivers/hadjar-card.webp",
+     "number": "/media/seasons/2025/drivers/hadjar-number.webp",
+     "head": "/media/seasons/2025/drivers/hadjar-head.webp"
+    },
+    "hamilton": {
+     "team": "ferrari",
+     "front": "/media/seasons/2025/drivers/hamilton-front.webp",
+     "card": "/media/seasons/2025/drivers/hamilton-card.webp",
+     "number": "/media/seasons/2025/drivers/hamilton-number.webp",
+     "head": "/media/seasons/2025/drivers/hamilton-head.webp"
+    },
+    "hulkenberg": {
+     "team": "sauber",
+     "front": "/media/seasons/2025/drivers/hulkenberg-front.webp",
+     "card": "/media/seasons/2025/drivers/hulkenberg-card.webp",
+     "number": "/media/seasons/2025/drivers/hulkenberg-number.webp",
+     "head": "/media/seasons/2025/drivers/hulkenberg-head.webp"
+    },
+    "lawson": {
+     "team": "rb",
+     "front": "/media/seasons/2025/drivers/lawson-front.webp",
+     "card": "/media/seasons/2025/drivers/lawson-card.webp",
+     "number": "/media/seasons/2025/drivers/lawson-number.webp",
+     "head": "/media/seasons/2025/drivers/lawson-head.webp"
+    },
+    "leclerc": {
+     "team": "ferrari",
+     "front": "/media/seasons/2025/drivers/leclerc-front.webp",
+     "card": "/media/seasons/2025/drivers/leclerc-card.webp",
+     "number": "/media/seasons/2025/drivers/leclerc-number.webp",
+     "head": "/media/seasons/2025/drivers/leclerc-head.webp"
+    },
+    "max_verstappen": {
+     "team": "red_bull",
+     "front": "/media/seasons/2025/drivers/max_verstappen-front.webp",
+     "card": "/media/seasons/2025/drivers/max_verstappen-card.webp",
+     "number": "/media/seasons/2025/drivers/max_verstappen-number.webp",
+     "head": "/media/seasons/2025/drivers/max_verstappen-head.webp"
+    },
+    "norris": {
+     "team": "mclaren",
+     "front": "/media/seasons/2025/drivers/norris-front.webp",
+     "card": "/media/seasons/2025/drivers/norris-card.webp",
+     "number": "/media/seasons/2025/drivers/norris-number.webp",
+     "head": "/media/seasons/2025/drivers/norris-head.webp"
+    },
+    "ocon": {
+     "team": "haas",
+     "front": "/media/seasons/2025/drivers/ocon-front.webp",
+     "card": "/media/seasons/2025/drivers/ocon-card.webp",
+     "number": "/media/seasons/2025/drivers/ocon-number.webp",
+     "head": "/media/seasons/2025/drivers/ocon-head.webp"
+    },
+    "piastri": {
+     "team": "mclaren",
+     "front": "/media/seasons/2025/drivers/piastri-front.webp",
+     "card": "/media/seasons/2025/drivers/piastri-card.webp",
+     "number": "/media/seasons/2025/drivers/piastri-number.webp",
+     "head": "/media/seasons/2025/drivers/piastri-head.webp"
+    },
+    "russell": {
+     "team": "mercedes",
+     "front": "/media/seasons/2025/drivers/russell-front.webp",
+     "card": "/media/seasons/2025/drivers/russell-card.webp",
+     "number": "/media/seasons/2025/drivers/russell-number.webp",
+     "head": "/media/seasons/2025/drivers/russell-head.webp"
+    },
+    "sainz": {
+     "team": "williams",
+     "front": "/media/seasons/2025/drivers/sainz-front.webp",
+     "card": "/media/seasons/2025/drivers/sainz-card.webp",
+     "number": "/media/seasons/2025/drivers/sainz-number.webp",
+     "head": "/media/seasons/2025/drivers/sainz-head.webp"
+    },
+    "stroll": {
+     "team": "aston_martin",
+     "front": "/media/seasons/2025/drivers/stroll-front.webp",
+     "card": "/media/seasons/2025/drivers/stroll-card.webp",
+     "number": "/media/seasons/2025/drivers/stroll-number.webp",
+     "head": "/media/seasons/2025/drivers/stroll-head.webp"
+    },
+    "tsunoda": {
+     "team": "red_bull",
+     "front": "/media/seasons/2025/drivers/tsunoda-front.webp",
+     "card": "/media/seasons/2025/drivers/tsunoda-card.webp",
+     "number": "/media/seasons/2025/drivers/tsunoda-number.webp",
+     "head": "/media/seasons/2025/drivers/tsunoda-head.webp"
+    }
+   },
+   "teams": {
+    "alpine": {
+     "logo": "/media/seasons/2025/teams/alpine-logo.webp",
+     "logoWhite": "/media/seasons/2025/teams/alpine-logo-white.webp",
+     "car": "/media/seasons/2025/teams/alpine-car.webp",
+     "carLeft": "/media/seasons/2025/teams/alpine-car-left.webp"
+    },
+    "aston_martin": {
+     "logo": "/media/seasons/2025/teams/aston_martin-logo.webp",
+     "logoWhite": "/media/seasons/2025/teams/aston_martin-logo-white.webp",
+     "car": "/media/seasons/2025/teams/aston_martin-car.webp",
+     "carLeft": "/media/seasons/2025/teams/aston_martin-car-left.webp"
+    },
+    "ferrari": {
+     "logo": "/media/seasons/2025/teams/ferrari-logo.webp",
+     "logoWhite": "/media/seasons/2025/teams/ferrari-logo-white.webp",
+     "car": "/media/seasons/2025/teams/ferrari-car.webp",
+     "carLeft": "/media/seasons/2025/teams/ferrari-car-left.webp"
+    },
+    "haas": {
+     "logo": "/media/seasons/2025/teams/haas-logo.webp",
+     "logoWhite": "/media/seasons/2025/teams/haas-logo-white.webp",
+     "car": "/media/seasons/2025/teams/haas-car.webp",
+     "carLeft": "/media/seasons/2025/teams/haas-car-left.webp"
+    },
+    "mclaren": {
+     "logo": "/media/seasons/2025/teams/mclaren-logo.webp",
+     "logoWhite": "/media/seasons/2025/teams/mclaren-logo-white.webp",
+     "car": "/media/seasons/2025/teams/mclaren-car.webp",
+     "carLeft": "/media/seasons/2025/teams/mclaren-car-left.webp"
+    },
+    "mercedes": {
+     "logo": "/media/seasons/2025/teams/mercedes-logo.webp",
+     "logoWhite": "/media/seasons/2025/teams/mercedes-logo-white.webp",
+     "car": "/media/seasons/2025/teams/mercedes-car.webp",
+     "carLeft": "/media/seasons/2025/teams/mercedes-car-left.webp"
+    },
+    "rb": {
+     "logo": "/media/seasons/2025/teams/rb-logo.webp",
+     "logoWhite": "/media/seasons/2025/teams/rb-logo-white.webp",
+     "car": "/media/seasons/2025/teams/rb-car.webp",
+     "carLeft": "/media/seasons/2025/teams/rb-car-left.webp"
+    },
+    "red_bull": {
+     "logo": "/media/seasons/2025/teams/red_bull-logo.webp",
+     "logoWhite": "/media/seasons/2025/teams/red_bull-logo-white.webp",
+     "car": "/media/seasons/2025/teams/red_bull-car.webp",
+     "carLeft": "/media/seasons/2025/teams/red_bull-car-left.webp"
+    },
+    "sauber": {
+     "logo": "/media/seasons/2025/teams/sauber-logo.webp",
+     "logoWhite": "/media/seasons/2025/teams/sauber-logo-white.webp",
+     "car": "/media/seasons/2025/teams/sauber-car.webp",
+     "carLeft": "/media/seasons/2025/teams/sauber-car-left.webp"
+    },
+    "williams": {
+     "logo": "/media/seasons/2025/teams/williams-logo.webp",
+     "logoWhite": "/media/seasons/2025/teams/williams-logo-white.webp",
+     "car": "/media/seasons/2025/teams/williams-car.webp",
+     "carLeft": "/media/seasons/2025/teams/williams-car-left.webp"
+    }
+   }
+  },
+  "2024": {
+   "drivers": {
+    "albon": {
+     "team": "williams",
+     "front": "/media/seasons/2024/drivers/albon-front.webp",
+     "card": "/media/seasons/2024/drivers/albon-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/albon-head.webp"
+    },
+    "alonso": {
+     "team": "aston_martin",
+     "front": "/media/seasons/2024/drivers/alonso-front.webp",
+     "card": "/media/seasons/2024/drivers/alonso-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/alonso-head.webp"
+    },
+    "bearman": {
+     "team": "haas",
+     "front": "/media/seasons/2024/drivers/bearman-front.webp",
+     "card": "/media/seasons/2024/drivers/bearman-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/bearman-head.webp"
+    },
+    "bottas": {
+     "team": "sauber",
+     "front": "/media/seasons/2024/drivers/bottas-front.webp",
+     "card": "/media/seasons/2024/drivers/bottas-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/bottas-head.webp"
+    },
+    "colapinto": {
+     "team": "williams",
+     "front": "/media/seasons/2024/drivers/colapinto-front.webp",
+     "card": "/media/seasons/2024/drivers/colapinto-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/colapinto-head.webp"
+    },
+    "doohan": {
+     "team": "alpine",
+     "front": null,
+     "card": null,
+     "number": null,
+     "head": "/media/seasons/2024/drivers/doohan-head.webp"
+    },
+    "gasly": {
+     "team": "alpine",
+     "front": "/media/seasons/2024/drivers/gasly-front.webp",
+     "card": "/media/seasons/2024/drivers/gasly-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/gasly-head.webp"
+    },
+    "hamilton": {
+     "team": "mercedes",
+     "front": "/media/seasons/2024/drivers/hamilton-front.webp",
+     "card": "/media/seasons/2024/drivers/hamilton-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/hamilton-head.webp"
+    },
+    "hulkenberg": {
+     "team": "haas",
+     "front": "/media/seasons/2024/drivers/hulkenberg-front.webp",
+     "card": "/media/seasons/2024/drivers/hulkenberg-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/hulkenberg-head.webp"
+    },
+    "kevin_magnussen": {
+     "team": "haas",
+     "front": "/media/seasons/2024/drivers/kevin_magnussen-front.webp",
+     "card": "/media/seasons/2024/drivers/kevin_magnussen-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/kevin_magnussen-head.webp"
+    },
+    "lawson": {
+     "team": "rb",
+     "front": "/media/seasons/2024/drivers/lawson-front.webp",
+     "card": "/media/seasons/2024/drivers/lawson-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/lawson-head.webp"
+    },
+    "leclerc": {
+     "team": "ferrari",
+     "front": "/media/seasons/2024/drivers/leclerc-front.webp",
+     "card": "/media/seasons/2024/drivers/leclerc-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/leclerc-head.webp"
+    },
+    "max_verstappen": {
+     "team": "red_bull",
+     "front": "/media/seasons/2024/drivers/max_verstappen-front.webp",
+     "card": "/media/seasons/2024/drivers/max_verstappen-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/max_verstappen-head.webp"
+    },
+    "norris": {
+     "team": "mclaren",
+     "front": "/media/seasons/2024/drivers/norris-front.webp",
+     "card": "/media/seasons/2024/drivers/norris-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/norris-head.webp"
+    },
+    "ocon": {
+     "team": "alpine",
+     "front": "/media/seasons/2024/drivers/ocon-front.webp",
+     "card": "/media/seasons/2024/drivers/ocon-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/ocon-head.webp"
+    },
+    "perez": {
+     "team": "red_bull",
+     "front": "/media/seasons/2024/drivers/perez-front.webp",
+     "card": "/media/seasons/2024/drivers/perez-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/perez-head.webp"
+    },
+    "piastri": {
+     "team": "mclaren",
+     "front": "/media/seasons/2024/drivers/piastri-front.webp",
+     "card": "/media/seasons/2024/drivers/piastri-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/piastri-head.webp"
+    },
+    "ricciardo": {
+     "team": "rb",
+     "front": "/media/seasons/2024/drivers/ricciardo-front.webp",
+     "card": "/media/seasons/2024/drivers/ricciardo-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/ricciardo-head.webp"
+    },
+    "russell": {
+     "team": "mercedes",
+     "front": "/media/seasons/2024/drivers/russell-front.webp",
+     "card": "/media/seasons/2024/drivers/russell-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/russell-head.webp"
+    },
+    "sainz": {
+     "team": "ferrari",
+     "front": "/media/seasons/2024/drivers/sainz-front.webp",
+     "card": "/media/seasons/2024/drivers/sainz-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/sainz-head.webp"
+    },
+    "sargeant": {
+     "team": "williams",
+     "front": "/media/seasons/2024/drivers/sargeant-front.webp",
+     "card": "/media/seasons/2024/drivers/sargeant-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/sargeant-head.webp"
+    },
+    "stroll": {
+     "team": "aston_martin",
+     "front": "/media/seasons/2024/drivers/stroll-front.webp",
+     "card": "/media/seasons/2024/drivers/stroll-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/stroll-head.webp"
+    },
+    "tsunoda": {
+     "team": "rb",
+     "front": "/media/seasons/2024/drivers/tsunoda-front.webp",
+     "card": "/media/seasons/2024/drivers/tsunoda-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/tsunoda-head.webp"
+    },
+    "zhou": {
+     "team": "sauber",
+     "front": "/media/seasons/2024/drivers/zhou-front.webp",
+     "card": "/media/seasons/2024/drivers/zhou-card.webp",
+     "number": null,
+     "head": "/media/seasons/2024/drivers/zhou-head.webp"
+    }
+   },
+   "teams": {
+    "alpine": {
+     "logo": "/media/seasons/2024/teams/alpine-logo.webp",
+     "logoWhite": "/media/seasons/2024/teams/alpine-logo-white.webp",
+     "car": "/media/seasons/2024/teams/alpine-car.webp",
+     "carFront": "/media/seasons/2024/teams/alpine-car-front.webp",
+     "carLeft": "/media/seasons/2024/teams/alpine-car-left.webp"
+    },
+    "aston_martin": {
+     "logo": "/media/seasons/2024/teams/aston_martin-logo.webp",
+     "logoWhite": "/media/seasons/2024/teams/aston_martin-logo-white.webp",
+     "car": "/media/seasons/2024/teams/aston_martin-car.webp",
+     "carFront": "/media/seasons/2024/teams/aston_martin-car-front.webp",
+     "carLeft": "/media/seasons/2024/teams/aston_martin-car-left.webp"
+    },
+    "ferrari": {
+     "logo": "/media/seasons/2024/teams/ferrari-logo.webp",
+     "logoWhite": "/media/seasons/2024/teams/ferrari-logo-white.webp",
+     "car": "/media/seasons/2024/teams/ferrari-car.webp",
+     "carFront": "/media/seasons/2024/teams/ferrari-car-front.webp",
+     "carLeft": "/media/seasons/2024/teams/ferrari-car-left.webp"
+    },
+    "haas": {
+     "logo": "/media/seasons/2024/teams/haas-logo.webp",
+     "logoWhite": "/media/seasons/2024/teams/haas-logo-white.webp",
+     "car": "/media/seasons/2024/teams/haas-car.webp",
+     "carFront": "/media/seasons/2024/teams/haas-car-front.webp",
+     "carLeft": "/media/seasons/2024/teams/haas-car-left.webp"
+    },
+    "mclaren": {
+     "logo": "/media/seasons/2024/teams/mclaren-logo.webp",
+     "logoWhite": "/media/seasons/2024/teams/mclaren-logo-white.webp",
+     "car": "/media/seasons/2024/teams/mclaren-car.webp",
+     "carFront": "/media/seasons/2024/teams/mclaren-car-front.webp",
+     "carLeft": "/media/seasons/2024/teams/mclaren-car-left.webp"
+    },
+    "mercedes": {
+     "logo": "/media/seasons/2024/teams/mercedes-logo.webp",
+     "logoWhite": "/media/seasons/2024/teams/mercedes-logo-white.webp",
+     "car": "/media/seasons/2024/teams/mercedes-car.webp",
+     "carFront": "/media/seasons/2024/teams/mercedes-car-front.webp",
+     "carLeft": "/media/seasons/2024/teams/mercedes-car-left.webp"
+    },
+    "rb": {
+     "logo": "/media/seasons/2024/teams/rb-logo.webp",
+     "logoWhite": "/media/seasons/2024/teams/rb-logo-white.webp",
+     "car": "/media/seasons/2024/teams/rb-car.webp",
+     "carFront": "/media/seasons/2024/teams/rb-car-front.webp",
+     "carLeft": "/media/seasons/2024/teams/rb-car-left.webp"
+    },
+    "red_bull": {
+     "logo": "/media/seasons/2024/teams/red_bull-logo.webp",
+     "logoWhite": "/media/seasons/2024/teams/red_bull-logo-white.webp",
+     "car": "/media/seasons/2024/teams/red_bull-car.webp",
+     "carFront": "/media/seasons/2024/teams/red_bull-car-front.webp",
+     "carLeft": "/media/seasons/2024/teams/red_bull-car-left.webp"
+    },
+    "sauber": {
+     "logo": "/media/seasons/2024/teams/sauber-logo.webp",
+     "logoWhite": "/media/seasons/2024/teams/sauber-logo-white.webp",
+     "car": "/media/seasons/2024/teams/sauber-car.webp",
+     "carFront": "/media/seasons/2024/teams/sauber-car-front.webp",
+     "carLeft": "/media/seasons/2024/teams/sauber-car-left.webp"
+    },
+    "williams": {
+     "logo": "/media/seasons/2024/teams/williams-logo.webp",
+     "logoWhite": "/media/seasons/2024/teams/williams-logo-white.webp",
+     "car": "/media/seasons/2024/teams/williams-car.webp",
+     "carFront": "/media/seasons/2024/teams/williams-car-front.webp",
+     "carLeft": "/media/seasons/2024/teams/williams-car-left.webp"
+    }
+   }
+  },
+  "2023": {
+   "drivers": {
+    "albon": {
+     "team": "williams",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/albon-photo.webp",
+     "head": "/media/seasons/2023/drivers/albon-head.webp"
+    },
+    "alonso": {
+     "team": "aston_martin",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/alonso-photo.webp",
+     "head": "/media/seasons/2023/drivers/alonso-head.webp"
+    },
+    "bottas": {
+     "team": "alfa",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/bottas-photo.webp",
+     "head": "/media/seasons/2023/drivers/bottas-head.webp"
+    },
+    "de_vries": {
+     "team": "alphatauri",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/de_vries-photo.webp",
+     "head": "/media/seasons/2023/drivers/de_vries-head.webp"
+    },
+    "gasly": {
+     "team": "alpine",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/gasly-photo.webp",
+     "head": "/media/seasons/2023/drivers/gasly-head.webp"
+    },
+    "hamilton": {
+     "team": "mercedes",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/hamilton-photo.webp",
+     "head": "/media/seasons/2023/drivers/hamilton-head.webp"
+    },
+    "hulkenberg": {
+     "team": "haas",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/hulkenberg-photo.webp",
+     "head": "/media/seasons/2023/drivers/hulkenberg-head.webp"
+    },
+    "kevin_magnussen": {
+     "team": "haas",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/kevin_magnussen-photo.webp",
+     "head": "/media/seasons/2023/drivers/kevin_magnussen-head.webp"
+    },
+    "lawson": {
+     "team": "alphatauri",
+     "front": null,
+     "card": null,
+     "number": null
+    },
+    "leclerc": {
+     "team": "ferrari",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/leclerc-photo.webp",
+     "head": "/media/seasons/2023/drivers/leclerc-head.webp"
+    },
+    "max_verstappen": {
+     "team": "red_bull",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/max_verstappen-photo.webp",
+     "head": "/media/seasons/2023/drivers/max_verstappen-head.webp"
+    },
+    "norris": {
+     "team": "mclaren",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/norris-photo.webp",
+     "head": "/media/seasons/2023/drivers/norris-head.webp"
+    },
+    "ocon": {
+     "team": "alpine",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/ocon-photo.webp",
+     "head": "/media/seasons/2023/drivers/ocon-head.webp"
+    },
+    "perez": {
+     "team": "red_bull",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/perez-photo.webp",
+     "head": "/media/seasons/2023/drivers/perez-head.webp"
+    },
+    "piastri": {
+     "team": "mclaren",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/piastri-photo.webp",
+     "head": "/media/seasons/2023/drivers/piastri-head.webp"
+    },
+    "ricciardo": {
+     "team": "alphatauri",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/ricciardo-photo.webp",
+     "head": "/media/seasons/2023/drivers/ricciardo-head.webp"
+    },
+    "russell": {
+     "team": "mercedes",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/russell-photo.webp",
+     "head": "/media/seasons/2023/drivers/russell-head.webp"
+    },
+    "sainz": {
+     "team": "ferrari",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/sainz-photo.webp",
+     "head": "/media/seasons/2023/drivers/sainz-head.webp"
+    },
+    "sargeant": {
+     "team": "williams",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/sargeant-photo.webp",
+     "head": "/media/seasons/2023/drivers/sargeant-head.webp"
+    },
+    "stroll": {
+     "team": "aston_martin",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/stroll-photo.webp",
+     "head": "/media/seasons/2023/drivers/stroll-head.webp"
+    },
+    "tsunoda": {
+     "team": "alphatauri",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/tsunoda-photo.webp",
+     "head": "/media/seasons/2023/drivers/tsunoda-head.webp"
+    },
+    "zhou": {
+     "team": "alfa",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2023/drivers/zhou-photo.webp",
+     "head": "/media/seasons/2023/drivers/zhou-head.webp"
+    }
+   },
+   "teams": {
+    "alfa": {
+     "logo": "/media/seasons/2023/teams/alfa-logo.webp",
+     "car": "/media/seasons/2023/teams/alfa-car.webp"
+    },
+    "alphatauri": {
+     "logo": "/media/seasons/2023/teams/alphatauri-logo.webp",
+     "car": "/media/seasons/2023/teams/alphatauri-car.webp"
+    },
+    "alpine": {
+     "logo": "/media/seasons/2023/teams/alpine-logo.webp",
+     "car": "/media/seasons/2023/teams/alpine-car.webp"
+    },
+    "aston_martin": {
+     "logo": "/media/seasons/2023/teams/aston_martin-logo.webp",
+     "car": "/media/seasons/2023/teams/aston_martin-car.webp"
+    },
+    "ferrari": {
+     "logo": "/media/seasons/2023/teams/ferrari-logo.webp",
+     "car": "/media/seasons/2023/teams/ferrari-car.webp"
+    },
+    "haas": {
+     "logo": "/media/seasons/2023/teams/haas-logo.webp",
+     "car": "/media/seasons/2023/teams/haas-car.webp"
+    },
+    "mclaren": {
+     "logo": "/media/seasons/2023/teams/mclaren-logo.webp",
+     "car": "/media/seasons/2023/teams/mclaren-car.webp"
+    },
+    "mercedes": {
+     "logo": "/media/seasons/2023/teams/mercedes-logo.webp",
+     "car": "/media/seasons/2023/teams/mercedes-car.webp"
+    },
+    "red_bull": {
+     "logo": "/media/seasons/2023/teams/red_bull-logo.webp",
+     "car": "/media/seasons/2023/teams/red_bull-car.webp"
+    },
+    "williams": {
+     "logo": "/media/seasons/2023/teams/williams-logo.webp",
+     "car": "/media/seasons/2023/teams/williams-car.webp"
+    }
+   }
+  },
+  "2022": {
+   "drivers": {
+    "albon": {
+     "team": "williams",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/albon-photo.webp",
+     "head": "/media/seasons/2022/drivers/albon-head.webp"
+    },
+    "alonso": {
+     "team": "alpine",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/alonso-photo.webp",
+     "head": "/media/seasons/2022/drivers/alonso-head.webp"
+    },
+    "bottas": {
+     "team": "alfa",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/bottas-photo.webp",
+     "head": "/media/seasons/2022/drivers/bottas-head.webp"
+    },
+    "de_vries": {
+     "team": "williams",
+     "front": null,
+     "card": null,
+     "number": null
+    },
+    "gasly": {
+     "team": "alphatauri",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/gasly-photo.webp",
+     "head": "/media/seasons/2022/drivers/gasly-head.webp"
+    },
+    "hamilton": {
+     "team": "mercedes",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/hamilton-photo.webp",
+     "head": "/media/seasons/2022/drivers/hamilton-head.webp"
+    },
+    "hulkenberg": {
+     "team": "aston_martin",
+     "front": null,
+     "card": null,
+     "number": null
+    },
+    "kevin_magnussen": {
+     "team": "haas",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/kevin_magnussen-photo.webp",
+     "head": "/media/seasons/2022/drivers/kevin_magnussen-head.webp"
+    },
+    "latifi": {
+     "team": "williams",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/latifi-photo.webp",
+     "head": "/media/seasons/2022/drivers/latifi-head.webp"
+    },
+    "leclerc": {
+     "team": "ferrari",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/leclerc-photo.webp",
+     "head": "/media/seasons/2022/drivers/leclerc-head.webp"
+    },
+    "max_verstappen": {
+     "team": "red_bull",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/max_verstappen-photo.webp",
+     "head": "/media/seasons/2022/drivers/max_verstappen-head.webp"
+    },
+    "mick_schumacher": {
+     "team": "haas",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/mick_schumacher-photo.webp",
+     "head": "/media/seasons/2022/drivers/mick_schumacher-head.webp"
+    },
+    "norris": {
+     "team": "mclaren",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/norris-photo.webp",
+     "head": "/media/seasons/2022/drivers/norris-head.webp"
+    },
+    "ocon": {
+     "team": "alpine",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/ocon-photo.webp",
+     "head": "/media/seasons/2022/drivers/ocon-head.webp"
+    },
+    "perez": {
+     "team": "red_bull",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/perez-photo.webp",
+     "head": "/media/seasons/2022/drivers/perez-head.webp"
+    },
+    "ricciardo": {
+     "team": "mclaren",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/ricciardo-photo.webp",
+     "head": "/media/seasons/2022/drivers/ricciardo-head.webp"
+    },
+    "russell": {
+     "team": "mercedes",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/russell-photo.webp",
+     "head": "/media/seasons/2022/drivers/russell-head.webp"
+    },
+    "sainz": {
+     "team": "ferrari",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/sainz-photo.webp",
+     "head": "/media/seasons/2022/drivers/sainz-head.webp"
+    },
+    "stroll": {
+     "team": "aston_martin",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/stroll-photo.webp",
+     "head": "/media/seasons/2022/drivers/stroll-head.webp"
+    },
+    "tsunoda": {
+     "team": "alphatauri",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/tsunoda-photo.webp",
+     "head": "/media/seasons/2022/drivers/tsunoda-head.webp"
+    },
+    "vettel": {
+     "team": "aston_martin",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/vettel-photo.webp",
+     "head": "/media/seasons/2022/drivers/vettel-head.webp"
+    },
+    "zhou": {
+     "team": "alfa",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2022/drivers/zhou-photo.webp",
+     "head": "/media/seasons/2022/drivers/zhou-head.webp"
+    }
+   },
+   "teams": {
+    "alfa": {
+     "logo": "/media/seasons/2022/teams/alfa-logo.webp",
+     "car": "/media/seasons/2022/teams/alfa-car.webp"
+    },
+    "alphatauri": {
+     "logo": "/media/seasons/2022/teams/alphatauri-logo.webp",
+     "car": "/media/seasons/2022/teams/alphatauri-car.webp"
+    },
+    "alpine": {
+     "logo": "/media/seasons/2022/teams/alpine-logo.webp",
+     "car": "/media/seasons/2022/teams/alpine-car.webp"
+    },
+    "aston_martin": {
+     "logo": "/media/seasons/2022/teams/aston_martin-logo.webp",
+     "car": "/media/seasons/2022/teams/aston_martin-car.webp"
+    },
+    "ferrari": {
+     "logo": "/media/seasons/2022/teams/ferrari-logo.webp",
+     "car": "/media/seasons/2022/teams/ferrari-car.webp"
+    },
+    "haas": {
+     "logo": "/media/seasons/2022/teams/haas-logo.webp",
+     "car": "/media/seasons/2022/teams/haas-car.webp"
+    },
+    "mclaren": {
+     "logo": "/media/seasons/2022/teams/mclaren-logo.webp",
+     "car": "/media/seasons/2022/teams/mclaren-car.webp"
+    },
+    "mercedes": {
+     "logo": "/media/seasons/2022/teams/mercedes-logo.webp",
+     "car": "/media/seasons/2022/teams/mercedes-car.webp"
+    },
+    "red_bull": {
+     "logo": "/media/seasons/2022/teams/red_bull-logo.webp",
+     "car": "/media/seasons/2022/teams/red_bull-car.webp"
+    },
+    "williams": {
+     "logo": "/media/seasons/2022/teams/williams-logo.webp",
+     "car": "/media/seasons/2022/teams/williams-car.webp"
+    }
+   }
+  },
+  "2021": {
+   "drivers": {
+    "alonso": {
+     "team": "alpine",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/alonso-photo.webp",
+     "head": "/media/seasons/2021/drivers/alonso-head.webp"
+    },
+    "bottas": {
+     "team": "mercedes",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/bottas-photo.webp",
+     "head": "/media/seasons/2021/drivers/bottas-head.webp"
+    },
+    "gasly": {
+     "team": "alphatauri",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/gasly-photo.webp",
+     "head": "/media/seasons/2021/drivers/gasly-head.webp"
+    },
+    "giovinazzi": {
+     "team": "alfa",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/giovinazzi-photo.webp",
+     "head": "/media/seasons/2021/drivers/giovinazzi-head.webp"
+    },
+    "hamilton": {
+     "team": "mercedes",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/hamilton-photo.webp",
+     "head": "/media/seasons/2021/drivers/hamilton-head.webp"
+    },
+    "kubica": {
+     "team": "alfa",
+     "front": null,
+     "card": null,
+     "number": null
+    },
+    "latifi": {
+     "team": "williams",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/latifi-photo.webp",
+     "head": "/media/seasons/2021/drivers/latifi-head.webp"
+    },
+    "leclerc": {
+     "team": "ferrari",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/leclerc-photo.webp",
+     "head": "/media/seasons/2021/drivers/leclerc-head.webp"
+    },
+    "max_verstappen": {
+     "team": "red_bull",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/max_verstappen-photo.webp",
+     "head": "/media/seasons/2021/drivers/max_verstappen-head.webp"
+    },
+    "mazepin": {
+     "team": "haas",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/mazepin-photo.webp",
+     "head": "/media/seasons/2021/drivers/mazepin-head.webp"
+    },
+    "mick_schumacher": {
+     "team": "haas",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/mick_schumacher-photo.webp",
+     "head": "/media/seasons/2021/drivers/mick_schumacher-head.webp"
+    },
+    "norris": {
+     "team": "mclaren",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/norris-photo.webp",
+     "head": "/media/seasons/2021/drivers/norris-head.webp"
+    },
+    "ocon": {
+     "team": "alpine",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/ocon-photo.webp",
+     "head": "/media/seasons/2021/drivers/ocon-head.webp"
+    },
+    "perez": {
+     "team": "red_bull",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/perez-photo.webp",
+     "head": "/media/seasons/2021/drivers/perez-head.webp"
+    },
+    "raikkonen": {
+     "team": "alfa",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/raikkonen-photo.webp",
+     "head": "/media/seasons/2021/drivers/raikkonen-head.webp"
+    },
+    "ricciardo": {
+     "team": "mclaren",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/ricciardo-photo.webp",
+     "head": "/media/seasons/2021/drivers/ricciardo-head.webp"
+    },
+    "russell": {
+     "team": "williams",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/russell-photo.webp",
+     "head": "/media/seasons/2021/drivers/russell-head.webp"
+    },
+    "sainz": {
+     "team": "ferrari",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/sainz-photo.webp",
+     "head": "/media/seasons/2021/drivers/sainz-head.webp"
+    },
+    "stroll": {
+     "team": "aston_martin",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/stroll-photo.webp",
+     "head": "/media/seasons/2021/drivers/stroll-head.webp"
+    },
+    "tsunoda": {
+     "team": "alphatauri",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/tsunoda-photo.webp",
+     "head": "/media/seasons/2021/drivers/tsunoda-head.webp"
+    },
+    "vettel": {
+     "team": "aston_martin",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2021/drivers/vettel-photo.webp",
+     "head": "/media/seasons/2021/drivers/vettel-head.webp"
+    }
+   },
+   "teams": {
+    "alfa": {
+     "logo": "/media/seasons/2021/teams/alfa-logo.webp",
+     "car": "/media/seasons/2021/teams/alfa-car.webp"
+    },
+    "alphatauri": {
+     "logo": "/media/seasons/2021/teams/alphatauri-logo.webp",
+     "car": "/media/seasons/2021/teams/alphatauri-car.webp"
+    },
+    "alpine": {
+     "logo": "/media/seasons/2021/teams/alpine-logo.webp",
+     "car": "/media/seasons/2021/teams/alpine-car.webp"
+    },
+    "aston_martin": {
+     "logo": "/media/seasons/2021/teams/aston_martin-logo.webp",
+     "car": "/media/seasons/2021/teams/aston_martin-car.webp"
+    },
+    "ferrari": {
+     "logo": "/media/seasons/2021/teams/ferrari-logo.webp",
+     "car": "/media/seasons/2021/teams/ferrari-car.webp"
+    },
+    "haas": {
+     "logo": "/media/seasons/2021/teams/haas-logo.webp",
+     "car": "/media/seasons/2021/teams/haas-car.webp"
+    },
+    "mclaren": {
+     "logo": "/media/seasons/2021/teams/mclaren-logo.webp"
+    },
+    "mercedes": {
+     "logo": "/media/seasons/2021/teams/mercedes-logo.webp",
+     "car": "/media/seasons/2021/teams/mercedes-car.webp"
+    },
+    "red_bull": {
+     "logo": "/media/seasons/2021/teams/red_bull-logo.webp",
+     "car": "/media/seasons/2021/teams/red_bull-car.webp"
+    },
+    "williams": {
+     "logo": "/media/seasons/2021/teams/williams-logo.webp",
+     "car": "/media/seasons/2021/teams/williams-car.webp"
+    }
+   }
+  },
+  "2020": {
+   "drivers": {
+    "aitken": {
+     "team": "williams",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/aitken-photo.webp",
+     "head": "/media/seasons/2020/drivers/aitken-head.webp"
+    },
+    "albon": {
+     "team": "red_bull",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/albon-photo.webp",
+     "head": "/media/seasons/2020/drivers/albon-head.webp"
+    },
+    "bottas": {
+     "team": "mercedes",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/bottas-photo.webp",
+     "head": "/media/seasons/2020/drivers/bottas-head.webp"
+    },
+    "gasly": {
+     "team": "alphatauri",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/gasly-photo.webp",
+     "head": "/media/seasons/2020/drivers/gasly-head.webp"
+    },
+    "giovinazzi": {
+     "team": "alfa",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/giovinazzi-photo.webp",
+     "head": "/media/seasons/2020/drivers/giovinazzi-head.webp"
+    },
+    "grosjean": {
+     "team": "haas",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/grosjean-photo.webp",
+     "head": "/media/seasons/2020/drivers/grosjean-head.webp"
+    },
+    "hamilton": {
+     "team": "mercedes",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/hamilton-photo.webp",
+     "head": "/media/seasons/2020/drivers/hamilton-head.webp"
+    },
+    "hulkenberg": {
+     "team": "racing_point",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/hulkenberg-photo.webp",
+     "head": "/media/seasons/2020/drivers/hulkenberg-head.webp"
+    },
+    "kevin_magnussen": {
+     "team": "haas",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/kevin_magnussen-photo.webp",
+     "head": "/media/seasons/2020/drivers/kevin_magnussen-head.webp"
+    },
+    "kvyat": {
+     "team": "alphatauri",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/kvyat-photo.webp",
+     "head": "/media/seasons/2020/drivers/kvyat-head.webp"
+    },
+    "latifi": {
+     "team": "williams",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/latifi-photo.webp",
+     "head": "/media/seasons/2020/drivers/latifi-head.webp"
+    },
+    "leclerc": {
+     "team": "ferrari",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/leclerc-photo.webp",
+     "head": "/media/seasons/2020/drivers/leclerc-head.webp"
+    },
+    "max_verstappen": {
+     "team": "red_bull",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/max_verstappen-photo.webp",
+     "head": "/media/seasons/2020/drivers/max_verstappen-head.webp"
+    },
+    "norris": {
+     "team": "mclaren",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/norris-photo.webp",
+     "head": "/media/seasons/2020/drivers/norris-head.webp"
+    },
+    "ocon": {
+     "team": "renault",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/ocon-photo.webp",
+     "head": "/media/seasons/2020/drivers/ocon-head.webp"
+    },
+    "perez": {
+     "team": "racing_point",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/perez-photo.webp",
+     "head": "/media/seasons/2020/drivers/perez-head.webp"
+    },
+    "pietro_fittipaldi": {
+     "team": "haas",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/pietro_fittipaldi-photo.webp",
+     "head": "/media/seasons/2020/drivers/pietro_fittipaldi-head.webp"
+    },
+    "raikkonen": {
+     "team": "alfa",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/raikkonen-photo.webp",
+     "head": "/media/seasons/2020/drivers/raikkonen-head.webp"
+    },
+    "ricciardo": {
+     "team": "renault",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/ricciardo-photo.webp",
+     "head": "/media/seasons/2020/drivers/ricciardo-head.webp"
+    },
+    "russell": {
+     "team": "williams",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/russell-photo.webp",
+     "head": "/media/seasons/2020/drivers/russell-head.webp"
+    },
+    "sainz": {
+     "team": "mclaren",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/sainz-photo.webp",
+     "head": "/media/seasons/2020/drivers/sainz-head.webp"
+    },
+    "stroll": {
+     "team": "racing_point",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/stroll-photo.webp",
+     "head": "/media/seasons/2020/drivers/stroll-head.webp"
+    },
+    "vettel": {
+     "team": "ferrari",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2020/drivers/vettel-photo.webp",
+     "head": "/media/seasons/2020/drivers/vettel-head.webp"
+    }
+   },
+   "teams": {
+    "alfa": {
+     "logo": "/media/seasons/2020/teams/alfa-logo.webp",
+     "car": "/media/seasons/2020/teams/alfa-car.webp"
+    },
+    "alphatauri": {
+     "logo": "/media/seasons/2020/teams/alphatauri-logo.webp",
+     "car": "/media/seasons/2020/teams/alphatauri-car.webp"
+    },
+    "ferrari": {
+     "logo": "/media/seasons/2020/teams/ferrari-logo.webp",
+     "car": "/media/seasons/2020/teams/ferrari-car.webp"
+    },
+    "haas": {
+     "logo": "/media/seasons/2020/teams/haas-logo.webp",
+     "car": "/media/seasons/2020/teams/haas-car.webp"
+    },
+    "mclaren": {
+     "logo": "/media/seasons/2020/teams/mclaren-logo.webp",
+     "car": "/media/seasons/2020/teams/mclaren-car.webp"
+    },
+    "mercedes": {
+     "logo": "/media/seasons/2020/teams/mercedes-logo.webp",
+     "car": "/media/seasons/2020/teams/mercedes-car.webp"
+    },
+    "racing_point": {
+     "logo": "/media/seasons/2020/teams/racing_point-logo.webp",
+     "car": "/media/seasons/2020/teams/racing_point-car.webp"
+    },
+    "red_bull": {
+     "logo": "/media/seasons/2020/teams/red_bull-logo.webp",
+     "car": "/media/seasons/2020/teams/red_bull-car.webp"
+    },
+    "renault": {
+     "logo": "/media/seasons/2020/teams/renault-logo.webp",
+     "car": "/media/seasons/2020/teams/renault-car.webp"
+    },
+    "williams": {
+     "logo": "/media/seasons/2020/teams/williams-logo.webp",
+     "car": "/media/seasons/2020/teams/williams-car.webp"
+    }
+   }
+  },
+  "2019": {
+   "drivers": {
+    "albon": {
+     "team": "red_bull",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/albon-photo.webp",
+     "head": "/media/seasons/2019/drivers/albon-head.webp"
+    },
+    "bottas": {
+     "team": "mercedes",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/bottas-photo.webp",
+     "head": "/media/seasons/2019/drivers/bottas-head.webp"
+    },
+    "gasly": {
+     "team": "toro_rosso",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/gasly-photo.webp",
+     "head": "/media/seasons/2019/drivers/gasly-head.webp"
+    },
+    "giovinazzi": {
+     "team": "alfa",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/giovinazzi-photo.webp",
+     "head": "/media/seasons/2019/drivers/giovinazzi-head.webp"
+    },
+    "grosjean": {
+     "team": "haas",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/grosjean-photo.webp",
+     "head": "/media/seasons/2019/drivers/grosjean-head.webp"
+    },
+    "hamilton": {
+     "team": "mercedes",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/hamilton-photo.webp",
+     "head": "/media/seasons/2019/drivers/hamilton-head.webp"
+    },
+    "hulkenberg": {
+     "team": "renault",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/hulkenberg-photo.webp",
+     "head": "/media/seasons/2019/drivers/hulkenberg-head.webp"
+    },
+    "kevin_magnussen": {
+     "team": "haas",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/kevin_magnussen-photo.webp",
+     "head": "/media/seasons/2019/drivers/kevin_magnussen-head.webp"
+    },
+    "kubica": {
+     "team": "williams",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/kubica-photo.webp",
+     "head": "/media/seasons/2019/drivers/kubica-head.webp"
+    },
+    "kvyat": {
+     "team": "toro_rosso",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/kvyat-photo.webp",
+     "head": "/media/seasons/2019/drivers/kvyat-head.webp"
+    },
+    "leclerc": {
+     "team": "ferrari",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/leclerc-photo.webp",
+     "head": "/media/seasons/2019/drivers/leclerc-head.webp"
+    },
+    "max_verstappen": {
+     "team": "red_bull",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/max_verstappen-photo.webp",
+     "head": "/media/seasons/2019/drivers/max_verstappen-head.webp"
+    },
+    "norris": {
+     "team": "mclaren",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/norris-photo.webp",
+     "head": "/media/seasons/2019/drivers/norris-head.webp"
+    },
+    "perez": {
+     "team": "racing_point",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/perez-photo.webp",
+     "head": "/media/seasons/2019/drivers/perez-head.webp"
+    },
+    "raikkonen": {
+     "team": "alfa",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/raikkonen-photo.webp",
+     "head": "/media/seasons/2019/drivers/raikkonen-head.webp"
+    },
+    "ricciardo": {
+     "team": "renault",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/ricciardo-photo.webp",
+     "head": "/media/seasons/2019/drivers/ricciardo-head.webp"
+    },
+    "russell": {
+     "team": "williams",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/russell-photo.webp",
+     "head": "/media/seasons/2019/drivers/russell-head.webp"
+    },
+    "sainz": {
+     "team": "mclaren",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/sainz-photo.webp",
+     "head": "/media/seasons/2019/drivers/sainz-head.webp"
+    },
+    "stroll": {
+     "team": "racing_point",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/stroll-photo.webp",
+     "head": "/media/seasons/2019/drivers/stroll-head.webp"
+    },
+    "vettel": {
+     "team": "ferrari",
+     "front": null,
+     "card": null,
+     "number": null,
+     "photo": "/media/seasons/2019/drivers/vettel-photo.webp",
+     "head": "/media/seasons/2019/drivers/vettel-head.webp"
+    }
+   },
+   "teams": {
+    "alfa": {
+     "logo": "/media/seasons/2019/teams/alfa-logo.webp",
+     "car": "/media/seasons/2019/teams/alfa-car.webp"
+    },
+    "ferrari": {
+     "logo": "/media/seasons/2019/teams/ferrari-logo.webp",
+     "car": "/media/seasons/2019/teams/ferrari-car.webp"
+    },
+    "haas": {
+     "logo": "/media/seasons/2019/teams/haas-logo.webp",
+     "car": "/media/seasons/2019/teams/haas-car.webp"
+    },
+    "mclaren": {
+     "logo": "/media/seasons/2019/teams/mclaren-logo.webp",
+     "car": "/media/seasons/2019/teams/mclaren-car.webp"
+    },
+    "mercedes": {
+     "logo": "/media/seasons/2019/teams/mercedes-logo.webp",
+     "car": "/media/seasons/2019/teams/mercedes-car.webp"
+    },
+    "racing_point": {
+     "logo": "/media/seasons/2019/teams/racing_point-logo.webp",
+     "car": "/media/seasons/2019/teams/racing_point-car.webp"
+    },
+    "red_bull": {
+     "logo": "/media/seasons/2019/teams/red_bull-logo.webp",
+     "car": "/media/seasons/2019/teams/red_bull-car.webp"
+    },
+    "renault": {
+     "logo": "/media/seasons/2019/teams/renault-logo.webp",
+     "car": "/media/seasons/2019/teams/renault-car.webp"
+    },
+    "toro_rosso": {
+     "logo": "/media/seasons/2019/teams/toro_rosso-logo.webp",
+     "car": "/media/seasons/2019/teams/toro_rosso-car.webp"
+    },
+    "williams": {
+     "logo": "/media/seasons/2019/teams/williams-logo.webp",
+     "car": "/media/seasons/2019/teams/williams-car.webp"
+    }
+   }
+  }
+ },
+ "galleries": {
+  "drivers": {
+   "albon": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268884877.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268737626.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-previews-2268389856.webp",
+     "caption": "Japanese Grand Prix 2026 · Previews",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-2297217830.webp",
+     "caption": "Azerbaijan Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-spain-qualifying-2294872498.webp",
+     "caption": "Spanish Grand Prix 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-spain-madrid-gettyimages-2294471458.webp",
+     "caption": "Spanish Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "alonso": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268856846.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268728398.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-qualifying-2265212512.webp",
+     "caption": "Australian Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-bahrain-malaysia-gettyimages-2298168619.webp",
+     "caption": "Bahrain Grand Prix in Malaysia 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-belgium-2286755470.webp",
+     "caption": "Belgian Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-singapore-gettyimages-2299191507.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "antonelli": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268884816.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-2-2262577854.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 2",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-bahrain-in-malaysia-2298499916.webp",
+     "caption": "Bahrain Grand Prix in Malaysia 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-2299680754.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-spain-2295053177.webp",
+     "caption": "Spanish Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-italy-2293823265.webp",
+     "caption": "Italian Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "arvid_lindblad": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268740686.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-2266576203.webp",
+     "caption": "Chinese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266421433.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-practice-2296902748.webp",
+     "caption": "Azerbaijan Grand Prix 2026 · Practice",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-bahrain-in-malaysia-2298475682.webp",
+     "caption": "Bahrain Grand Prix in Malaysia 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-qualifying-2297021514.webp",
+     "caption": "Azerbaijan Grand Prix 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "bearman": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266430506.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-qualifying-2265209293.webp",
+     "caption": "Australian Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-practice-2265040425.webp",
+     "caption": "Australian Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-practice-2296927364.webp",
+     "caption": "Azerbaijan Grand Prix 2026 · Practice",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-belgium-2286755646.webp",
+     "caption": "Belgian Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "bortoleto": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268728402.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268552739.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-previews-2264876466.webp",
+     "caption": "Australian Grand Prix 2026 · Previews",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-1-2262310040.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 1",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-3-2261364649.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 3",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-practice-2296927351.webp",
+     "caption": "Azerbaijan Grand Prix 2026 · Practice",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "bottas": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268885079.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-2-2262433021.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 2",
+     "credit": "Formula 1"
+    }
+   ],
+   "colapinto": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268566310.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266404724.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-2-2262423826.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 2",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-azerbaijan-gettyimages-2297248341.webp",
+     "caption": "Azerbaijan Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-qualifying-2297076373.webp",
+     "caption": "Azerbaijan Grand Prix 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-2267025860.webp",
+     "caption": "Chinese Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "gasly": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268571549.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-2265359570.webp",
+     "caption": "Australian Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-2-2261204473.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 2",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-sprint-qualifying-2299495435.webp",
+     "caption": "Singapore Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-miscellaneous-gettyimages-2280341072.webp",
+     "caption": "Monaco Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-japan-gettyimages-2268873747.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "hadjar": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268710644.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-previews-2268393761.webp",
+     "caption": "Japanese Grand Prix 2026 · Previews",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266407902.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-sprint-qualifying-2299519361.webp",
+     "caption": "Singapore Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-practice-sprint-qualifying-2299382014.webp",
+     "caption": "Singapore Grand Prix 2026 · Practice & Sprint Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-bahrain-in-malaysia-qualifying-2298359915.webp",
+     "caption": "Bahrain Grand Prix in Malaysia 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "hamilton": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268712083.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268577899.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-china-gettyimages-2266398499.webp",
+     "caption": "Chinese Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-3-2261401734.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 3",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-sprint-qualifying-2299532250.webp",
+     "caption": "Singapore Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-singapore-gettyimages-2299497212.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "hulkenberg": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268570436.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-qualifying-2265208863.webp",
+     "caption": "Australian Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-3-2262603158.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 3",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-2-2262497656.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 2",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-2299645413.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268566458.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    }
+   ],
+   "lawson": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268544506.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-previews-2268380450.webp",
+     "caption": "Japanese Grand Prix 2026 · Previews",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266431845.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-2299647078.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-azerbaijan-gettyimages-2296707909.webp",
+     "caption": "Azerbaijan Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266419901.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    }
+   ],
+   "leclerc": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268572376.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266430502.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-china-gettyimages-2266398499.webp",
+     "caption": "Chinese Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-3-2262590967.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 3",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-great-britain-2284744325.webp",
+     "caption": "British Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-2299675887.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "max_verstappen": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268885742.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268728198.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-singapore-gettyimages-2299662779.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-2299656194.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-spain-qualifying-2294875433.webp",
+     "caption": "Spanish Grand Prix 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-previews-2299209321.webp",
+     "caption": "Singapore Grand Prix 2026 · Previews",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "norris": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268736648.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-previews-2268386179.webp",
+     "caption": "Japanese Grand Prix 2026 · Previews",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-2-2262443438.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 2",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-azerbaijan-gettyimages-2297232980.webp",
+     "caption": "Azerbaijan Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-netherlands-2291683428.webp",
+     "caption": "Dutch Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-monaco-practice-2279987621.webp",
+     "caption": "Monaco Grand Prix 2026 · Practice",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "ocon": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268876176.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-previews-2268378497.webp",
+     "caption": "Japanese Grand Prix 2026 · Previews",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-australia-gettyimages-2264863604.webp",
+     "caption": "Australian Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-monaco-2280325141.webp",
+     "caption": "Monaco Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-bahrain-in-malaysia-previews-2297997415.webp",
+     "caption": "Bahrain Grand Prix in Malaysia 2026 · Previews",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-miscellaneous-gettyimages-2297040117.webp",
+     "caption": "Azerbaijan Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "perez": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266418217.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-previews-2266043167.webp",
+     "caption": "Chinese Grand Prix 2026 · Previews",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-3-2262604512.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 3",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-2-2261277576.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 2",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-bahrain-in-malaysia-qualifying-2298330540.webp",
+     "caption": "Bahrain Grand Prix in Malaysia 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-netherlands-2291687048.webp",
+     "caption": "Dutch Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "piastri": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268737809.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268566614.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266430496.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-sprint-qualifying-2299494641.webp",
+     "caption": "Singapore Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-hungary-2287716837.webp",
+     "caption": "Hungarian Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-previews-2299209362.webp",
+     "caption": "Singapore Grand Prix 2026 · Previews",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "russell": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268571554.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-qualifying-2265209242.webp",
+     "caption": "Australian Grand Prix 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-austria-2283726923.webp",
+     "caption": "Austrian Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-barcelona-catalunya-gettyimages-2281526128.webp",
+     "caption": "Barcelona Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-miscellaneous-hinch-gettyimages-2274322648.webp",
+     "caption": "Miami Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-singapore-gettyimages-2299673357.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "sainz": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268874944.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268737625.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-spain-practice-2294745906.webp",
+     "caption": "Spanish Grand Prix 2026 · Practice",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-bahrain-in-malaysia-qualifying-2298357474.webp",
+     "caption": "Bahrain Grand Prix in Malaysia 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-2297217830.webp",
+     "caption": "Azerbaijan Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268733634.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    }
+   ],
+   "stroll": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268711043.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-practice-sprint-qualifying-2266273831.webp",
+     "caption": "Chinese Grand Prix 2026 · Practice & Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-practice-2265040423.webp",
+     "caption": "Australian Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-singapore-gettyimages-2299492757.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266405064.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-miscellaneous-gettyimages-2297215408.webp",
+     "caption": "Azerbaijan Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "tsunoda": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-spain-2295070886.webp",
+     "caption": "Spanish Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-netherlands-2291649099.webp",
+     "caption": "Dutch Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ]
+  },
+  "teams": {
+   "alpine": [
+    {
+     "src": "/media/gallery/2026-azerbaijan-gettyimages-2297248341.webp",
+     "caption": "Azerbaijan Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-qualifying-2297076373.webp",
+     "caption": "Azerbaijan Grand Prix 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268571549.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266404724.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-2265359570.webp",
+     "caption": "Australian Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-2-2262423826.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 2",
+     "credit": "Formula 1"
+    }
+   ],
+   "aston_martin": [
+    {
+     "src": "/media/gallery/2026-singapore-gettyimages-2299492757.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-bahrain-malaysia-gettyimages-2298168619.webp",
+     "caption": "Bahrain Grand Prix in Malaysia 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-belgium-2286755470.webp",
+     "caption": "Belgian Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266405064.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268856846.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268728398.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    }
+   ],
+   "audi": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-practice-2296927351.webp",
+     "caption": "Azerbaijan Grand Prix 2026 · Practice",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268728402.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268570436.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-qualifying-2265208863.webp",
+     "caption": "Australian Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-previews-2264876466.webp",
+     "caption": "Australian Grand Prix 2026 · Previews",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-formula-1-testing-in-bahrain-day-3-2262603158.webp",
+     "caption": "Pre-season testing, Bahrain 2026 · Day 3",
+     "credit": "Formula 1"
+    }
+   ],
+   "cadillac": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-bahrain-in-malaysia-qualifying-2298330540.webp",
+     "caption": "Bahrain Grand Prix in Malaysia 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-netherlands-2291687048.webp",
+     "caption": "Dutch Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-great-britain-2284746019.webp",
+     "caption": "British Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268885079.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266418217.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-previews-2266043167.webp",
+     "caption": "Chinese Grand Prix 2026 · Previews",
+     "credit": "Formula 1"
+    }
+   ],
+   "ferrari": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-sprint-qualifying-2299532250.webp",
+     "caption": "Singapore Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-great-britain-2284744325.webp",
+     "caption": "British Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268712083.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268577899.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266430502.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-china-gettyimages-2266398499.webp",
+     "caption": "Chinese Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "haas": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-practice-2296927364.webp",
+     "caption": "Azerbaijan Grand Prix 2026 · Practice",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268876176.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-previews-2268378497.webp",
+     "caption": "Japanese Grand Prix 2026 · Previews",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266430506.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-qualifying-2265209293.webp",
+     "caption": "Australian Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-australia-practice-2265040425.webp",
+     "caption": "Australian Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    }
+   ],
+   "mclaren": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-sprint-qualifying-2299494641.webp",
+     "caption": "Singapore Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-azerbaijan-gettyimages-2297232980.webp",
+     "caption": "Azerbaijan Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-netherlands-2291683428.webp",
+     "caption": "Dutch Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268737809.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268566614.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-previews-2268386179.webp",
+     "caption": "Japanese Grand Prix 2026 · Previews",
+     "credit": "Formula 1"
+    }
+   ],
+   "mercedes": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-bahrain-in-malaysia-2298499916.webp",
+     "caption": "Bahrain Grand Prix in Malaysia 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-austria-2283726923.webp",
+     "caption": "Austrian Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-barcelona-catalunya-gettyimages-2281526128.webp",
+     "caption": "Barcelona Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-miscellaneous-hinch-gettyimages-2274322648.webp",
+     "caption": "Miami Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268884816.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-practice-2268571554.webp",
+     "caption": "Japanese Grand Prix 2026 · Practice",
+     "credit": "Formula 1"
+    }
+   ],
+   "rb": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-practice-2296902748.webp",
+     "caption": "Azerbaijan Grand Prix 2026 · Practice",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268740686.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-2266576203.webp",
+     "caption": "Chinese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-china-sprint-qualifying-2266421433.webp",
+     "caption": "Chinese Grand Prix 2026 · Sprint Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-bahrain-in-malaysia-2298475682.webp",
+     "caption": "Bahrain Grand Prix in Malaysia 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-qualifying-2297021514.webp",
+     "caption": "Azerbaijan Grand Prix 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "red_bull": [
+    {
+     "src": "/media/gallery/2026-singapore-gettyimages-2299662779.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-singapore-2299656194.webp",
+     "caption": "Singapore Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-spain-qualifying-2294875433.webp",
+     "caption": "Spanish Grand Prix 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268885742.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268728198.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-previews-2268393761.webp",
+     "caption": "Japanese Grand Prix 2026 · Previews",
+     "credit": "Getty Images / Formula 1"
+    }
+   ],
+   "williams": [
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-2268884877.webp",
+     "caption": "Japanese Grand Prix 2026",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-qualifying-2268737626.webp",
+     "caption": "Japanese Grand Prix 2026 · Qualifying",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-japan-previews-2268389856.webp",
+     "caption": "Japanese Grand Prix 2026 · Previews",
+     "credit": "Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-azerbaijan-2297217830.webp",
+     "caption": "Azerbaijan Grand Prix 2026",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-spain-qualifying-2294872498.webp",
+     "caption": "Spanish Grand Prix 2026 · Qualifying",
+     "credit": "Getty Images / Formula 1"
+    },
+    {
+     "src": "/media/gallery/2026-f1-grand-prix-of-spain-practice-2294745906.webp",
+     "caption": "Spanish Grand Prix 2026 · Practice",
+     "credit": "Getty Images / Formula 1"
+    }
+   ]
   }
  }
 }

@@ -1,0 +1,35 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "node scripts/serve.mjs",
+      "startServerReadyPattern": "verification server",
+      "startServerReadyTimeout": 30000,
+      "url": [
+        "http://127.0.0.1:8787/?lh=home#/",
+        "http://127.0.0.1:8787/?lh=standings#/standings",
+        "http://127.0.0.1:8787/?lh=driver#/driver/leclerc"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "desktop",
+        "skipAudits": ["uses-http2", "bf-cache"],
+        "chromeFlags": "--no-sandbox --headless=new"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["warn", { "minScore": 0.8, "aggregationMethod": "median-run" }],
+        "categories:accessibility": ["warn", { "minScore": 0.9, "aggregationMethod": "median-run" }],
+        "categories:best-practices": ["warn", { "minScore": 0.9, "aggregationMethod": "median-run" }],
+        "cumulative-layout-shift": ["warn", { "maxNumericValue": 0.1, "aggregationMethod": "median-run" }],
+        "largest-contentful-paint": ["warn", { "maxNumericValue": 2500, "aggregationMethod": "median-run" }],
+        "total-blocking-time": ["warn", { "maxNumericValue": 300, "aggregationMethod": "median-run" }]
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": "artifacts/lighthouse",
+      "reportFilenamePattern": "%%HOSTNAME%%-%%DATETIME%%.report.%%EXTENSION%%"
+    }
+  }
+}

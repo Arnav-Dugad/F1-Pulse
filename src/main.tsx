@@ -1,3 +1,4 @@
+import { usePageviews } from "./lib/beacon";
 import React, { Suspense, lazy, useEffect, useState, type ComponentType } from "react";
 import { createRoot } from "react-dom/client";
 import { MotionConfig } from "motion/react";
@@ -5,6 +6,10 @@ import { PrefsProvider, usePrefs } from "./app/prefs";
 import { Ambient, CommandPalette, Footer, TabBar, TopNav, sectionOf } from "./app/shell";
 import { useRoute, type Route } from "./lib/router";
 import { Page, useAutoReveal } from "./ui/core";
+import { useGlobalGestures } from "./ui/gestures";
+import { SectionNav } from "./ui/section-nav";
+import { LivePill } from "./ui/live-pill";
+import { PullToRefresh } from "./ui/pull-refresh";
 import "./styles/base.css";
 import "./styles/components.css";
 import "./styles/shell.css";
@@ -48,6 +53,15 @@ const pages: Record<string, React.LazyExoticComponent<ComponentType<{ route: Rou
   news: page(() => import("./pages/News")),
   favorites: page(() => import("./pages/Favorites")),
   settings: page(() => import("./pages/Settings")),
+  insights: page(() => import("./pages/Insights")),
+  predict: page(() => import("./pages/Predict")),
+  records: page(() => import("./pages/Records")),
+  "on-this-day": page(() => import("./pages/OnThisDay")),
+  rivalry: page(() => import("./pages/Rivalry")),
+  rookies: page(() => import("./pages/Rookies")),
+  eras: page(() => import("./pages/Eras")),
+  lineage: page(() => import("./pages/Lineage")),
+  story: page(() => import("./pages/Story")),
 };
 
 function NotFound() {
@@ -69,11 +83,14 @@ function RouteFallback() {
 
 function App() {
   const route = useRoute();
+  usePageviews(route.path);
   const { reducedMotion, season } = usePrefs();
   const [search, setSearch] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const section = sectionOf(route);
   const Current = pages[section];
-  useAutoReveal(route.path + season);
+  useAutoReveal(route.path + season + refreshKey);
+  useGlobalGestures();
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setSearch((s) => !s); }
@@ -83,10 +100,12 @@ function App() {
     return () => document.removeEventListener("keydown", key);
   }, []);
   useEffect(() => setSearch(false), [route.path]);
-  // Retire any service worker or offline cache left behind by the original site.
+  // Offline shell + runtime caches (public/service-worker.js) in production builds; retire the original site's cache.
   useEffect(() => {
-    navigator.serviceWorker?.getRegistrations?.().then((rs) => rs.forEach((r) => r.unregister())).catch(() => {});
     window.caches?.keys().then((keys) => keys.filter((k) => k.startsWith("f1-pulse-shell-")).forEach((k) => caches.delete(k))).catch(() => {});
+    if ((import.meta as unknown as { env?: { PROD?: boolean } }).env?.PROD)
+      navigator.serviceWorker?.register("/service-worker.js", { scope: "/", updateViaCache: "none" }).catch(() => {});
+    else navigator.serviceWorker?.getRegistrations?.().then((rs) => rs.forEach((r) => r.unregister())).catch(() => {});
   }, []);
   return (
     <MotionConfig reducedMotion={reducedMotion ? "always" : "user"}>
@@ -95,12 +114,15 @@ function App() {
       <TopNav section={section} onSearch={() => setSearch(true)} />
       <Boundary key={route.path}>
         <Suspense fallback={<RouteFallback />}>
-          {Current ? <Current key={route.path + "|" + season} route={route} /> : <NotFound />}
+          {Current ? <Current key={route.path + "|" + season + "|" + refreshKey} route={route} /> : <NotFound />}
         </Suspense>
       </Boundary>
+      <SectionNav path={route.path + "|" + season + "|" + refreshKey} />
+      <LivePill route={route} />
+      <PullToRefresh onRefresh={() => setRefreshKey((k) => k + 1)} />
       <Footer />
       <TabBar section={section} />
-      <CommandPalette open={search} onClose={() => setSearch(false)} />
+      <CommandPalette open={search} onClose={() => setSearch(false)} route={route} />
     </MotionConfig>
   );
 }

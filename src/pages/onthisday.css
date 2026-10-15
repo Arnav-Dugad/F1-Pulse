@@ -1,0 +1,57 @@
+/* ───────────────────────── On This Day ───────────────────────── */
+.otd-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.otd-arrow { color: #fff; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.18); }
+.otd-arrow:hover { background: rgba(255, 255, 255, 0.22); color: #fff; }
+.otd-select { width: auto; height: 40px; border-radius: 999px; color: #fff; background-color: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.2); font-weight: 650; }
+.otd-select:focus { background-color: rgba(255, 255, 255, 0.18); }
+
+.otd-latest { position: relative; display: grid; justify-items: center; gap: 8px; width: min(100%, 330px); padding: 30px 22px 22px; border-radius: 32px; color: #fff; text-align: center; overflow: hidden;
+  background: linear-gradient(165deg, color-mix(in srgb, var(--tint) 30%, rgba(255, 255, 255, 0.08)), rgba(255, 255, 255, 0.04)); border: 1px solid rgba(255, 255, 255, 0.18); -webkit-backdrop-filter: blur(26px) saturate(160%); backdrop-filter: blur(26px) saturate(160%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 40px 80px -40px rgba(0, 0, 0, 0.8); transition: transform 0.7s var(--spring); }
+.otd-latest:hover { transform: translateY(-6px); }
+.otd-latest-year { position: absolute; top: -10px; right: 10px; font-family: var(--font-display); font-size: 92px; font-weight: 900; letter-spacing: -0.06em; color: rgba(255, 255, 255, 0.08); line-height: 1; pointer-events: none; }
+.otd-latest-face { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.14), 0 30px 60px -20px var(--tint); }
+.otd-latest-label { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-top: 6px; }
+.otd-latest strong { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: -0.035em; }
+.otd-latest-sub { font-size: 13px; color: rgba(255, 255, 255, 0.7); }
+
+/* Timeline */
+.otd-timeline { list-style: none; margin: 0; padding: 0 0 0 28px; position: relative; display: grid; gap: 16px; }
+.otd-timeline::before { content: ""; position: absolute; left: 8px; top: 12px; bottom: 12px; width: 2px; border-radius: 2px; background: linear-gradient(180deg, var(--separator), color-mix(in srgb, var(--accent) 40%, var(--separator)), var(--separator)); }
+.otd-item { position: relative; }
+.otd-dot { position: absolute; left: -26px; top: 28px; width: 14px; height: 14px; border-radius: 50%; background: var(--tint); box-shadow: 0 0 0 4px var(--bg), 0 0 18px var(--tint); }
+.otd-card { padding: 18px 20px; border-radius: var(--r-xl); display: grid; gap: 14px; }
+.otd-card-head { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.otd-year { font-family: var(--font-display); font-size: clamp(34px, 4vw, 48px); font-weight: 850; letter-spacing: -0.055em; line-height: 0.9; color: var(--label); font-variant-numeric: tabular-nums; }
+.otd-race { display: grid; gap: 3px; min-width: 0; }
+.otd-race-name { font-size: 18px; font-weight: 720; letter-spacing: -0.025em; }
+.otd-race-name:hover { text-decoration: underline; text-underline-offset: 3px; }
+.otd-race .small { display: inline-flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.otd-podium { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; }
+.otd-step { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 16px; background: var(--fill-4); min-width: 0; transition: background-color 0.2s, transform 0.4s var(--spring); }
+.otd-step:hover { background: var(--fill-3); transform: translateY(-2px); }
+.otd-step.win { background: color-mix(in srgb, var(--tint) 14%, var(--fill-4)); }
+.otd-step-main { display: grid; min-width: 0; }
+.otd-step-main strong { font-size: 14px; font-weight: 680; letter-spacing: -0.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.otd-step-main small { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--label-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.otd-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* People */
+.otd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.otd-person { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: var(--r-lg); min-width: 0; }
+.otd-person-main { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.otd-person-main strong { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.otd-person-main small { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--label-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.otd-person-stat { display: grid; justify-items: end; line-height: 1.05; }
+.otd-person-stat b { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: -0.04em; }
+.otd-person-stat small { font-size: 10.5px; color: var(--label-3); font-weight: 650; text-transform: uppercase; letter-spacing: 0.05em; }
+.otd-empty { display: flex; align-items: center; gap: 8px; }
+
+@media (max-width: 520px) {
+  .otd-timeline { padding-left: 20px; }
+  .otd-timeline::before { left: 4px; }
+  .otd-dot { left: -22px; }
+  .otd-card { padding: 16px 14px; }
+  .otd-card-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .otd-select { padding-left: 12px; }
+}

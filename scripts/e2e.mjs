@@ -1,6 +1,7 @@
 /**
  * Browser verification: every route at desktop, tablet and phone widths, in both themes.
- * Fails on uncaught page errors, horizontal overflow, missing headings or broken images.
+ * Fails on uncaught page errors, Content-Security-Policy violations, horizontal overflow, missing
+ * headings or broken images.
  *   PULSE_TEST_URL=http://127.0.0.1:8787 node scripts/e2e.mjs
  */
 import { chromium } from "@playwright/test";
@@ -11,6 +12,7 @@ const routes = (process.env.PULSE_ROUTES || [
   "", "calendar", "race/1", "race/23", "standings", "standings?view=constructors", "standings?view=story",
   "drivers", "driver/leclerc", "teams", "team/ferrari", "circuits", "circuit/monza", "compare", "telemetry",
   "replay", "strategy", "scenarios", "news", "favorites", "settings",
+  "insights", "predict", "records", "on-this-day", "rivalry", "rookies", "eras", "lineage", "story",
   "standings?season=1988", "driver/senna?season=1988", "race/5?season=1988", "team/mclaren?season=1988",
 ].join(",")).split(",");
 const viewports = { desktop: { width: 1440, height: 960 }, tablet: { width: 820, height: 1180 }, phone: { width: 390, height: 844 } };
@@ -26,6 +28,8 @@ for (const [device, viewport] of Object.entries(viewports)) {
     const page = await context.newPage();
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
+    // scripts/serve.mjs applies dist/_headers, so CSP violations surface here before production.
+    page.on("console", (m) => { if (m.type() === "error" && /Content Security Policy/i.test(m.text())) errors.push("CSP: " + m.text().slice(0, 200)); });
     for (const route of routes) {
       errors.length = 0;
       await page.goto(`${base}/#/${route}`);

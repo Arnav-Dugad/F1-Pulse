@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Activity, ArrowRight, ChevronLeft, ChevronRight, Download, Gauge, Info, Map as MapIcon, Maximize2, Minus, Plus, RotateCcw, Zap } from "lucide-react";
+import { Activity, ArrowRight, ChevronLeft, ChevronRight, Download, Gauge, Info, Map as MapIcon, Maximize2, Minus, Plus, Zap } from "lucide-react";
 import { request } from "../api";
 import { Link, type Route } from "../lib/router";
 import { download, lapTime, toCSV } from "../lib/format";
@@ -11,6 +11,8 @@ import {
   ArchiveControls, ArchiveHero, ArchiveStatus, ArchiveUnavailable, DriverBadge, LoadProgress, PaceSummary,
   displayName, lapEnd, signed, surname, useArchive, validLap, type Archive,
 } from "./_archive";
+import { CornerAnalysis } from "./_labcorners";
+import { MiniSectorBoard, MiniSectorHistory, SEG_COLOUR, SEG_LABEL, SegLegend, hasSegments, useSegmentOverlay, type SegLap } from "./_labsectors";
 import "./telemetry.css";
 
 /* ───────────────────────── Types & numeric helpers ───────────────────────── */
@@ -156,10 +158,32 @@ export default function Telemetry(_: { route: Route }) {
 
       {ax.session && ax.drivers.length > 0 && (
         <>
-          <Section title="Lap summary" subtitle="Measured lap and sector durations, straight from OpenF1 timing.">
+          <Section id="lap-summary" title="Lap summary" subtitle="Measured lap and sector durations, straight from OpenF1 timing.">
             <LapSummary ax={ax} />
             <Source value={ax.lapsAData.value?.meta.fetchedAt ? ax.lapsAData.value : undefined} />
           </Section>
+
+          {ax.chosenA && ax.chosenB && ax.driverA && ax.driverB && (hasSegments(ax.chosenA as SegLap) || hasSegments(ax.chosenB as SegLap)) && (
+            <Section id="mini-sectors" title="Mini-sectors" subtitle="The timing screen's segment colours for each selected lap — purple overall best, green personal best, yellow no improvement.">
+              <MiniSectorBoard year={ax.year} rows={[
+                { driver: ax.driverA, lap: ax.chosenA as SegLap, colour: ax.colours[0], side: "A" },
+                { driver: ax.driverB, lap: ax.chosenB as SegLap, colour: ax.colours[1], side: "B" },
+              ]} />
+              <MiniSectorHistory
+                sides={[
+                  { driver: ax.driverA, laps: ax.lapsA as SegLap[], colour: ax.colours[0], side: "A" },
+                  { driver: ax.driverB, laps: ax.lapsB as SegLap[], colour: ax.colours[1], side: "B" },
+                ]}
+                chosen={[ax.chosenA.lap_number, ax.chosenB.lap_number]}
+                onPick={(side, lap) => (side === "A" ? ax.setLapA : ax.setLapB)(String(lap))}
+              />
+              <p className="source">
+                Segment status codes from OpenF1 <code>laps</code> (segments_sector_1–3), mapped as 2049 → green, 2051 → purple, 2048 → yellow, 2064 → pit lane, 0 or empty → not available; any other code is shown as unlisted.
+                Statuses are set by the timing system when each segment is completed, so purple means the best of the session up to that moment.
+              </p>
+              <Source value={ax.lapsAData.value?.meta.fetchedAt ? ax.lapsAData.value : undefined} label="Laps" />
+            </Section>
+          )}
 
           {car.ready && car.loading && (
             <Section title="Telemetry">
@@ -183,7 +207,7 @@ export default function Telemetry(_: { route: Route }) {
             />
           )}
 
-          <Section title="Pace across the session" subtitle="Every valid lap for both drivers — context for the laps you're comparing."
+          <Section id="session-pace" title="Pace across the session" subtitle="Every valid lap for both drivers — context for the laps you're comparing."
             action={<Link className="btn sm" to="replay">Watch the replay<ArrowRight /></Link>}>
             <PaceSummary ax={ax} />
           </Section>
@@ -383,7 +407,7 @@ function TelemetryLab({ a, b, lapA, lapB, driverA, driverB, colours, year, sessi
 
   return (
     <>
-      <Section title="Telemetry traces"
+      <Section id="telemetry-traces" title="Telemetry traces"
         subtitle={mode === "d" ? "Six channels against estimated distance — hover, drag to zoom (mouse), or focus the chart and use ← → + − 0." : "Six channels against time from each lap's start — hover, drag to zoom (mouse), or focus the chart and use ← → + − 0."}
         action={<button className="btn sm" onClick={exportCSV}><Download />Raw CSV · {rowsA.length + rowsB.length} samples</button>}>
         {distError && (
@@ -422,7 +446,7 @@ function TelemetryLab({ a, b, lapA, lapB, driverA, driverB, colours, year, sessi
         <Source value={meta ? { data: null, meta } : undefined} label="Car data" />
       </Section>
 
-      <Section title="Where the time goes" subtitle={<>Estimated gap along the lap · <strong>B − A</strong>: above zero {driverA.name_acronym} is ahead, below zero {driverB.name_acronym} is ahead.</>}>
+      <Section id="where-time-goes" title="Where the time goes" subtitle={<>Estimated gap along the lap · <strong>B − A</strong>: above zero {driverA.name_acronym} is ahead, below zero {driverB.name_acronym} is ahead.</>}>
         <div className="tl-split">
           <Glass className="card tl-delta reveal">
             <div className="card-title">
@@ -439,8 +463,20 @@ function TelemetryLab({ a, b, lapA, lapB, driverA, driverB, colours, year, sessi
             )}
             <p className="source">Elapsed time compared at equal speed-integrated distance, over the overlapping distance only. Small integration errors accumulate, so the final value can differ from the measured lap-time difference.</p>
           </Glass>
-          <TrackMapCard rowsA={rowsA} lapA={lapA} driverA={driverA} sessionKey={session?.session_key} delta={delta} xKey={mode} cursor={cursor} onCursor={setCursor} colours={colours} names={[driverA.name_acronym, driverB.name_acronym]} />
+          <TrackMapCard rowsA={rowsA} lapA={lapA} lapB={lapB} driverA={driverA} sessionKey={session?.session_key} delta={delta} xKey={mode} cursor={cursor} onCursor={setCursor} colours={colours} names={[driverA.name_acronym, driverB.name_acronym]} />
         </div>
+      </Section>
+
+      <Section id="corners" title="Corner analysis" subtitle={<>Braking zones found automatically on the speed traces, compared corner by corner. <span className="chip yellow">Automated · estimated distance</span></>}>
+        {mode === "d" && delta.length ? (
+          <CornerAnalysis rowsA={rowsA} rowsB={rowsB} delta={delta} colours={colours} names={[driverA.name_acronym, driverB.name_acronym]}
+            cursor={cursor} onCursor={setCursor} onZoom={(w) => setWin(clampWin(w))} />
+        ) : (
+          <Glass className="card tl-delta-off">
+            <p className="muted small">{distError ? "Corner analysis needs gap-free speed traces aligned by estimated distance, which these laps don't have." : "Corner analysis works on estimated distance."}</p>
+            {!distError && <button className="btn sm" onClick={() => setMode("d")}>Switch to distance</button>}
+          </Glass>
+        )}
       </Section>
     </>
   );
@@ -870,8 +906,8 @@ function speedColour(f: number) {
   return "rgb(255,69,58)";
 }
 
-function TrackMapCard({ rowsA, lapA, driverA, sessionKey, delta, xKey, cursor, onCursor, colours, names }: {
-  rowsA: Row[]; lapA: Lap; driverA: ArchiveDriver; sessionKey?: number; delta: { distance: number; delta: number }[]; xKey: XKey;
+function TrackMapCard({ rowsA, lapA, lapB, driverA, sessionKey, delta, xKey, cursor, onCursor, colours, names }: {
+  rowsA: Row[]; lapA: Lap; lapB: Lap; driverA: ArchiveDriver; sessionKey?: number; delta: { distance: number; delta: number }[]; xKey: XKey;
   cursor: number | null; onCursor: (x: number | null) => void; colours: [string, string]; names: [string, string];
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -879,9 +915,11 @@ function TrackMapCard({ rowsA, lapA, driverA, sessionKey, delta, xKey, cursor, o
   const [want, setWant] = useState(false);
   const [state, setState] = useState<{ loading: boolean; data?: LocationSample[]; meta?: Envelope<unknown>["meta"]; error?: string }>({ loading: false });
   const [retry, setRetry] = useState(0);
-  const [colourBy, setColourBy] = useState<"speed" | "faster">("speed");
+  const [colourBy, setColourBy] = useState<"speed" | "faster" | "segments">("speed");
+  const [segSide, setSegSide] = useState<"A" | "B">("A");
   const canFaster = delta.length > 1;
-  const by = canFaster ? colourBy : "speed";
+  const canSegments = hasSegments(lapA as SegLap) || hasSegments(lapB as SegLap);
+  const by = colourBy === "faster" && !canFaster ? "speed" : colourBy === "segments" && !canSegments ? "speed" : colourBy;
 
   // Location is a separate request — only fetch once the card scrolls into view.
   useEffect(() => {
@@ -944,6 +982,8 @@ function TrackMapCard({ rowsA, lapA, driverA, sessionKey, delta, xKey, cursor, o
     return { dot, viewBox: `${minX - pad} ${-maxY - pad} ${maxX - minX + 2 * pad} ${maxY - minY + 2 * pad}`, segs, outline, lo, hi, aWins, bWins, pts, first: pts[0] };
   }, [state.data, rowsA, delta, colours, start]);
 
+  const overlay = useSegmentOverlay(geo?.pts, lapA as SegLap, (segSide === "A" ? lapA : lapB) as SegLap);
+
   // Crosshair → Driver A's position on the map.
   const marker = useMemo(() => {
     if (!state.data || cursor === null) return null;
@@ -969,8 +1009,12 @@ function TrackMapCard({ rowsA, lapA, driverA, sessionKey, delta, xKey, cursor, o
     <Glass className="card tl-map reveal" style={{ "--i": 1 } as CSSProperties}>
       <div ref={ref} className="card-title">
         <h3><MapIcon size={16} />Track map · {names[0]} lap {lapA.lap_number}</h3>
-        {canFaster && (
-          <Segmented label="Colour the track by" value={by} onChange={setColourBy} options={[{ value: "speed", label: "Speed" }, { value: "faster", label: "Faster" }]} />
+        {(canFaster || canSegments) && (
+          <Segmented label="Colour the track by" value={by} onChange={setColourBy} options={[
+            { value: "speed" as const, label: "Speed" },
+            ...(canFaster ? [{ value: "faster" as const, label: "Faster" }] : []),
+            ...(canSegments ? [{ value: "segments" as const, label: "Mini-sectors" }] : []),
+          ]} />
         )}
       </div>
       {!want || state.loading ? (
@@ -983,14 +1027,32 @@ function TrackMapCard({ rowsA, lapA, driverA, sessionKey, delta, xKey, cursor, o
             <svg ref={svgRef} viewBox={geo.viewBox} role="img" aria-label={`Circuit drawn from ${names[0]}'s location samples, coloured by ${by === "speed" ? "speed" : "the faster driver per mini-sector"}`}
               onPointerMove={hover} onPointerDown={hover} onPointerLeave={(e) => e.pointerType === "mouse" && onCursor(null)} preserveAspectRatio="xMidYMid meet">
               <path d={geo.outline} className="tl-map-base" />
-              <g className="tl-map-segs">
-                {geo.segs.map((s, i) => <path key={i} d={s.d} stroke={by === "speed" ? s.speed : s.faster} />)}
-              </g>
+              {by === "segments" && overlay ? (
+                <g className="tl-map-segs lab-map-segs" key={segSide}>
+                  {overlay.segs.map((s, i) => <path key={i} d={s.d} stroke={SEG_COLOUR[s.status]} style={{ "--k": i } as CSSProperties}><title>{`S${s.sector} · segment ${s.index + 1}: ${SEG_LABEL[s.status]}`}</title></path>)}
+                </g>
+              ) : (
+                <g className="tl-map-segs">
+                  {geo.segs.map((s, i) => <path key={i} d={s.d} stroke={by === "faster" ? s.faster : s.speed} />)}
+                </g>
+              )}
               {geo.first && <circle cx={geo.first.x} cy={geo.first.y} r={geo.dot * 0.8} className="tl-map-start" />}
               {marker && <circle cx={marker.x} cy={marker.y} r={geo.dot} className="tl-map-marker" style={{ "--c": colours[0] } as CSSProperties} />}
             </svg>
           </div>
-          {by === "speed" ? (
+          {by === "segments" ? (
+            <div className="lab-map-seg-foot">
+              <div className="tl-presets" role="group" aria-label="Whose mini-sectors">
+                {(["A", "B"] as const).map((k, i) => (
+                  <button key={k} type="button" className={cx("tl-preset", segSide === k && "on")} aria-pressed={segSide === k} onClick={() => setSegSide(k)}
+                    disabled={!hasSegments((k === "A" ? lapA : lapB) as SegLap)}>
+                    <i className="ax-legend-dot" style={{ "--c": colours[i], marginRight: 6 } as CSSProperties} />{names[i]} L{(k === "A" ? lapA : lapB).lap_number}
+                  </button>
+                ))}
+              </div>
+              {overlay ? <SegLegend compact /> : <span className="faint xsmall">No segment data for this lap.</span>}
+            </div>
+          ) : by === "speed" ? (
             <div className="tl-map-legend">
               <span>{Math.round(geo.lo)} km/h</span>
               <i className="tl-ramp" />
@@ -1003,7 +1065,7 @@ function TrackMapCard({ rowsA, lapA, driverA, sessionKey, delta, xKey, cursor, o
             </div>
           )}
           <p className="source">
-            Path from OpenF1 location samples (local coordinates), ○ marks the lap start. {by === "faster" ? "Mini-sectors are 25 equal slices of estimated distance; the winner is whoever loses less estimated time in each — an estimate." : `Colour shows ${names[0]}'s measured speed.`} Hover the map to move the crosshair.
+            Path from OpenF1 location samples (local coordinates), ○ marks the lap start. {by === "segments" ? <><strong>Approximate placement:</strong> sector boundaries come from {names[0]}'s measured sector times; inside each sector the mini-sectors are spread proportionally along the path, whereas real timing loops are unevenly spaced.</> : by === "faster" ? "The lap is cut into 25 equal slices of estimated distance (not the official mini-sectors); each goes to whoever loses less estimated time in it — an estimate." : `Colour shows ${names[0]}'s measured speed.`} Hover the map to move the crosshair.
           </p>
           <Source value={state.meta ? { data: null, meta: state.meta } : undefined} label="Location" />
         </>

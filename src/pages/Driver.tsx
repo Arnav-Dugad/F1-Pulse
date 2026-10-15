@@ -1,11 +1,12 @@
+import { sharedTransition } from "../ui/cards";
 import { ProgressNote } from "../ui/progress-note";
-import { useEffect, useMemo, useRef, type CSSProperties } from "react";
-import { ArrowLeft, ArrowRight, BookOpen, Cake, ExternalLink, Flag as FlagIcon, Gauge, Hash, Medal, Swords, Timer, TrendingUp, Trophy, UserX, Zap } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, Cake, ChevronLeft, ChevronRight, Crown, ExternalLink, Flag as FlagIcon, Gauge, Hash, Medal, MoveRight, Swords, Timer, TrendingUp, Trophy, UserX, Users, Zap } from "lucide-react";
 import { allResults, driverCareer, sprintResults, standings, standingsHistory, useData, wiki, wikiTitle, type StandingsList } from "../api";
 import { usePrefs } from "../app/prefs";
 import { Link, type Route } from "../lib/router";
 import { shortRace, useCalendar, useSeasonProgress } from "../lib/season";
-import { driverMedia, fullName, initials, isLightColor, teamColor, teamShortName } from "../lib/media";
+import { driverGallery, driverMedia, fullName, initials, isLightColor, MEDIA_SEASON, teamColor, teamOf, teamShortName } from "../lib/media";
 import { age, formatDay, hasStarted, ordinal, plural, pts } from "../lib/format";
 import { Counter, Glass, Img, Page, Section, Skeleton, Source, StateView, cx, useAmbient, useTitle } from "../ui/core";
 import { DriverAvatar, DriverPortrait, Flag, NumberArt, TeamLogo } from "../ui/media";
@@ -13,9 +14,11 @@ import { FavoriteButton } from "../ui/cards";
 import { LineChart } from "../ui/charts";
 import {
   driverInfo, driverQualifying, driverRaces, emptyEnvelope, findTeammate, finishDescription, finishDuel, finishLabel, finishTone,
-  isClassified, pairColors, poleCount, qualiDuel, roundRanges, seasonStats, teamStints, TugRow, useParallax,
+  isClassified, loadHistoryLite, pairColors, poleCount, qualiDuel, resultTeammates, roundRanges, seasonStats, seasonTeammates, teamStints, TugRow, useParallax,
+  type Mate,
 } from "./_drivers";
-import type { Driver, Race, Result, Team } from "../types";
+import { Gallery } from "../ui/gallery";
+import type { Driver, Race, Result, Standing, Team } from "../types";
 import "./driver.css";
 
 type Entry = { race: Race; result: Result };
@@ -71,6 +74,7 @@ export default function DriverPage({ route }: { route: Route }) {
           <SeasonKpis entries={mine} standing={standing} total={ds.value?.data.length || 0} quali={quali.value?.data} qualiLoading={quali.loading} year={year} tint={tint} />
           <RaceStrip entries={mine} calendar={cal.value?.data} sprints={sprints.value?.data} driverId={id} year={year} source={res.value} />
           <SeasonCharts driver={driver} mate={mate} progress={progress} tint={tint} />
+          <FormCurve entries={mine} sprints={sprints.value?.data} driverId={id} tint={tint} source={res.value} />
           {mate && (
             <TeammateDuel driver={driver} mate={mate} races={res.value?.data || []} quali={quali.value?.data} mateQuali={mateQuali.value?.data} qualiLoading={quali.loading || mateQuali.loading}
               standings={ds.value?.data || []} year={year} />
@@ -79,8 +83,10 @@ export default function DriverPage({ route }: { route: Route }) {
         </>
       )}
 
-      <Career driver={driver} />
+      <Career driver={driver} year={year} seasonRaces={res.value?.data} />
+      <DriverGallery driver={driver} />
       <Biography driver={driver} />
+      <Adjacent id={id} standings={ds.value?.data} year={year} />
 
       <nav className="drv-foot reveal" aria-label="Related pages">
         <Link to="drivers" className="btn glass-btn"><ArrowLeft />All drivers</Link>
@@ -124,14 +130,16 @@ function DriverHero({ driver, team, year, standing, stints, inSeason, loadingSea
       <div className="drv-hero-art" aria-hidden={!photo}>
         {photo ? (
           <>
-            <NumberArt id={driver.driverId} number={driver.permanentNumber} year={year} className="drv-hero-number" />
+            <NumberArt id={driver.driverId} number={driver.permanentNumber} year={year} className="drv-hero-number" eager />
+            <span className="drv-hero-streak" />
             <span className="drv-hero-glow" />
-            <DriverPortrait id={driver.driverId} name={name} year={year} variant="front" eager className="drv-hero-photo" />
+            <DriverPortrait id={driver.driverId} name={name} year={year} variant="front" eager className="drv-hero-photo" style={sharedTransition("driver", driver.driverId)} />
           </>
         ) : (
           <div className="drv-mono">
             <span className="drv-mono-num">{driver.permanentNumber || driver.code || initials(name)}</span>
-            <span className="drv-mono-plate"><span>{initials(name)}</span><small>{driver.code || driver.nationality}</small></span>
+            <span className="drv-hero-streak" />
+            <span className="drv-mono-plate" style={sharedTransition("driver", driver.driverId)}><span>{initials(name)}</span><small>{driver.code || driver.nationality}</small></span>
           </div>
         )}
       </div>
@@ -405,8 +413,14 @@ function RaceRecord({ entries, quali, sprints, driverId, multiTeam, year, source
 /* ───────────────────────── Career ───────────────────────── */
 type SeasonRow = { season: string; teams: Team[]; position: number | null; points: number; wins: number; entries: number; podiums: number; list?: StandingsList };
 
-function Career({ driver }: { driver: Driver }) {
+function Career({ driver, year, seasonRaces }: { driver: Driver; year: string; seasonRaces?: Race[] }) {
   const career = useData(() => driverCareer(driver.driverId), [driver.driverId]);
+  const [mates, setMates] = useState<Map<string, Map<string, Mate[]>> | null>(null);
+  useEffect(() => {
+    let live = true;
+    loadHistoryLite().then((h) => live && setMates(seasonTeammates(h, driver.driverId))).catch(() => live && setMates(new Map()));
+    return () => { live = false; };
+  }, [driver.driverId]);
   const history = useData(() => standingsHistory("drivers", driver.driverId), [driver.driverId]);
   const currentYear = new Date().getFullYear();
 
@@ -486,6 +500,7 @@ function Career({ driver }: { driver: Driver }) {
             ))}
           </div>
 
+          <CareerRibbon driverId={driver.driverId} rows={data.rows} mates={mates} year={year} seasonRaces={seasonRaces} />
           <TeamTimeline rows={data.rows} />
 
           {data.rows.some((r) => r.position) && <ChampionshipChart rows={data.rows} tint={tint} />}
@@ -613,5 +628,155 @@ function Biography({ driver }: { driver: Driver }) {
         </Glass>
       )}
     </Section>
+  );
+}
+
+/* ───────────────────────── Form curve ───────────────────────── */
+const WINDOW = 5;
+function FormCurve({ entries, sprints, driverId, tint, source }: {
+  entries: Entry[]; sprints?: Race[]; driverId: string; tint: string; source?: Parameters<typeof Source>[0]["value"];
+}) {
+  const sprintPts = new Map((sprints || []).map((r) => [r.round, Number(r.SprintResults?.find((x) => x.Driver.driverId === driverId)?.points || 0)]));
+  const perRound = entries.map((e) => Number(e.result.points || 0) + (sprintPts.get(e.race.round) || 0));
+  if (perRound.length < 2)
+    return (
+      <Section id="form-curve" title="Form curve">
+        <StateView empty emptyTitle="Not enough races yet" emptyText="The rolling form curve needs at least two Grand Prix starts this season." />
+      </Section>
+    );
+  const rolling = perRound.map((_, i) => {
+    const slice = perRound.slice(Math.max(0, i - WINDOW + 1), i + 1);
+    return slice.reduce((s, v) => s + v, 0) / slice.length;
+  });
+  const lastAvg = rolling.at(-1)!;
+  const prevIdx = rolling.length - 1 - WINDOW;
+  const prevAvg = prevIdx >= 0 ? rolling[prevIdx] : rolling[0];
+  const delta = lastAvg - prevAvg;
+  const trend = Math.abs(delta) < 0.5 ? "flat" : delta > 0 ? "up" : "down";
+  const seasonAvg = perRound.reduce((s, v) => s + v, 0) / perRound.length;
+  const span = Math.min(WINDOW, perRound.length);
+  const Arrow = trend === "up" ? ArrowUpRight : trend === "down" ? ArrowDownRight : MoveRight;
+  const labels = entries.map((e) => "R" + e.race.round);
+  return (
+    <Section id="form-curve" title="Form curve" subtitle={`Rolling ${WINDOW}-race average of points scored (Grand Prix + sprint), across the races ${entries[0].result.Driver.familyName} started.`}>
+      <div className="drv-form">
+        <Glass className={cx("card drv-form-kpi reveal", trend)} style={{ "--tint": tint } as CSSProperties}>
+          <span className="drv-kpi-label"><TrendingUp size={14} />Last {plural(span, "race")}</span>
+          <span className="drv-form-value"><Counter value={lastAvg} decimals={1} /><small>pts / race</small></span>
+          <span className={cx("drv-form-trend", trend)} aria-label={`Trend ${trend === "flat" ? "level" : trend}: ${delta >= 0 ? "+" : "−"}${Math.abs(delta).toFixed(1)} points per race`}>
+            <Arrow size={18} />{trend === "flat" ? "Holding steady" : `${delta > 0 ? "+" : "−"}${Math.abs(delta).toFixed(1)} vs ${prevIdx >= 0 ? `the ${WINDOW} races before` : "the opening race"}`}
+          </span>
+          <span className="drv-kpi-detail">Season average {seasonAvg.toFixed(1)} pts per race · {plural(perRound.length, "start")}</span>
+        </Glass>
+        <Glass className="card drv-chart reveal" style={{ "--i": 1 } as CSSProperties}>
+          <div className="card-title"><h3>Points per race</h3><span className="eyebrow">Rolling {WINDOW}-race average</span></div>
+          <LineChart ariaLabel={`Rolling ${WINDOW}-race points average and points per race`} labels={labels} height={260} area
+            series={[
+              { id: "rolling", name: `${WINDOW}-race average`, color: tint, values: rolling },
+              { id: "race", name: "That round", color: "#8e8e99", values: perRound, dashed: true },
+            ]}
+            yFormat={(v) => (Number.isInteger(v) ? String(v) : v.toFixed(1))}
+            tooltipTitle={(i) => `Round ${entries[i].race.round} · ${shortRace(entries[i].race.raceName)}`} />
+          <p className="source">Classification points as published; later penalties may differ from the official table. Rounds the driver did not start are skipped.</p>
+        </Glass>
+      </div>
+      <Source value={source} />
+    </Section>
+  );
+}
+
+/* ───────────────────────── Career ribbon ───────────────────────── */
+function CareerRibbon({ driverId, rows, mates, year, seasonRaces }: {
+  driverId: string; rows: SeasonRow[]; mates: Map<string, Map<string, Mate[]>> | null; year: string; seasonRaces?: Race[];
+}) {
+  const strip = useRef<HTMLOListElement>(null);
+  const currentYear = new Date().getFullYear();
+  const live = useMemo(() => (seasonRaces?.length ? resultTeammates(seasonRaces, driverId) : null), [seasonRaces, driverId]);
+  useEffect(() => {
+    const el = strip.current?.querySelector<HTMLElement>(".drv-rb-season.current") || (strip.current?.lastElementChild as HTMLElement | null);
+    if (el && strip.current) strip.current.scrollLeft = el.offsetLeft - strip.current.clientWidth / 2 + el.clientWidth / 2;
+  }, [rows.length, year]);
+  const matesOf = (r: SeasonRow): Mate[] => {
+    const fromSnap = mates?.get(r.season);
+    const byTeam = fromSnap || (r.season === year && live ? live : null);
+    if (!byTeam) return [];
+    const seen = new Map<string, Mate>();
+    for (const t of r.teams) for (const m of byTeam.get(t.constructorId) || []) seen.set(m.driverId, m);
+    return [...seen.values()];
+  };
+  return (
+    <Glass className="card drv-ribbon reveal">
+      <div className="card-title"><h3>Career timeline</h3><span className="eyebrow">{plural(rows.length, "season")} · tap a season</span></div>
+      <ol className="drv-rb" ref={strip} aria-label="Seasons">
+        {rows.map((r, i) => {
+          const champ = r.position === 1 && +r.season < currentYear;
+          const colors = r.teams.map((t) => teamColor(t));
+          const list = matesOf(r);
+          const known = !!mates?.get(r.season) || (r.season === year && !!live);
+          return (
+            <li key={r.season} className={cx("drv-rb-season", r.season === year && "current", champ && "champ")} style={{ "--i": Math.min(i, 14), "--band": colors.length > 1 ? `linear-gradient(90deg, ${colors.join(", ")})` : colors[0] || "var(--fill-2)" } as CSSProperties}>
+              <Link to={`driver/${driverId}?season=${r.season}`} className="drv-rb-card" aria-current={r.season === year ? "page" : undefined}
+                aria-label={`${r.season}: ${r.teams.map((t) => teamShortName(t.name, r.season)).join(" and ")}${r.position ? `, P${r.position} in the championship` : ""}, ${plural(r.wins, "win")}, ${plural(r.podiums, "podium")}`}>
+                <span className="drv-rb-band" aria-hidden />
+                <span className="drv-rb-top">
+                  <span className="drv-rb-year">{r.season}</span>
+                  {champ ? <span className="drv-rb-crown" title="World champion"><Crown size={13} /></span> : +r.season === currentYear ? <span className="drv-rb-live">Live</span> : null}
+                </span>
+                <span className="drv-rb-logos">
+                  {r.teams.map((t) => <TeamLogo key={t.constructorId} id={t.constructorId} name={t.name} year={r.season} size={30} />)}
+                  <span className="drv-rb-team">{r.teams.map((t) => teamShortName(t.name, r.season)).join(" / ") || "—"}</span>
+                </span>
+                <span className="drv-rb-pos"><b>{r.position ? "P" + r.position : "—"}</b><small>Championship</small></span>
+                <span className="drv-rb-stats"><span><b>{r.wins}</b> W</span><span><b>{r.podiums}</b> Pod</span><span><b>{r.entries}</b> GP</span></span>
+                <span className="drv-rb-mates">
+                  <Users size={11} />
+                  {list.length ? (
+                    <>{list.slice(0, 2).map((m) => m.familyName).join(", ")}{list.length > 2 && <i> +{list.length - 2}</i>}</>
+                  ) : <i>{known ? "No team-mate classified" : mates === null ? "…" : "—"}</i>}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ol>
+      <p className="source">Logos are season-appropriate where official imagery exists (monograms otherwise). Team-mates are drivers classified in that season's standings for the same constructor.</p>
+    </Glass>
+  );
+}
+
+/* ───────────────────────── Gallery ───────────────────────── */
+function DriverGallery({ driver }: { driver: Driver }) {
+  const images = driverGallery(driver.driverId);
+  if (!images.length) return null;
+  return (
+    <Section id="gallery" title="Trackside gallery" subtitle={`${fullName(driver)} on track · ${MEDIA_SEASON} season photography`}>
+      <Gallery images={images} label={`${fullName(driver)} trackside photos`} />
+    </Section>
+  );
+}
+
+/* ───────────────────────── Previous / next ───────────────────────── */
+function Adjacent({ id, standings: table, year }: { id: string; standings?: Standing[]; year: string }) {
+  const idx = table?.findIndex((s) => s.Driver.driverId === id) ?? -1;
+  if (!table || idx < 0) return null;
+  const prev = table[idx - 1], next = table[idx + 1];
+  if (!prev && !next) return null;
+  const card = (s: Standing, dir: "prev" | "next") => {
+    const team = teamOf(s, year);
+    return (
+      <Link to={"driver/" + s.Driver.driverId} className={cx("drv-adj", dir)} data-swipe={dir} style={{ "--tint": teamColor(team) } as CSSProperties}
+        aria-label={`${dir === "prev" ? "Previous" : "Next"} in the championship: P${s.position} ${fullName(s.Driver)}`}>
+        {dir === "prev" && <ChevronLeft className="drv-adj-chev" />}
+        <DriverAvatar id={s.Driver.driverId} name={fullName(s.Driver)} year={year} team={team?.constructorId} size={44} />
+        <span className="drv-adj-text"><small>{dir === "prev" ? "Previous" : "Next"} · P{s.position}</small><strong>{fullName(s.Driver)}</strong></span>
+        {dir === "next" && <ChevronRight className="drv-adj-chev" />}
+      </Link>
+    );
+  };
+  return (
+    <nav className="drv-adjacent reveal" aria-label={`Championship order, ${year}`}>
+      {prev ? card(prev, "prev") : <span />}
+      {next ? card(next, "next") : <span />}
+    </nav>
   );
 }

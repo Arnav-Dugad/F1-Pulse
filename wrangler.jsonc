@@ -20,4 +20,21 @@
     ],
   },
   "observability": { "enabled": true },
+  // Pre-warms current-season endpoints and runs the points self-check (worker `scheduled()`).
+  // Race-weekend-only schedules are not expressible in cron, so it simply runs every three hours.
+  "triggers": { "crons": ["0 */3 * * *"] },
+  // Exposed by GET /api/status as the build id.
+  "version_metadata": { "binding": "CF_VERSION_METADATA" },
+  "vars": {
+    // Origin used for scheduled pre-warm requests (edge cache keys are per hostname).
+    "PULSE_ORIGIN": "https://f1-pulse.arnavrival12.workers.dev",
+  },
+  // Optional (recommended): persist the latest /api/status report, a last-known-good current season and
+  // completed seasons for /api/season globally (the Cache API is a no-op on *.workers.dev).
+  // Holds the scheduled self-check report and completed-season bundles (created with `wrangler kv namespace create PULSE_KV`).
+  "kv_namespaces": [{ "binding": "PULSE_KV", "id": "963ef4316cac47d1ab625953c780fe43" }],
+  //
+  // Optional: privacy-friendly page views (POST /api/hit). Requires Workers Analytics Engine on the
+  // account (dashboard → Workers & Pages → Analytics Engine); the dataset is created on first write.
+  "analytics_engine_datasets": [{ "binding": "PULSE_ANALYTICS", "dataset": "f1_pulse_pageviews" }],
 }

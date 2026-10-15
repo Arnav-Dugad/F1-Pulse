@@ -1,11 +1,12 @@
+import { Countdown } from "../ui/countdown";
 import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, type MotionProps } from "motion/react";
 import {
   Activity, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CalendarDays, CalendarPlus, Check, ChevronDown, ChevronLeft, ChevronRight,
   ChevronUp, ChevronsUpDown, Clock, CloudSun, Download, Droplets, Flag as FlagIcon, Gauge, Info, MapPin, Minus, RotateCcw,
   Thermometer, Timer, Trophy, Wind, Wrench, Zap,
 } from "lucide-react";
-import { pitStops, raceLaps, raceResult, useData, weather, type Weather } from "../api";
+import { pitStops, raceResult, useData, weather, type Weather } from "../api";
 import { usePrefs } from "../app/prefs";
 import { Link, type Route } from "../lib/router";
 import { buildCalendar, weekendSessions } from "../domain.mjs";
@@ -20,6 +21,12 @@ import { Glass, Img, Page, Section, Segmented, Skeleton, Source, StateView, Togg
 import { DriverAvatar, DriverPortrait, Flag, NumberArt, TeamLogo, TrackMap } from "../ui/media";
 import { LineChart, type Series } from "../ui/charts";
 import type { Driver, Envelope, Race as RaceData, Result } from "../types";
+import { neutralWindows, useAnalysis, useLapData, type AnalysisState, type LapData } from "./_raceData";
+import { Confetti, RaceReport, useCelebration } from "./_raceReport";
+import { QualifyingDeepDive, StartingGrid } from "./_raceGrid";
+import { RaceGaps, RacePace } from "./_racePace";
+import { RaceDayWeather } from "./_raceWeather";
+import { RCStrip, SessionAnalysis } from "./_raceAnalysis";
 import "./race.css";
 
 /* ───────────────────────── Helpers ───────────────────────── */
@@ -76,6 +83,12 @@ function RaceWeekend({ race, prev, next, total, schedule }: { race: RaceData; pr
   const phase: Phase = !started ? "upcoming" : res.loading ? "loading" : res.error ? "error" : results.length ? "completed" : "pending";
   useAmbient(winner ? teamColor(winner.Constructor) : undefined, results[1] ? teamColor(results[1].Constructor) : undefined);
   const cars = phase === "completed" ? results.slice(0, 3).map((r) => teamColor(r.Constructor)) : [];
+  const laps = useLapData(season, race.round);
+  const analysis = useAnalysis(race, results);
+  const pitsEligible = +race.season >= 2011 && started;
+  const pits = useData(() => (pitsEligible ? pitStops(season, race.round) : none([] as RaceData[])), [season, race.round, pitsEligible]);
+  const qualiRows = quali.value?.data?.QualifyingResults;
+  const pitList = useMemo(() => pits.value?.data[0]?.PitStops || [], [pits.value]);
 
   return (
     <Page className="rw">
@@ -98,13 +111,20 @@ function RaceWeekend({ race, prev, next, total, schedule }: { race: RaceData; pr
             <WinnerSpotlight race={race} results={results} year={year} />
             <Source value={res.value} />
           </section>
+          <RaceReport race={race} results={results} quali={qualiRows} laps={laps} analysis={analysis} env={res.value} year={year} />
           <Section id="rw-classification" title="Classification" subtitle="Official results as published. Sort any column, or export the table.">
             <Classification res={res} quali={quali} sprint={sprint} race={race} year={year} />
           </Section>
+          <StartingGrid results={results} quali={qualiRows} analysis={analysis} year={year} resEnv={res.value} qualiEnv={quali.value} />
+          {qualiRows?.length ? <QualifyingDeepDive rows={qualiRows} year={year} env={quali.value} /> : null}
           <Movers results={results} year={year} env={res.value} />
-          <LapChart race={race} results={results} year={year} />
-          <PitStops race={race} results={results} year={year} />
-          <Section title="The circuit">
+          <LapChart race={race} results={results} year={year} laps={laps} analysis={analysis} />
+          <RaceGaps race={race} results={results} laps={laps} analysis={analysis} />
+          <RacePace race={race} results={results} laps={laps} analysis={analysis} pits={pitList} year={year} />
+          <PitStops race={race} results={results} year={year} data={pits} />
+          <SessionAnalysis race={race} results={results} analysis={analysis} year={year} />
+          <RaceDayWeather race={race} results={results} />
+          <Section id="rw-circuit" title="The circuit">
             <CircuitCard race={race} />
           </Section>
         </>
@@ -123,11 +143,11 @@ function RaceWeekend({ race, prev, next, total, schedule }: { race: RaceData; pr
             <WeatherCard race={race} />
           </div>
           {(quali.value?.data?.QualifyingResults?.length || sprint.value?.data?.SprintResults?.length) ? (
-            <Section title="Weekend so far" subtitle="Sessions already classified this weekend.">
+            <Section id="rw-weekend" title="Weekend so far" subtitle="Sessions already classified this weekend.">
               <Classification res={res} quali={quali} sprint={sprint} race={race} year={year} />
             </Section>
           ) : null}
-          <Section title="The circuit">
+          <Section id="rw-circuit" title="The circuit">
             <CircuitCard race={race} />
           </Section>
         </>
@@ -159,13 +179,13 @@ function RaceHero({ race, prev, next, total, phase, results, cars }: {
 
       <nav className="rw-hero-nav" aria-label="Rounds">
         {prev ? (
-          <Link className="rw-nav-btn" to={"race/" + prev.round} aria-label={`Previous round: ${prev.raceName}`}>
+          <Link className="rw-nav-btn" to={"race/" + prev.round} data-swipe="prev" aria-label={`Previous round: ${prev.raceName}`}>
             <ChevronLeft /><span><small>Round {prev.round}</small>{shortRace(prev.raceName)}</span>
           </Link>
         ) : <span />}
         <Link className="rw-nav-btn rw-nav-all" to="calendar" aria-label="Full calendar"><CalendarDays /><span>Calendar</span></Link>
         {next ? (
-          <Link className="rw-nav-btn right" to={"race/" + next.round} aria-label={`Next round: ${next.raceName}`}>
+          <Link className="rw-nav-btn right" to={"race/" + next.round} data-swipe="next" aria-label={`Next round: ${next.raceName}`}>
             <span><small>Round {next.round}</small>{shortRace(next.raceName)}</span><ChevronRight />
           </Link>
         ) : <span />}
@@ -232,36 +252,15 @@ function RaceHero({ race, prev, next, total, phase, results, cars }: {
   );
 }
 
-function Digit({ value }: { value: string }) {
-  return (
-    <span className="rw-digit">
-      <AnimatePresence initial={false} mode="popLayout">
-        <motion.span key={value} initial={{ y: "-70%", opacity: 0, filter: "blur(4px)" }} animate={{ y: 0, opacity: 1, filter: "blur(0px)" }} exit={{ y: "70%", opacity: 0, filter: "blur(4px)" }} transition={{ type: "spring", stiffness: 380, damping: 30 }}>
-          {value}
-        </motion.span>
-      </AnimatePresence>
-    </span>
-  );
-}
-
 function SessionCountdown({ race }: { race: RaceData }) {
   const { timezone } = usePrefs();
   const now = useNow(1000);
   const upcoming = weekendSessions(race).find((s) => sessionDate(s.date, s.time).getTime() > now);
   if (!upcoming) return <span className="rw-chip-glass accent"><span className="rw-live" />Lights out — race underway</span>;
-  const c = countdown(sessionDate(upcoming.date, upcoming.time).getTime(), now);
-  const units: [number, string][] = [[c.days, "days"], [c.hours, "hrs"], [c.minutes, "min"], [c.seconds, "sec"]];
   return (
     <div className="rw-cd-wrap">
       <span className="rw-cd-label">{upcoming.label} {upcoming.time ? "starts in" : "· day of session in"}</span>
-      <div className="rw-cd" role="timer" aria-label={`${upcoming.label} in ${c.days} days, ${c.hours} hours, ${c.minutes} minutes`}>
-        {units.map(([v, label]) => (
-          <div className="rw-cd-unit" key={label}>
-            <span className="rw-cd-value" aria-hidden>{String(v).padStart(2, "0").split("").map((d, i) => <Digit key={i} value={d} />)}</span>
-            <span className="rw-cd-unit-label">{label}</span>
-          </div>
-        ))}
-      </div>
+      <Countdown target={sessionDate(upcoming.date, upcoming.time).getTime()} label={upcoming.label} startLights={!!upcoming.time} />
       <p className="rw-cd-when"><Clock size={14} />{formatSession(upcoming.date, upcoming.time, timezone)} · {timezoneLabel(timezone)}</p>
     </div>
   );
@@ -280,17 +279,29 @@ function WinnerSpotlight({ race, results, year }: { race: RaceData; results: Res
     { label: "Points", value: `+${pts(w.points)}`, detail: "Grand Prix" },
     { label: "Finishers", value: `${finishers}/${results.length}`, detail: "Classified" },
   ];
+  // First visit this session: the winner and podium drop in on springs, with a confetti burst.
+  const party = useCelebration(race.season + ":" + race.round);
+  const drop = (i: number): MotionProps =>
+    party.pending
+      ? {
+          initial: { y: -260, opacity: 0, rotate: i % 2 ? 5 : -5 },
+          whileInView: { y: 0, opacity: 1, rotate: 0 },
+          viewport: { once: true, amount: 0.3 },
+          transition: { type: "spring", stiffness: 210, damping: 12, mass: 0.9, delay: 0.1 + i * 0.14 },
+        }
+      : {};
   return (
     <Glass className="rw-spot reveal" style={{ "--tint": tint } as CSSProperties}>
       <span className="rw-spot-glow" aria-hidden />
-      <div className={cx("rw-spot-figure", !hasPhoto && "mono")}>
+      {party.burst && <Confetti colors={results.slice(0, 3).map((r) => teamColor(r.Constructor))} origin={party.burst} onDone={party.clear} />}
+      <motion.div className={cx("rw-spot-figure", !hasPhoto && "mono")} {...drop(0)} onViewportEnter={party.pending ? (e) => party.fire(e?.target) : undefined}>
         <NumberArt id={w.Driver.driverId} number={w.Driver.permanentNumber} year={year} className="rw-spot-number" />
         {hasPhoto ? (
           <DriverPortrait id={w.Driver.driverId} name={fullName(w.Driver)} year={year} variant="front" className="rw-spot-photo" />
         ) : (
           <DriverAvatar id={w.Driver.driverId} name={fullName(w.Driver)} year={year} team={w.Constructor.constructorId} size={168} className="rw-spot-avatar" />
         )}
-      </div>
+      </motion.div>
       <div className="rw-spot-body">
         <span className="eyebrow"><Trophy size={14} />Winner · {race.raceName}</span>
         <Link to={"driver/" + w.Driver.driverId} className="rw-spot-name">
@@ -312,15 +323,15 @@ function WinnerSpotlight({ race, results, year }: { race: RaceData; results: Res
           ))}
         </div>
         <ol className="rw-spot-podium" aria-label="Podium">
-          {results.slice(1, 3).map((r) => (
-            <li key={r.Driver.driverId}>
+          {results.slice(1, 3).map((r, i) => (
+            <motion.li key={r.Driver.driverId} {...drop(i + 1)}>
               <Link to={"driver/" + r.Driver.driverId} style={{ "--tint": teamColor(r.Constructor) } as CSSProperties}>
                 <span className={cx("pos", "p" + r.position)}>{r.position}</span>
                 <DriverAvatar id={r.Driver.driverId} name={fullName(r.Driver)} year={year} team={r.Constructor.constructorId} size={34} />
                 <span className="rw-spot-podium-name"><strong>{r.Driver.familyName}</strong><small>{teamShortName(r.Constructor.name, year)}</small></span>
                 <span className="rw-spot-podium-gap">{r.Time?.time || r.status}</span>
               </Link>
-            </li>
+            </motion.li>
           ))}
         </ol>
         {fastest?.FastestLap && (
@@ -576,7 +587,7 @@ function Movers({ results, year, env }: { results: Result[]; year: string; env?:
     );
   };
   return (
-    <Section title="Movers" subtitle="Starting grid against finishing position. Hover a driver to trace their race.">
+    <Section id="rw-movers" title="Movers" subtitle="Starting grid against finishing position. Hover a driver to trace their race.">
       <div className="rw-movers">
         <Glass className="card rw-slope reveal">
           <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Slope chart of starting grid position against finishing position for classified finishers" className="rw-slope-svg">
@@ -621,14 +632,14 @@ function Movers({ results, year, env }: { results: Result[]; year: string; env?:
 }
 
 /* ───────────────────────── Lap chart (lazy) ───────────────────────── */
-function LapChart({ race, results, year }: { race: RaceData; results: Result[]; year: string }) {
-  const { season } = usePrefs();
-  const [open, setOpen] = useState(false);
+function LapChart({ results, year, laps, analysis }: { race: RaceData; results: Result[]; year: string; laps: LapData; analysis: AnalysisState }) {
   const [all, setAll] = useState(false);
   const [hidden, setHidden] = useState<Set<string>>(new Set());
   const [focus, setFocus] = useState<string | null>(null);
-  const laps = useData(() => (open ? raceLaps(season, race.round) : none([] as RaceData[])), [season, race.round, open]);
-  const lapList = laps.value?.data[0]?.Laps || [];
+  const open = laps.open;
+  const lapList = laps.laps;
+  const a = analysis.status === "done" ? analysis.data : undefined;
+  const windows = a && !a.failed.includes("race_control") ? neutralWindows(a.control, lapList.length) : [];
 
   const model = useMemo(() => {
     const byDriver = new Map<string, (number | null)[]>();
@@ -662,7 +673,7 @@ function LapChart({ race, results, year }: { race: RaceData; results: Result[]; 
   const leaders = [...model.led.entries()].sort((a, b) => b[1] - a[1]);
 
   return (
-    <Section title="Lap by lap" subtitle="Running order at the end of every lap, from the official timing archive.">
+    <Section id="rw-laps" title="Lap by lap" subtitle="Running order at the end of every lap, from the official timing archive.">
       {!open ? (
         <Glass className="rw-cta reveal">
           <span className="rw-cta-icon"><Activity /></span>
@@ -670,7 +681,7 @@ function LapChart({ race, results, year }: { race: RaceData; results: Result[]; 
             <h3>Every lap. Every overtake.</h3>
             <p className="muted">Trace the top ten through all {results[0]?.laps ? `${results[0].laps} laps` : "laps"} — undercuts, safety cars and late charges. It's a large dataset, so it loads only when you ask.</p>
           </div>
-          <button className="btn primary lg" onClick={() => setOpen(true)}><Activity />Build lap chart</button>
+          <button className="btn primary lg" onClick={laps.load}><Activity />Build lap chart</button>
         </Glass>
       ) : laps.loading ? (
         <Glass className="card rw-lap-loading">
@@ -708,6 +719,11 @@ function LapChart({ race, results, year }: { race: RaceData; results: Result[]; 
               <label className="rw-lap-toggle small muted">All finishers<Toggle checked={all} onChange={(v) => { setAll(v); setHidden(new Set()); }} label="Show every driver in the lap chart" /></label>
             </div>
           </div>
+          {windows.length > 0 && (
+            <div className="rw-lap-rc">
+              <RCStrip windows={windows} totalLaps={lapList.length} className="compact" />
+            </div>
+          )}
           <LineChart
             ariaLabel={`Running position by lap for ${visible.length} drivers`}
             series={visible}
@@ -740,7 +756,7 @@ function LapChart({ race, results, year }: { race: RaceData; results: Result[]; 
               </div>
             </div>
           )}
-          <p className="source">Position at the end of each lap, as recorded in the timing archive. “Grid” is the official starting position; pit-lane starters have no grid value. Use ← → on the chart to scrub laps.</p>
+          <p className="source">Position at the end of each lap, as recorded in the timing archive. “Grid” is the official starting position; pit-lane starters have no grid value.{windows.length ? " Bands above the chart mark safety-car, VSC and red-flag periods from OpenF1 race control." : ""} Use ← → on the chart to scrub laps.</p>
           <Source value={laps.value} />
         </Glass>
       )}
@@ -749,10 +765,8 @@ function LapChart({ race, results, year }: { race: RaceData; results: Result[]; 
 }
 
 /* ───────────────────────── Pit stops ───────────────────────── */
-function PitStops({ race, results, year }: { race: RaceData; results: Result[]; year: string }) {
-  const { season } = usePrefs();
+function PitStops({ race, results, year, data }: { race: RaceData; results: Result[]; year: string; data: Loaded<RaceData[]> }) {
   const eligible = +race.season >= 2011;
-  const data = useData(() => (eligible ? pitStops(season, race.round) : none([] as RaceData[])), [season, race.round, eligible]);
   const stops = data.value?.data[0]?.PitStops || [];
 
   const model = useMemo(() => {
@@ -769,7 +783,7 @@ function PitStops({ race, results, year }: { race: RaceData; results: Result[]; 
 
   if (!eligible)
     return (
-      <Section title="Pit lane">
+      <Section id="rw-pits" title="Pit lane">
         <StateView empty emptyTitle="No pit stop data for this era" emptyText="The timing archive records pit stops from the 2011 season onward." />
       </Section>
     );
@@ -782,7 +796,7 @@ function PitStops({ race, results, year }: { race: RaceData; results: Result[]; 
   const dur = (d: string) => (d.includes(":") ? d : `${(+d).toFixed(1)}s`);
 
   return (
-    <Section title="Pit lane" subtitle="Every stop, lap by lap. Durations are pit-lane time from entry to exit, not stationary time.">
+    <Section id="rw-pits" title="Pit lane" subtitle="Every stop, lap by lap. Durations are pit-lane time from entry to exit, not stationary time.">
       {data.loading ? (
         <Skeleton h={480} r={28} />
       ) : data.error ? (

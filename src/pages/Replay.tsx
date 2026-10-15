@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type Keyboard
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import {
   ArrowDown, ArrowRight, ArrowUp, CloudRain, Droplets, ExternalLink, Flag as FlagIcon, Gauge, Info, Pause, Play, Radio, RotateCcw,
-  SkipBack, SkipForward, Thermometer, Timer, Wind,
+  SkipBack, SkipForward, Thermometer, Timer, Users, Wind,
 } from "lucide-react";
 import { request, useData } from "../api";
-import { Link, type Route } from "../lib/router";
+import { Link, parseRoute, setQuery, type Route } from "../lib/router";
 import { plural } from "../lib/format";
 import { sampleAt } from "../math.mjs";
 import { Glass, Page, Section, Segmented, Skeleton, Source, StateView, Toggle, cx, useAmbient, useTitle } from "../ui/core";
@@ -16,6 +16,7 @@ import {
   ArchiveControls, ArchiveHero, ArchiveStatus, ArchiveUnavailable, DriverBadge, LoadProgress, PaceSummary,
   circuitIdOf, displayName, emptyEnvelope, lapEnd, surname, teamHex, useArchive, utcClock, type Archive,
 } from "./_archive";
+import { FieldReplay } from "./_labfield";
 import "./replay.css";
 
 /* ───────────────────────── Types ───────────────────────── */
@@ -29,6 +30,7 @@ type Pt = { t: number; x: number; y: number };
 type Meta = Envelope<unknown>["meta"];
 
 const SPEEDS = ["0.5", "1", "2", "4", "8"] as const;
+type View = "duel" | "field";
 type Speed = (typeof SPEEDS)[number];
 
 const fmtElapsed = (ms: number) => {
@@ -71,10 +73,10 @@ type ReplayState = {
 };
 const TOTAL_STEPS = 4;
 
-function useReplayData(ax: Archive) {
+function useReplayData(ax: Archive, enabled = true) {
   const { sessionKey, aId, bId, chosenA, driverA, driverB } = ax;
   const sig = [sessionKey, aId, bId, chosenA?.lap_number].join(":");
-  const ready = !!(sessionKey && chosenA && driverA && driverB && aId !== bId);
+  const ready = enabled && !!(sessionKey && chosenA && driverA && driverB && aId !== bId);
   const [state, setState] = useState<ReplayState>({ sig: "", loading: false, step: 0, label: "" });
   const [retry, setRetry] = useState(0);
   useEffect(() => {
@@ -130,7 +132,9 @@ export default function Replay(_: { route: Route }) {
   useTitle("Race replay");
   const ax = useArchive("replay");
   useAmbient(ax.driverA ? ax.colours[0] : undefined, ax.driverB ? ax.colours[1] : undefined);
-  const data = useReplayData(ax);
+  const [view, setViewRaw] = useState<View>(() => (parseRoute().query.get("view") === "field" ? "field" : "duel"));
+  const setView = (v: View) => { setViewRaw(v); setQuery({ view: v === "field" ? "field" : null }); };
+  const data = useReplayData(ax, view === "duel");
   const circuit = circuitIdOf(ax.session);
   const s = data.state;
 
@@ -140,7 +144,7 @@ export default function Replay(_: { route: Route }) {
       eyebrow={<><Play />OpenF1 archive · {ax.year}</>}
       title="Race replay"
       sub="Relive the racing line."
-      lede="Two cars, one shared session clock. Watch the reported positions of any pair through a chosen lap window, with the running order and race control in sync."
+      lede="Two cars, or the whole field, on one shared session clock. Watch reported positions through a chosen window with glowing trails, the running order and race control in sync."
       session={ax.archived ? ax.session : undefined}
       graphic={ax.archived && circuit ? <TrackMap circuitId={circuit} cars={ax.driverA && ax.driverB ? ax.colours : []} label={`${ax.session?.circuit_short_name || "Circuit"} layout`} lap={11} /> : undefined}
     />
@@ -162,8 +166,16 @@ export default function Replay(_: { route: Route }) {
 
       {ax.session && ax.drivers.length > 0 && (
         <>
-          <Section title="Circuit stage" subtitle="Space to play or pause · ← → to step a second (Shift for five) · Home to rewind."
-            action={<Link className="btn sm" to="telemetry">Telemetry lab<ArrowRight /></Link>}>
+          <Section id="circuit-stage" title="Circuit stage" subtitle={view === "duel" ? "Space to play or pause · ← → to step a second (Shift for five) · Home to rewind." : "Every driver for a 3-minute window — loads only when you ask. Focus the stage for Space and arrow keys."}
+            action={
+              <div className="rp-stage-actions">
+                <Segmented<View> label="Replay mode" value={view} onChange={setView} options={[{ value: "duel", label: <><Gauge size={14} />Duel</> }, { value: "field", label: <><Users size={14} />Full field</> }]} />
+                <Link className="btn sm" to="telemetry">Telemetry lab<ArrowRight /></Link>
+              </div>
+            }>
+            <AnimatePresence mode="wait" initial={false}>
+            <motion.div key={view} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ type: "spring", stiffness: 320, damping: 32 }}>
+            {view === "field" ? <FieldReplay ax={ax} /> : <>
             {data.ready && data.loading && (
               <>
                 <LoadProgress step={Math.max(1, s?.step || 0)} total={TOTAL_STEPS} label={s?.label || "Preparing request…"} />
@@ -181,6 +193,9 @@ export default function Replay(_: { route: Route }) {
                 year={ax.year} sessionKey={ax.sessionKey!}
               />
             )}
+            </>}
+            </motion.div>
+            </AnimatePresence>
           </Section>
 
           <ArchiveDetails ax={ax} />
@@ -190,7 +205,7 @@ export default function Replay(_: { route: Route }) {
       <p className="ax-note">
         <Info />
         <span>
-          This is a replay of the <strong>selected lap window</strong> using the location samples OpenF1 actually reported (≈3–4 Hz, local circuit coordinates) — not a full-race broadcast.
+          This is a replay of the <strong>selected window</strong> (one lap in duel mode, chained 3-minute windows in full-field mode) using the location samples OpenF1 actually reported (≈3–4 Hz, local circuit coordinates) — not a full-race broadcast.
           Positions between samples are interpolated linearly; a car disappears wherever its samples are more than three seconds apart. Archive only: sessions appear after the provider's live window ends.
         </span>
       </p>
@@ -630,7 +645,7 @@ function ArchiveDetails({ ax }: { ax: Archive }) {
   );
   const list = data.value?.data || [];
   return (
-    <section className="section rp-details" ref={ref}>
+    <section className="section rp-details" id="session-detail" ref={ref}>
       <div className="section-head reveal">
         <div>
           <h2>Inside the session</h2>

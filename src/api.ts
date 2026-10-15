@@ -186,10 +186,33 @@ export async function raceResult(
   const r = await request<any>("jolpica", `${season}/${round}/${kind}.json`);
   return { ...r, data: r.data.MRData.RaceTable.Races[0] };
 }
+export type SeasonBundle = { season: string; round: string; calendar: Race[]; results: Race[]; sprints: Race[] };
+/**
+ * Calendar plus every race and sprint result of a season in one request, assembled from all
+ * Jolpica pages and edge-cached by the Worker (`/api/season`): a day for completed seasons, ten
+ * minutes for the running one. Race objects keep Jolpica's shapes.
+ */
+export const seasonBundle = (season: string) => request<SeasonBundle>("season", "", { year: season });
+/** One list from the season bundle (copied, so callers can sort freely), or null to fall back. */
+async function fromBundle(season: string, key: "results" | "sprints"): Promise<Envelope<Race[]> | null> {
+  try {
+    const r = await seasonBundle(season);
+    const list = r.data?.[key];
+    if (!Array.isArray(list)) return null;
+    const rows = key === "results" ? "Results" : "SprintResults";
+    return { data: list.map((race) => ({ ...race, [rows]: [...(race[rows] || [])] })), meta: r.meta };
+  } catch {
+    return null;
+  }
+}
 export async function allResults(
   season: string,
   filter = "",
 ): Promise<Envelope<Race[]>> {
+  if (!filter) {
+    const bundled = await fromBundle(season, "results");
+    if (bundled) return bundled;
+  }
   let offset = 0,
     total = Infinity,
     list: Race[] = [],
@@ -293,7 +316,8 @@ export async function paginate(path: string, key: RaceArrayKey, pageSize = 100):
     }
   return { data, meta: meta! };
 }
-export const sprintResults = (season: string) => paginate(`${season}/sprint.json`, "SprintResults");
+export const sprintResults = async (season: string): Promise<Envelope<Race[]>> =>
+  (await fromBundle(season, "sprints")) || paginate(`${season}/sprint.json`, "SprintResults");
 export const qualifyingResults = (season: string) => paginate(`${season}/qualifying.json`, "QualifyingResults");
 export const driverCareer = (driverId: string) => paginate(`drivers/${driverId}/results.json`, "Results");
 export const teamSeasonResults = (season: string, constructorId: string) => paginate(`${season}/constructors/${constructorId}/results.json`, "Results");
@@ -366,9 +390,23 @@ export async function roundStandings(season: string, round: string, kind: "drive
 export type Weather = {
   current?: { time: string; temperature_2m: number; relative_humidity_2m: number; precipitation: number; wind_speed_10m: number };
   hourly?: { time: string[]; temperature_2m: number[]; precipitation_probability: number[] };
+  daily?: { time: string[]; sunrise: string[]; sunset: string[]; temperature_2m_max: number[]; temperature_2m_min: number[]; precipitation_probability_max: number[] };
   timezone?: string;
+  utc_offset_seconds?: number;
 };
 export const weather = (lat: string | number, lon: string | number) => request<Weather>("weather", "", { latitude: lat, longitude: lon });
+export type Climate = {
+  timezone?: string;
+  utc_offset_seconds?: number;
+  hourly?: { time: string[]; temperature_2m: number[]; precipitation: number[]; wind_speed_10m: number[]; relative_humidity_2m: number[]; cloud_cover: number[] };
+  daily?: { time: string[]; temperature_2m_max: number[]; temperature_2m_min: number[]; precipitation_sum: number[]; wind_speed_10m_max: number[]; sunrise: string[]; sunset: string[] };
+};
+/**
+ * Historical weather (Open-Meteo ERA5 reanalysis) at circuit coordinates — modelled, not trackside.
+ * `hourly` for ≤ 7 days (e.g. a race day), `daily` summaries for up to 12 years.
+ */
+export const climate = (lat: string | number, lon: string | number, start: string, end: string, mode: "daily" | "hourly" = "daily") =>
+  request<Climate>("climate", "", { latitude: lat, longitude: lon, start_date: start, end_date: end, mode });
 export type NewsItem = { title: string; url: string; date: string; publisher: string };
 export const news = () => request<NewsItem[]>("news");
 export type WikiSummary = { title: string; extract: string; thumbnail?: { source: string }; content_urls?: { desktop?: { page: string } } };

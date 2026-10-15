@@ -1,0 +1,26 @@
+/* ───────────────────────── 3D circuit (shared) ───────────────────────── */
+.t3d { --tx: 0; --ty: 0; --t3d-ink: rgba(255, 255, 255, 0.94); --t3d-edge: rgba(255, 255, 255, 0.5); --t3d-s1: #ff453a; --t3d-s2: #0a84ff; --t3d-s3: #ffd60a;
+  position: relative; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 8px; width: 100%; height: 100%; }
+.t3d.loading { min-height: 200px; }
+.t3d-viewport { position: relative; perspective: 1100px; perspective-origin: 50% 35%; display: grid; place-items: center; min-height: 0; }
+.t3d-tilt { position: relative; width: 100%; aspect-ratio: 121 / 85; transform-style: preserve-3d;
+  transform: rotateX(calc(50deg - var(--ty) * 7deg)) rotateY(calc(var(--tx) * 6deg)) scale(0.96);
+  transition: transform 1.1s var(--ease); animation: t3d-enter 1.6s var(--ease) backwards; }
+@keyframes t3d-enter { from { opacity: 0; transform: rotateX(75deg) scale(0.8) translateY(20px); } }
+.t3d-orbit { position: absolute; inset: 0; transform-style: preserve-3d; animation: t3d-orbit 26s var(--ease-in-out) infinite alternate; }
+@keyframes t3d-orbit { from { transform: rotateZ(-11deg); } to { transform: rotateZ(11deg); } }
+.t3d.still .t3d-orbit { animation: none; transform: rotateZ(-6deg); }
+.t3d-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.t3d-layer.edge { transform: translateZ(var(--z)); }
+.t3d-layer.edge path { fill: color-mix(in srgb, var(--t3d-edge) calc(var(--k) * 70%), transparent); }
+.t3d-layer.top { transform: translateZ(0.5px); }
+.t3d-surface { fill: var(--t3d-ink); filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.35)); }
+.t3d-sector { fill: none; stroke-width: 3.2; stroke-linecap: butt; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: 0; animation: t3d-sector 0.9s var(--ease) both; animation-delay: calc(0.9s + var(--i) * 0.25s); filter: drop-shadow(0 0 4px currentColor); }
+@keyframes t3d-sector { to { opacity: 1; } }
+.t3d-car { fill: var(--car); stroke: #fff; stroke-width: 0.5; }
+.t3d-car-glow { fill: var(--car); opacity: 0.45; filter: blur(1.6px); }
+.t3d-shadow { position: absolute; left: 6%; right: 6%; top: 8%; bottom: 8%; border-radius: 50%; transform: translateZ(-24px); background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), transparent); filter: blur(18px); }
+.t3d-legend { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 12px; font-size: 11.5px; font-weight: 700; color: rgba(255, 255, 255, 0.78); }
+.t3d-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.t3d-legend i { width: 14px; height: 4px; border-radius: 3px; box-shadow: 0 0 8px currentColor; }
+.t3d-legend small { font-size: 10.5px; font-weight: 600; letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.55); }
