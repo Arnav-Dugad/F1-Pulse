@@ -62,7 +62,7 @@ export default function Race({ route }: { route: Route }) {
         <div className="split" style={{ marginTop: 24 }}><Skeleton h={420} r={28} /><Skeleton h={420} r={28} /></div>
       </Page>
     );
-  if (cal.error) return <Page className="rw"><StateView error={cal.error} onRetry={cal.reload} /></Page>;
+  if (cal.error) return <Page className="rw"><h1 className="sr-only">Race weekend unavailable</h1><StateView error={cal.error} onRetry={cal.reload} /></Page>;
   if (!race) return <Page className="rw"><NotFound round={round} year={year} list={list} /></Page>;
   return <RaceWeekend key={season + ":" + race.round} race={race} prev={list[index - 1]} next={list[index + 1]} total={list.length} schedule={cal.value!} />;
 }

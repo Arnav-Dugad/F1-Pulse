@@ -145,7 +145,7 @@ export default function Team({ route }: { route: Route }) {
         <div className="tm-kpis" style={{ marginTop: 56 }}>{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} h={128} r={22} />)}</div>
       </Page>
     );
-  if (failed) return <Page className="tm"><StateView error={tl.error} onRetry={() => { tl.reload(); res.reload(); }} /></Page>;
+  if (failed) return <Page className="tm"><h1 className="sr-only">Team profile unavailable</h1><StateView error={tl.error} onRetry={() => { tl.reload(); res.reload(); }} /></Page>;
   if (!team || !id) return <Page className="tm"><Missing id={id} year={year} /></Page>;
 
   const competed = !!(seasonTeam || standing || model.rounds.length);

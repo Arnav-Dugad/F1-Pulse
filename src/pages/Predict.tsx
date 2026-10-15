@@ -212,7 +212,7 @@ export default function Predict({ route }: { route: Route }) {
         <div className="pr-board-skel"><Skeleton h={420} r={28} /><Skeleton h={420} r={28} /></div>
       </Page>
     );
-  if (cal.error) return <Page className="pr"><StateView error={cal.error} onRetry={cal.reload} /></Page>;
+  if (cal.error) return <Page className="pr"><h1 className="sr-only">Predict unavailable</h1><StateView error={cal.error} onRetry={cal.reload} /></Page>;
 
   return (
     <Page className="pr">

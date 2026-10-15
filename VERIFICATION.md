@@ -1,6 +1,51 @@
-# Verification — F1 Pulse 3.0
+# Verification — F1 Pulse 3.1
 
-Checked on 13 October 2026, after round 17 (Singapore) of the 2026 season.
+Checked on 15 October 2026, after round 17 (Singapore) of the 2026 season. (3.0 was verified on 13 October; everything below was re-run for 3.1.)
+
+## 3.1 additions
+
+**Tests**
+
+- **Unit tests:** 78 pass. They cover the archive maths, season analytics (Monte Carlo seeding, decider and clinch arithmetic, heatmap, consistency), Lab logic (mini-sector codes, corner detection, degradation fits, safety-car windows), Worker routes and the counting rules.
+- **Browser checks:** 136/136 pass locally across all 34 routes. The checks include CSP errors, overflow, headings and broken images.
+- **Visual regression:** all 9 baselines replay at 0.000% difference.
+
+**Media.** `node scripts/verify-media.mjs` checks that every referenced file exists and is recorded in `sources.json`. It also checks that every 2019–2025 photo shows the kit of the team that driver last raced for that season.
+
+| Season | Headshot coverage |
+| --- | --- |
+| 2019, 2020, 2024, 2025 | 100% |
+| 2021 | 95% |
+| 2022 | 91% |
+| 2023 | 95% |
+
+Kubica 2021, Hülkenberg and de Vries 2022 (stand-ins) and Lawson 2023 have no official studio portrait, so they keep monograms.
+
+**Records spot-checked against public figures:**
+
+- Schumacher 91 wins, Vettel 53, Prost 51, Senna 41
+- Hamilton 106 including his 2026 win
+- Alonso 425 starts
+- Verstappen's 10-race streak and 19 wins in 2023
+- Youngest winner Verstappen at 18 years 228 days
+
+Pole counts come from qualifying classifications, which include two exclusions that the official tallies don't (Hamilton 105 vs 104, Schumacher 69 vs 68). The page footnotes this.
+
+**Defects found and fixed during 3.1 QA:**
+
+- **Safety car counted as zero.** 2026 race-control messages abbreviate to "VSC DEPLOYED", so Singapore's two Virtual Safety Cars were missed. The race report, race-pace filter and degradation fit all recognise the short form now, with a regression test.
+- **Missing overtake names.** The code had OpenF1's overtake field names reversed, so every pass showed "#undefined". Driver codes now show.
+- **Class-name collisions:**
+  - The countdown used a `hero` class, which gave it an 80vh minimum height.
+  - Race-control rows used `flag`, which squeezed them to the 22 px country-flag width.
+  - Two feature areas both used the `.ax-` prefix, so the Archive section moved to `.arx-`.
+- **Image wrapper side-effects.** The AVIF `<picture>` wrapper broke `parent > img` selectors and parallax measurement.
+- **Layout fixes:**
+  - The race-report glow had been laid out as a grid item.
+  - Rivalries overflowed horizontally on phones.
+  - The navigation was crowded below 1360 px; the phone tab bar now takes over below 1024 px.
+  - The title model showed "100%" for a title that isn't mathematically settled; it now shows ">99.9%".
+  - Title Maths showed a negative "outscores by" margin.
 
 ## Data accuracy (`npm run verify:accuracy`)
 

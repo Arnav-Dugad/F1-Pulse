@@ -48,7 +48,7 @@ export default function DriverPage({ route }: { route: Route }) {
 
   if (info.loading && !driver) return <Page className="drv"><Skeleton h="min(82vh, 760px)" r={36} /><div className="drv-kpi-skel"><Skeleton h={150} r={28} /><Skeleton h={150} r={28} /><Skeleton h={150} r={28} /></div></Page>;
   if (!driver) {
-    if (info.error) return <Page className="drv"><StateView error={info.error} onRetry={info.reload} /></Page>;
+    if (info.error) return <Page className="drv"><h1 className="sr-only">Driver profile unavailable</h1><StateView error={info.error} onRetry={info.reload} /></Page>;
     return <NotFound id={id} />;
   }
   const inSeason = mine.length > 0 || !!standing;

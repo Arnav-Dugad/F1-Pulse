@@ -64,7 +64,7 @@ export default function Circuit({ route }: { route: Route }) {
   if (!id) return <NotFound />;
   if (!circuit) {
     if (history.loading || cal.loading) return <CircuitSkeleton />;
-    if (history.error) return <Page><StateView error={history.error} onRetry={history.reload} /></Page>;
+    if (history.error) return <Page><h1 className="sr-only">Circuit unavailable</h1><StateView error={history.error} onRetry={history.reload} /></Page>;
     return <NotFound />;
   }
 
