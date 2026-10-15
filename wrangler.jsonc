@@ -36,5 +36,6 @@
   //
   // Optional: privacy-friendly page views (POST /api/hit). Requires Workers Analytics Engine on the
   // account (dashboard → Workers & Pages → Analytics Engine); the dataset is created on first write.
-  "analytics_engine_datasets": [{ "binding": "PULSE_ANALYTICS", "dataset": "f1_pulse_pageviews" }],
+  // Enable Analytics Engine once in the dashboard (Workers & Pages → Analytics Engine), then uncomment:
+  // "analytics_engine_datasets": [{ "binding": "PULSE_ANALYTICS", "dataset": "f1_pulse_pageviews" }],
 }
