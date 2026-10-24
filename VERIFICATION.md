@@ -1,6 +1,61 @@
-# Verification — F1 Pulse 3.1
+# Verification — F1 Pulse 3.2
 
-Checked on 15 October 2026, after round 17 (Singapore) of the 2026 season. (3.0 was verified on 13 October; everything below was re-run for 3.1.)
+Checked on 24 October 2026, after round 17 (Singapore) of the 2026 season. Notes from earlier versions (3.1 on 15 October, 3.0 on 13 October) follow the 3.2 section.
+
+## 3.2 additions
+
+**Tests**
+
+- **Unit tests:** 111 pass. New since 3.1:
+  - upgrade-step detection, start-performance and teammate-rating maths (`tests/analytics-x.test.mjs`)
+  - quali-lap distance integration, corner detection and undercut/overcut classification (`tests/race-x.test.mjs`)
+  - calendar alarms (VALARM) in the ICS export
+- **Browser checks:** 152/152 pass locally (desktop dark and light, tablet, phone). They run across 38 routes, including the new What If, Weather Impact and Career Ratings pages and race 17 with its lap overlay and strategy explorer.
+- **Visual regression:** the 9 baselines were re-recorded for the new photography and layout, then replay at 0.000% difference.
+- **Data accuracy:** `npm run verify:accuracy` passes. The 2025, 2007 and 1988 audits match the official tables apart from the disclosed McLaren 2007 exclusion.
+
+**Historical photography.** `node scripts/verify-media.mjs` checks every Wikimedia Commons file:
+
+- it exists and is recorded in `sources.json`
+- its licence is free, its artist is named and its source is the Commons file page
+- its year is plausible
+- no file is orphaned
+
+| Group | With a free photo |
+| --- | --- |
+| World champions | 35/35 |
+| Race winners | 113/115 (Peter Collins has no usable free photo; Ocon's lead file has no licence metadata, and he has official media) |
+| Drivers 1950–2025 | 587/817 (420 with a face-centred headshot) |
+| Constructors | 108/203 |
+| Circuits | 66/77 (293 photos of circuits and their surroundings) |
+
+Driver, constructor and circuit picks were reviewed on contact sheets. The automatic checks:
+
+- reject pages that aren't about a racing driver
+- drop non-lead photos taken more than 20 years after a career
+- don't show scan dates on black-and-white prints as the photo year
+
+**Defects found and fixed during 3.2 QA:**
+
+- **Wrong cars on 36 constructors.** Team variants shared one photo, so every Lotus-Climax, Lotus-BRM and Lotus-Ford page showed a 1984 JPS Lotus, the 1960s McLaren entries a 2025 Norris photo, and the Cooper entries a Cooper-Jaguar sports car. These were dropped. A team photo dated inside the team's racing years now only appears for seasons within eight years of it, so McLaren 1988 shows no 2025 car. Museum and historic-event shots of a period car still appear for any season.
+- **Credit text from Commons metadata.** Strings like "Unknown authorUnknown author", "No machine-readable author provided. X assumed" and the German Federal Archive's standard disclaimer (shown in place of a description) are cleaned at fetch time.
+- **Credits in the wrong place.** A leftover global `.photo-credit` rule positioned every inline credit absolutely, in white text: invisible in light mode and stranded beside section headings.
+- **Lap overlay on Singapore.** It defaulted to the pole-sitter's team-mate even though he set no time (P22) and then reported a connection error. It now falls back to the next qualifier with a time, and a missing lap shows an empty state.
+- **Upgrade tracker axis.** The axis printed "R16R17" on phones.
+- **Weather Impact on phones.** Driver and team names were truncated to "Jean…" and "M…".
+- **Montoya's name.** Jolpica stores Juan Pablo Montoya's surname as "Pablo Montoya"; it is normalised in the archive.
+- **Phone layout fixes:**
+  - race radio players
+  - the car-evolution stage
+  - Insights pairs
+  - Weather controls
+  - race-pace ticks
+  - strategy labels, which overlapped and are now a sorted chip list
+  - the telemetry readout
+  - circuit hero stats
+  - the last row of the trackside gallery
+
+**Bundle.** Commons photos are already-compressed WebP, so they skip the AVIF pipeline. That keeps the bundled image manifest at 121 KB and leaves about 40 MB of variant files out of the deploy. Commons metadata (93 KB gzipped) loads lazily.
 
 ## 3.1 additions
 

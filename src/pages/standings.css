@@ -259,3 +259,14 @@ a.st-ident-name:hover, a.st-ident:hover .st-ident-name { text-decoration: none; 
   .st-ss-stage .st-race-lead { padding: 6px 10px; }
   .st-ss-sticky { height: calc(100svh - var(--nav-h) - 110px); }
 }
+
+/* Polish: "When the title is settled" columns share the width on phones instead of overflowing it. */
+@media (max-width: 560px) {
+  .sa-clinch { grid-auto-columns: minmax(0, 1fr); gap: 4px; overflow: visible; }
+  .sa-clinch, .sa-clinch-col, .sa-model-block, .sa-model-grid > * { min-width: 0; }
+  .st .sa-model-block { grid-template-columns: minmax(0, 1fr); }
+  .sa-clinch-name { overflow-wrap: anywhere; font-size: 11px; }
+  .sa-clinch-pct { font-size: 12px; }
+}
+@media (max-width: 900px) { .st .sa-model-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) { .st .sa-model-link { max-width: 100%; white-space: normal; height: auto; min-height: 38px; padding-block: 8px; text-align: left; } }

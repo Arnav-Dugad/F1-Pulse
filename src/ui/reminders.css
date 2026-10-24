@@ -1,0 +1,31 @@
+/* ───────────────────────── Session reminders (shared) ───────────────────────── */
+.rmd-bell { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 30px; height: 30px; border-radius: 50%; color: var(--label-2); background: var(--fill-4); border: 1px solid var(--separator); transition: background-color 0.2s, color 0.2s, transform 0.35s var(--spring), box-shadow 0.3s; -webkit-tap-highlight-color: transparent; }
+.rmd-bell:hover:not(:disabled) { color: var(--label); background: var(--fill-3); }
+.rmd-bell:active:not(:disabled) { transform: scale(0.9); }
+.rmd-bell:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rmd-bell:disabled { opacity: 0.4; cursor: not-allowed; }
+.rmd-bell.on { color: #fff; background: var(--accent); border-color: transparent; box-shadow: 0 6px 16px -8px var(--accent); }
+.rmd-bell.on svg { animation: rmd-ring 0.7s var(--ease) both; transform-origin: 50% 10%; }
+@keyframes rmd-ring { 20% { rotate: 16deg; } 40% { rotate: -12deg; } 60% { rotate: 8deg; } 80% { rotate: -4deg; } }
+.rmd-bell.labelled { width: auto; height: 32px; padding: 0 12px 0 10px; border-radius: 99px; font-size: 12.5px; font-weight: 650; white-space: nowrap; }
+:root[data-motion="reduced"] .rmd-bell.on svg { animation: none; }
+
+.rmd-note { display: grid; gap: 8px; justify-items: start; }
+.rmd-status { font-size: 12.5px; font-weight: 600; color: var(--label); line-height: 1.4; }
+.rmd-status:empty { display: none; }
+.rmd-honest { font-size: 12px; line-height: 1.45; color: var(--label-2); max-width: 62ch; }
+.rmd-honest b { font-weight: 650; color: var(--label); }
+.rmd-ics svg { width: 15px; height: 15px; }
+.rmd-note.compact .rmd-honest { font-size: 11.5px; }
+
+.rmd-sessions { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.rmd-session { display: grid; grid-template-columns: minmax(0, 1fr) auto 30px; align-items: center; gap: 10px; min-height: 40px; padding: 5px 6px 5px 12px; border-radius: 12px; background: var(--fill-4); font-size: 13px; }
+.rmd-session.past { opacity: 0.5; grid-template-columns: minmax(0, 1fr) auto; padding-right: 12px; }
+.rmd-session-label { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rmd-session-time { color: var(--label-2); font-variant-numeric: tabular-nums; font-size: 12.5px; text-align: right; }
+
+/* Live pill panel additions (the pill's own layout lives in shell.css) */
+.lp-row .rmd-bell { width: 28px; height: 28px; margin: -4px -6px -4px 0; }
+.lp-row-side { display: inline-flex; align-items: center; gap: 10px; }
+.rmd-pill-note { margin-top: 10px; padding: 10px 4px 0; border-top: 1px solid var(--separator); }
+@media (max-width: 380px) { .rmd-pill-note .rmd-ics { width: 100%; justify-content: center; } }

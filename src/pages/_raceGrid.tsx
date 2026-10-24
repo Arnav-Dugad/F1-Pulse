@@ -6,8 +6,9 @@ import { fullName, teamColor, teamShortName } from "../lib/media";
 import { lapTime, plural } from "../lib/format";
 import { Glass, Section, Segmented, Source, cx } from "../ui/core";
 import { DriverAvatar, TeamLogo } from "../ui/media";
-import type { Envelope, Result } from "../types";
+import type { Envelope, Race as RaceData, Result } from "../types";
 import { codeOf, secs, type AnalysisState } from "./_raceData";
+import { QualiOverlay } from "./_raceQuali";
 import "./_race.css";
 
 /* ───────── Starting grid ───────── */
@@ -126,7 +127,7 @@ export function StartingGrid({ results, quali, analysis, year, resEnv, qualiEnv 
 const SESSIONS = ["Q1", "Q2", "Q3"] as const;
 type Q = (typeof SESSIONS)[number];
 
-export function QualifyingDeepDive({ rows, year, env }: { rows: Result[]; year: string; env?: Envelope<unknown> }) {
+export function QualifyingDeepDive({ rows, year, env, race }: { rows: Result[]; year: string; env?: Envelope<unknown>; race?: RaceData }) {
   const [view, setView] = useState<"driver" | "team">("driver");
   const model = useMemo(() => {
     const present = SESSIONS.filter((k) => rows.some((r) => secs(r[k]) !== null));
@@ -292,6 +293,7 @@ export function QualifyingDeepDive({ rows, year, env }: { rows: Result[]; year: 
           </Glass>
         )}
       </div>
+      {race && +race.season >= 2023 && <QualiOverlay race={race} rows={rows} year={year} />}
       <Source value={env} label="Qualifying" />
     </Section>
   );

@@ -2,7 +2,7 @@ import { Countdown } from "../ui/countdown";
 import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { AnimatePresence, motion, type MotionProps } from "motion/react";
 import {
-  Activity, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CalendarDays, CalendarPlus, Check, ChevronDown, ChevronLeft, ChevronRight,
+  Activity, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CalendarDays, Camera, CalendarPlus, Check, ChevronDown, ChevronLeft, ChevronRight,
   ChevronUp, ChevronsUpDown, Clock, CloudSun, Download, Droplets, Flag as FlagIcon, Gauge, Info, MapPin, Minus, RotateCcw,
   Thermometer, Timer, Trophy, Wind, Wrench, Zap,
 } from "lucide-react";
@@ -12,7 +12,7 @@ import { Link, type Route } from "../lib/router";
 import { buildCalendar, weekendSessions } from "../domain.mjs";
 import { timeSeconds } from "../math.mjs";
 import { shortRace, useCalendar } from "../lib/season";
-import { circuitMedia, driverMedia, fullName, teamColor, teamShortName, useTrackOutline } from "../lib/media";
+import { circuitMedia, driverMedia, fullName, raceGallery, teamColor, teamShortName, useTrackOutline } from "../lib/media";
 import {
   countdown, download, formatClock, formatDateRange, formatSession, formatWeekday, hasStarted, plural, pts, relativeTime,
   sessionDate, timezoneLabel, toCSV,
@@ -27,6 +27,8 @@ import { QualifyingDeepDive, StartingGrid } from "./_raceGrid";
 import { RaceGaps, RacePace } from "./_racePace";
 import { RaceDayWeather } from "./_raceWeather";
 import { RCStrip, SessionAnalysis } from "./_raceAnalysis";
+import { StrategyExplorer } from "./_raceStrategy";
+import { Gallery } from "../ui/gallery";
 import "./race.css";
 
 /* ───────────────────────── Helpers ───────────────────────── */
@@ -112,16 +114,18 @@ function RaceWeekend({ race, prev, next, total, schedule }: { race: RaceData; pr
             <Source value={res.value} />
           </section>
           <RaceReport race={race} results={results} quali={qualiRows} laps={laps} analysis={analysis} env={res.value} year={year} />
+          <RaceGallery race={race} />
           <Section id="rw-classification" title="Classification" subtitle="Official results as published. Sort any column, or export the table.">
             <Classification res={res} quali={quali} sprint={sprint} race={race} year={year} />
           </Section>
           <StartingGrid results={results} quali={qualiRows} analysis={analysis} year={year} resEnv={res.value} qualiEnv={quali.value} />
-          {qualiRows?.length ? <QualifyingDeepDive rows={qualiRows} year={year} env={quali.value} /> : null}
+          {qualiRows?.length ? <QualifyingDeepDive rows={qualiRows} year={year} env={quali.value} race={race} /> : null}
           <Movers results={results} year={year} env={res.value} />
           <LapChart race={race} results={results} year={year} laps={laps} analysis={analysis} />
           <RaceGaps race={race} results={results} laps={laps} analysis={analysis} />
           <RacePace race={race} results={results} laps={laps} analysis={analysis} pits={pitList} year={year} />
           <PitStops race={race} results={results} year={year} data={pits} />
+          <StrategyExplorer race={race} results={results} analysis={analysis} year={year} />
           <SessionAnalysis race={race} results={results} analysis={analysis} year={year} />
           <RaceDayWeather race={race} results={results} />
           <Section id="rw-circuit" title="The circuit">
@@ -874,6 +878,19 @@ function PitStops({ race, results, year, data }: { race: RaceData; results: Resu
           <Source value={data.value} />
         </>
       )}
+    </Section>
+  );
+}
+
+/* ───────────────────────── Race gallery ───────────────────────── */
+function RaceGallery({ race }: { race: RaceData }) {
+  const images = useMemo(() => raceGallery(race.season, race.round), [race.season, race.round]);
+  if (!images.length) return null;
+  const credits = [...new Set(images.map((i) => i.credit).filter((c): c is string => !!c))];
+  return (
+    <Section id="rw-gallery" title="In pictures" subtitle={`Trackside at the ${race.season} ${race.raceName}.`}>
+      <Gallery images={images} label={`${race.season} ${race.raceName} photos`} className="rgal" />
+      <p className="source"><Camera />{credits.length ? `Photos: ${credits.slice(0, 4).join(" · ")}${credits.length > 4 ? ` and ${credits.length - 4} more` : ""}` : "Official race-weekend photography"}. Select a photo to open it full screen with its caption and credit.</p>
     </Section>
   );
 }

@@ -9,10 +9,10 @@ import { mkdir, writeFile } from "node:fs/promises";
 
 const base = process.env.PULSE_TEST_URL || "http://127.0.0.1:8787";
 const routes = (process.env.PULSE_ROUTES || [
-  "", "calendar", "race/1", "race/23", "standings", "standings?view=constructors", "standings?view=story",
+  "", "calendar", "race/1", "race/17", "race/23", "standings", "standings?view=constructors", "standings?view=story",
   "drivers", "driver/leclerc", "teams", "team/ferrari", "circuits", "circuit/monza", "compare", "telemetry",
   "replay", "strategy", "scenarios", "news", "favorites", "settings",
-  "insights", "predict", "records", "on-this-day", "rivalry", "rookies", "eras", "lineage", "story",
+  "insights", "predict", "records", "on-this-day", "rivalry", "rookies", "eras", "lineage", "story", "whatif", "weather", "ratings",
   "standings?season=1988", "driver/senna?season=1988", "race/5?season=1988", "team/mclaren?season=1988",
 ].join(",")).split(",");
 const viewports = { desktop: { width: 1440, height: 960 }, tablet: { width: 820, height: 1180 }, phone: { width: 390, height: 844 } };

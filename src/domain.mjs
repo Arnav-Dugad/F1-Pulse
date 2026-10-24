@@ -122,7 +122,21 @@ function foldICS(line) {
   }
   return result + chunk;
 }
-export function buildCalendar(races, allSessions = false, now = new Date()) {
+/**
+ * A valid VALARM lead time in whole minutes (1 minute – 7 days), or null. Anything else means
+ * "no alarm", so a bad option never produces a malformed calendar.
+ */
+export function alarmLeadMinutes(value) {
+  const n = Number(value);
+  return Number.isInteger(n) && n > 0 && n <= 10080 ? n : null;
+}
+/**
+ * RFC 5545 iCalendar export. `options.alarmMinutes` adds a DISPLAY alarm (VALARM) that many
+ * minutes before each timed session; date-only sessions (no published time) get no alarm because
+ * their real start is unknown. Without the option the output is unchanged.
+ */
+export function buildCalendar(races, allSessions = false, now = new Date(), options = {}) {
+  const alarm = alarmLeadMinutes(options?.alarmMinutes);
   const stamp = now.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
   const lines = [
     "BEGIN:VCALENDAR",
@@ -149,8 +163,16 @@ export function buildCalendar(races, allSessions = false, now = new Date()) {
         `SUMMARY:${escapeICS(race.raceName + (session.label === "Grand Prix" ? "" : " — " + session.label))}`,
         `LOCATION:${escapeICS(race.Circuit.circuitName)}`,
         `DESCRIPTION:${escapeICS("Published schedule. Times may change; check F1 Pulse before the event.")}`,
-        "END:VEVENT",
       );
+      if (alarm && session.time)
+        lines.push(
+          "BEGIN:VALARM",
+          "ACTION:DISPLAY",
+          `DESCRIPTION:${escapeICS(`${race.raceName}${session.label === "Grand Prix" ? "" : " — " + session.label} starts in ${alarm} minute${alarm === 1 ? "" : "s"}`)}`,
+          `TRIGGER;RELATED=START:-PT${alarm}M`,
+          "END:VALARM",
+        );
+      lines.push("END:VEVENT");
     }
   lines.push("END:VCALENDAR");
   return lines.map(foldICS).join("\r\n") + "\r\n";

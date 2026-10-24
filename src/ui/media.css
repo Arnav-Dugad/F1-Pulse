@@ -1,0 +1,13 @@
+/* Photo credits and archive (Wikimedia Commons) fallbacks for src/ui/media.tsx */
+.photo-credit { display: inline; max-width: 100%; font-size: 11.5px; line-height: 1.4; letter-spacing: 0; color: var(--label-3); overflow-wrap: anywhere; }
+.photo-credit a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 2px; }
+.photo-credit a:hover, .photo-credit a:focus-visible { color: var(--label); text-decoration-color: currentColor; }
+.photo-credit-label { font-weight: 600; }
+.photo-credit.overlay { display: block; position: absolute; right: 8px; bottom: 8px; max-width: calc(100% - 16px); padding: 3px 9px; border-radius: 10px; font-size: 10.5px; color: rgba(255, 255, 255, 0.86); background: rgba(0, 0, 0, 0.48); -webkit-backdrop-filter: blur(10px) saturate(1.4); backdrop-filter: blur(10px) saturate(1.4); }
+.photo-credit.overlay a:hover, .photo-credit.overlay a:focus-visible { color: #fff; }
+
+.avatar.commons img { filter: saturate(0.92); }
+
+.portrait-archive, .car-archive { position: relative; margin: 0; overflow: hidden; border-radius: 22px; background: var(--fill-3); }
+.portrait-archive img, .car-archive img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.portrait-archive img { object-position: 50% 22%; }

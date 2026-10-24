@@ -177,3 +177,15 @@ self.addEventListener("fetch", (event) => {
   // Anything else in the precached shell (theme script, favicon, manifest): network, then cache.
   event.respondWith(fetch(request).catch(async () => (await caches.match(request)) || Response.error()));
 });
+
+// Session reminders: focus an open F1 Pulse window (or open one) at the notification's page.
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = new URL(event.notification.data?.url || "/", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
+      const open = windows.find((w) => w.url.startsWith(self.location.origin));
+      return open ? open.focus().then((w) => (w && "navigate" in w ? w.navigate(url) : w)) : self.clients.openWindow(url);
+    }),
+  );
+});

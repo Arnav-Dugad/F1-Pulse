@@ -17,8 +17,10 @@ export function snapshotMatches(
 export function weekendSessions(
   race: Race,
 ): Array<{ label: string; date: string; time?: string }>;
+export function alarmLeadMinutes(value: unknown): number | null;
 export function buildCalendar(
   races: Race[],
   allSessions?: boolean,
   now?: Date,
+  options?: { alarmMinutes?: number },
 ): string;

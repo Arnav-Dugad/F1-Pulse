@@ -13,6 +13,13 @@
  * - Fastest lap: rank 1 in the race classification, only where Jolpica publishes fastest-lap data.
  */
 
+/** Jolpica splits a few names unconventionally (e.g. "Juan" + "Pablo Montoya"); surnames are shown on their own. */
+const NAME_FIXES = { montoya: ["Juan Pablo", "Montoya"] };
+function nameFix(id, given, family) {
+  const [g, f] = NAME_FIXES[id] || [given, family];
+  return { given: g, family: f, name: `${g} ${f}` };
+}
+
 export const MODERN_POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 export const ERAS = [
   { id: "all", label: "All time", from: 1950, to: 9999 },
@@ -44,7 +51,7 @@ function decodeRace(r, statuses) {
 
 /** Expand the compact JSON file into indexed objects. */
 export function decodeArchive(file) {
-  const drivers = file.drivers.map(([id, given, family, dob, nat, code]) => ({ id, given, family, name: `${given} ${family}`, dob, nat, code }));
+  const drivers = file.drivers.map(([id, given, family, dob, nat, code]) => ({ id, ...nameFix(id, given, family), dob, nat, code }));
   const teams = file.constructors.map(([id, name, nat]) => ({ id, name, nat }));
   const circuits = file.circuits.map(([id, name, locality, country, lat, lon]) => ({ id, name, locality, country, lat, lon }));
   const races = file.races.map((r) => decodeRace(r, file.statuses)).sort((a, b) => a.season - b.season || a.round - b.round);
@@ -72,7 +79,7 @@ export function mergeSeason(archive, season, races, poles = new Map(), sprints =
   const driver = (d) => {
     if (!di.has(d.driverId)) {
       di.set(d.driverId, drivers.length);
-      drivers.push({ id: d.driverId, given: d.givenName, family: d.familyName, name: `${d.givenName} ${d.familyName}`, dob: d.dateOfBirth || "", nat: d.nationality || "", code: d.code || "" });
+      drivers.push({ id: d.driverId, ...nameFix(d.driverId, d.givenName, d.familyName), dob: d.dateOfBirth || "", nat: d.nationality || "", code: d.code || "" });
     }
     return di.get(d.driverId);
   };

@@ -126,7 +126,7 @@
 .lab-deg-controls .ax-label small { font-weight: 650; letter-spacing: 0.02em; text-transform: none; color: var(--label-4); margin-left: 4px; }
 .lab-deg-go { height: 42px; }
 .lab-deg-go small { font-size: 11px; font-weight: 650; opacity: 0.75; margin-left: 2px; }
-@media (max-width: 1180px) { .lab-deg-controls { grid-template-columns: 110px minmax(0, 1fr); } .lab-deg-go { justify-self: start; } }
+@media (max-width: 1180px) { .lab-deg-controls { grid-template-columns: max-content minmax(0, 1fr); } .lab-deg-go { justify-self: start; } }
 @media (max-width: 520px) { .lab-deg-controls { grid-template-columns: minmax(0, 1fr); padding: 14px; } .lab-deg-controls .seg { max-width: 100%; overflow-x: auto; } }
 .lab-deg-results { display: grid; gap: 22px; margin-top: 18px; }
 .lab-deg-notice p { margin: 0; }

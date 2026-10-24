@@ -1,0 +1,21 @@
+/* ───────────────────────── Calendar · session reminders (fan agent) ───────────────────────── */
+.calx-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+.calx-item > .cal-row { min-width: 0; }
+.calx-toggle { position: relative; display: inline-flex; align-items: center; gap: 3px; height: 40px; padding: 0 9px 0 11px; border-radius: 99px; color: var(--label-2); background: var(--fill-4); border: 1px solid var(--separator); transition: background-color 0.2s, color 0.2s, transform 0.35s var(--spring); }
+.calx-toggle:hover { background: var(--fill-3); color: var(--label); }
+.calx-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.calx-toggle.on { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); background: color-mix(in srgb, var(--accent) 10%, var(--fill-4)); }
+.calx-count { position: absolute; top: -4px; left: 22px; min-width: 17px; height: 17px; padding: 0 4px; display: grid; place-items: center; border-radius: 99px; font-size: 10.5px; font-weight: 800; color: #fff; background: var(--accent); font-variant-numeric: tabular-nums; }
+.calx-chev { transition: rotate 0.35s var(--spring); opacity: 0.7; }
+.calx-toggle.open .calx-chev { rotate: 180deg; }
+.calx-panel-li { padding-left: 52px; }
+.calx-panel-inner { display: grid; gap: 12px; margin: 0 0 6px; padding: 14px; border-radius: 20px; background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); }
+.calx-panel-inner .rmd-sessions { grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+.calx-alarm-btn svg { width: 17px; height: 17px; }
+@media (max-width: 680px) { .calx-panel-li { padding-left: 36px; } }
+@media (max-width: 560px) {
+  .calx-item { gap: 6px; }
+  .calx-toggle { height: 36px; padding: 0 7px 0 9px; }
+  .calx-chev { display: none; }
+  .calx-panel-inner { padding: 12px; }
+}

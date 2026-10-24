@@ -30,7 +30,7 @@ MANIFEST = ROOT / "src" / "data" / "image-variants.json"
 STATE = ROOT / "scripts" / "images-state.json"
 MEDIA_JSON = ROOT / "src" / "data" / "media.json"
 
-SKIP_DIRS = {"flags", "brand"}
+SKIP_DIRS = {"flags", "brand", "commons"}  # commons: already-compressed WebP; keeps the bundled manifest small
 SKIP_NAME = re.compile(r"(logo|flag|-map|-number|badge|icon)", re.I)
 VARIANT = re.compile(r"-800$")
 EXTS = {".webp", ".jpg", ".jpeg", ".png"}

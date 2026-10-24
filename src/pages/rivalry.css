@@ -77,7 +77,7 @@
 .rv-fight .eyebrow svg { color: var(--gold); }
 .rv-empty { display: flex; align-items: center; gap: 8px; }
 
-.rv-closest { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.rv-closest { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 228px), 1fr)); gap: 12px; }
 .rv-close { display: grid; gap: 8px; padding: 16px 18px; border-radius: var(--r-lg); min-width: 0; }
 .rv-close-gap { font-family: var(--font-display); font-size: 30px; font-weight: 820; letter-spacing: -0.045em; font-variant-numeric: tabular-nums; color: var(--label); }
 .rv-close-main { display: grid; }

@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { motion } from "motion/react";
-import { ArrowRight, Download, Gauge, Info, Play, RotateCcw, Timer, TrendingUp, Users, Wrench } from "lucide-react";
+import { ArrowRight, Download, Gauge, Info, Play, Rocket, RotateCcw, Timer, TrendingUp, Users, Wrench, Zap } from "lucide-react";
 import { allResults, pitStops, qualifyingResults, useData } from "../api";
 import { usePrefs } from "../app/prefs";
 import { Link, type Route } from "../lib/router";
@@ -14,6 +14,7 @@ import {
   type CauseKey, type PitRound, type Reliability as RelData, type TeammatePair,
 } from "../season-analytics.mjs";
 import { Lazy, Trend, useSprints } from "./_season";
+import { LaunchBoard, UpgradeTracker } from "./_insights-x";
 import type { Driver, Envelope, Race, Team } from "../types";
 import "./insights.css";
 
@@ -50,6 +51,10 @@ export default function Insights(_: { route: Route }) {
             <Lazy height={520}>{() => (loading ? <Skeleton h={520} r={28} /> : <Teammates season={season} year={year} races={races} order={teamPoints} />)}</Lazy>
           </Section>
 
+          <Section id="upgrades" title="Upgrade tracker" subtitle="Each team's qualifying pace round by round — best car, as a gap to the fastest time of the same session — with automatic detection of step changes.">
+            <Lazy height={560}>{() => <UpgradeTracker season={season} year={year} />}</Lazy>
+          </Section>
+
           <Section id="reliability" title="Reliability" subtitle="Every non-finish, grouped by the cause the results record gives.">
             <Lazy height={480}>{() => (loading ? <Skeleton h={480} r={28} /> : <Reliability races={races} year={year} />)}</Lazy>
             <Source value={results.value} />
@@ -67,6 +72,10 @@ export default function Insights(_: { route: Route }) {
           <Section id="positions-gained" title="Positions gained" subtitle="Grid to chequered flag, summed over the season for classified finishers.">
             <Lazy height={520}>{() => (loading ? <Skeleton h={520} r={28} /> : <Gained races={races} year={year} />)}</Lazy>
             <Source value={results.value} />
+          </Section>
+
+          <Section id="launch" title="Start performance" subtitle="Places gained or lost on the opening lap: grid slot against running order at the end of lap 1, loaded race by race when you ask for it.">
+            <LaunchBoard key={season + ":" + races.length} season={season} year={year} races={races} />
           </Section>
         </>
       )}
@@ -96,7 +105,7 @@ function InsightsHero({ year, races, total, loading }: { year: string; races: Ra
       <div className="ins-hero-inner">
         <span className="eyebrow ins-hero-eyebrow rise"><Gauge size={14} />Lab · {year} season</span>
         <h1 className="display ins-hero-title rise" style={{ "--i": 1 } as CSSProperties}>Insights<span>Beneath the results</span></h1>
-        <p className="ins-hero-lede rise" style={{ "--i": 2 } as CSSProperties}>Teammate battles, reliability, form, pit work and racecraft — computed from every published classification of {year}.</p>
+        <p className="ins-hero-lede rise" style={{ "--i": 2 } as CSSProperties}>Teammate battles, upgrades, reliability, form, pit work, starts and racecraft — computed from every published classification of {year}.</p>
         <div className="ins-hero-stats rise" style={{ "--i": 3 } as CSSProperties}>
           {loading ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} h={78} r={20} />) : (
             <>
@@ -108,7 +117,7 @@ function InsightsHero({ year, races, total, loading }: { year: string; races: Ra
           )}
         </div>
         <nav className="ins-hero-nav rise" style={{ "--i": 4 } as CSSProperties} aria-label="Jump to analysis">
-          {[["teammates", "Teammates", Users], ["reliability", "Reliability", Wrench], ["form", "Form", TrendingUp], ["pit-stops", "Pit stops", Timer], ["positions-gained", "Positions gained", ArrowRight]].map(([id, label, Icon]) => {
+          {[["teammates", "Teammates", Users], ["upgrades", "Upgrades", Zap], ["reliability", "Reliability", Wrench], ["form", "Form", TrendingUp], ["pit-stops", "Pit stops", Timer], ["positions-gained", "Positions gained", ArrowRight], ["launch", "Starts", Rocket]].map(([id, label, Icon]) => {
             const I = Icon as typeof Users;
             return <a key={id as string} href={"#" + id} onClick={(e) => { e.preventDefault(); document.getElementById(id as string)?.scrollIntoView({ behavior: "smooth", block: "start" }); }} className="btn sm glass-btn"><I />{label as string}</a>;
           })}

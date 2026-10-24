@@ -112,7 +112,8 @@ export function RacePace({ race, results, laps, analysis, pits, year }: {
     const pad = (hi - lo) * 0.04 || 0.5;
     const min = lo - pad, max = hi + pad, span = max - min;
     const x = (t: number) => `${((t - min) / span) * 100}%`;
-    const step = span > 8 ? 2 : span > 4 ? 1 : 0.5;
+    // At most ~5 labelled ticks so the axis stays legible on phones (outliers can stretch the span).
+    const step = [0.5, 1, 2, 5, 10, 20, 30].find((s) => span / s <= 5) || 60;
     const ticks: number[] = [];
     for (let t = Math.ceil(min / step) * step; t <= max; t += step) ticks.push(t);
     const fastestMed = Math.min(...rows.map((b) => b.med));
@@ -128,7 +129,7 @@ export function RacePace({ race, results, laps, analysis, pits, year }: {
         </div>
         <div className="rw-pace-plot" role="img" aria-label={`Lap time distribution for ${rows.length} drivers. Fastest median ${lapTime(fastestMed)}.`}>
           <div className="rw-pace-axis" aria-hidden>
-            {ticks.map((t) => <span key={t} style={{ left: x(t) }}>{lapTime(t)}</span>)}
+            {ticks.map((t) => <span key={t} style={{ left: x(t) }}>{Number.isInteger(t) ? `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}` : lapTime(t)}</span>)}
           </div>
           {rows.map((b) => (
             <div

@@ -3,6 +3,8 @@ import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { motion } from "motion/react";
 import { paginate, request } from "../api";
 import { cx } from "../ui/core";
+import type { PhotoCredit } from "../lib/media";
+import { PhotoCredit as SharedCredit } from "../ui/media";
 import type { Driver, Envelope, Race, Result } from "../types";
 import "./_drivers.css";
 
@@ -285,4 +287,10 @@ export function resultTeammates(races: Race[], id: string): Map<string, Mate[]> 
     out.set(team, m);
   }
   return new Map([...out].map(([k, v]) => [k, [...v.values()]]));
+}
+
+/* ─────────── Photo credit (freely licensed / official imagery) ─────────── */
+/** Attribution line under a photo; the shared `<PhotoCredit>` with this page family's spacing. */
+export function CreditLine({ credit, className }: { credit: PhotoCredit; className?: string }) {
+  return <SharedCredit credit={credit} className={cx("fan-credit", className)} />;
 }

@@ -1,0 +1,81 @@
+/* ───────────────────────── Car evolution (Team + Teams pages) ───────────────────────── */
+.evo { display: grid; gap: 22px; min-width: 0; }
+.evo-strip { list-style: none; margin: 0; padding: 4px 2px 14px; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: thin; overscroll-behavior-x: contain; }
+.evo-card { position: relative; flex: 0 0 clamp(200px, 24vw, 260px); scroll-snap-align: start; display: grid; gap: 6px; align-content: start; }
+.evo-card-link { position: relative; display: grid; gap: 8px; padding: 14px 14px 12px; border-radius: var(--r-xl); overflow: hidden; isolation: isolate; background: linear-gradient(160deg, color-mix(in srgb, var(--tint) 22%, var(--fill-4)), var(--fill-4) 70%); border: 1px solid color-mix(in srgb, var(--tint) 22%, var(--separator)); transition: transform 0.5s var(--spring), border-color 0.25s, box-shadow 0.3s; }
+.evo-card-link:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--tint) 55%, transparent); box-shadow: 0 22px 44px -28px color-mix(in srgb, var(--tint) 80%, #000); }
+.evo-card-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.evo-card.current .evo-card-link { border-color: var(--tint); box-shadow: 0 0 0 1px var(--tint), 0 18px 40px -26px var(--tint); }
+.evo-card-year { font-family: var(--font-display); font-size: 26px; font-weight: 850; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.evo-card.heritage .evo-card-year { font-size: 18px; letter-spacing: -0.02em; }
+.evo-card.current .evo-card-year::after { content: "This season"; margin-left: 8px; vertical-align: 0.35em; font-family: var(--font); font-size: 10px; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; color: var(--label-2); }
+.evo-card-car { display: grid; place-items: center; aspect-ratio: 16 / 6; }
+.evo-card-car img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.35)); transition: transform 0.7s var(--spring); }
+.evo-card-link:hover .evo-card-car img { transform: translateX(4%) scale(1.04); }
+.evo-card-photo { display: block; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: var(--fill-3); }
+.evo-card-photo img { width: 100%; height: 100%; object-fit: cover; }
+.evo-card-name { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 650; color: var(--label-2); min-width: 0; }
+.evo-card-credit { padding: 0 6px; }
+
+/* Before / after */
+.evo-compare { display: grid; gap: 12px; padding: clamp(14px, 2vw, 22px); border-radius: var(--r-xl); background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); }
+.evo-compare-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+.evo-compare-title { font-size: 17px; font-weight: 750; letter-spacing: -0.02em; }
+.evo-picks { display: flex; flex-wrap: wrap; gap: 10px; }
+.evo-pick { display: grid; gap: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--label-3); }
+.evo-select { height: 38px; min-width: 190px; padding: 0 12px; font-size: 14px; text-transform: none; letter-spacing: 0; }
+.evo-stage { --pos: 50%; position: relative; width: 100%; min-width: 0; aspect-ratio: 16 / 6.2; min-height: 150px; border-radius: 20px; overflow: hidden; touch-action: pan-y; user-select: none; cursor: ew-resize; background: radial-gradient(70% 90% at 50% 100%, var(--fill-3), transparent 70%), var(--fill-4); }
+.evo-layer { position: absolute; inset: 0; display: grid; place-items: center; padding: 4% 3%; }
+.evo-layer::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(60% 70% at 50% 60%, color-mix(in srgb, var(--tint) 26%, transparent), transparent 72%); }
+.evo-layer img { position: relative; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 16px 14px rgba(0, 0, 0, 0.4)); pointer-events: none; }
+.evo-layer.over { clip-path: inset(0 calc(100% - var(--pos)) 0 0); background: var(--fill-4); }
+.evo-layer.under { isolation: isolate; }
+.evo-layer.over { isolation: isolate; }
+.evo-tag { position: absolute; top: 12px; z-index: 2; display: grid; line-height: 1.05; padding: 7px 12px; border-radius: 14px; font-family: var(--font-display); font-size: 18px; font-weight: 850; letter-spacing: -0.03em; background: color-mix(in srgb, var(--bg) 62%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border: 1px solid var(--separator); pointer-events: none; }
+.evo-tag small { font-family: inherit; font-size: 11px; font-weight: 650; letter-spacing: 0; color: var(--label-2); }
+.evo-tag.l { left: 12px; }
+.evo-tag.r { right: 12px; text-align: right; }
+.evo-handle { position: absolute; z-index: 3; top: 0; bottom: 0; left: var(--pos); width: 44px; translate: -50% 0; display: grid; place-items: center; cursor: ew-resize; touch-action: none; outline: none; }
+.evo-handle::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; translate: -1px 0; background: var(--label); box-shadow: 0 0 12px rgba(0, 0, 0, 0.35); }
+.evo-handle-knob { position: relative; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: var(--bg); background: var(--label); box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.6); transition: transform 0.35s var(--spring); }
+.evo-handle:hover .evo-handle-knob, .evo-handle:active .evo-handle-knob { transform: scale(1.08); }
+.evo-handle:focus-visible .evo-handle-knob { box-shadow: 0 0 0 3px var(--bg), 0 0 0 6px var(--accent); }
+.evo-hint { line-height: 1.4; }
+@media (max-width: 560px) {
+  .evo-card { flex-basis: 72vw; }
+  .evo-picks { width: 100%; }
+  .evo-pick { flex: 1 1 140px; }
+  .evo-select { min-width: 0; width: 100%; }
+  .evo-stage { aspect-ratio: 16 / 8; }
+  .evo-tag { font-size: 15px; padding: 5px 9px; top: 8px; }
+  .evo-tag.l { left: 8px; }
+  .evo-tag.r { right: 8px; }
+}
+
+/* Teams page table */
+.evo-table { border-radius: var(--r-xl); overflow: hidden; }
+.evo-table-scroll { overflow-x: auto; overscroll-behavior-x: contain; outline: none; }
+.evo-table-scroll:focus-visible { box-shadow: inset 0 0 0 2px var(--accent); }
+.evo-tbl { width: 100%; min-width: 980px; border-collapse: separate; border-spacing: 0; }
+.evo-tbl th, .evo-tbl td { padding: 8px 6px; text-align: center; vertical-align: middle; border-bottom: 1px solid var(--separator); }
+.evo-tbl tbody tr:last-child th, .evo-tbl tbody tr:last-child td { border-bottom: 0; }
+.evo-tbl thead th { font-size: 12px; font-weight: 750; letter-spacing: 0.04em; color: var(--label-3); font-variant-numeric: tabular-nums; padding-top: 14px; }
+.evo-tbl .evo-tbl-team { position: sticky; left: 0; z-index: 1; text-align: left; padding-left: 16px; background: var(--glass-strong, var(--bg-elevated)); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); min-width: 170px; }
+.evo-tbl-name { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; letter-spacing: -0.015em; }
+.evo-tbl-name::before { content: ""; width: 4px; height: 26px; border-radius: 4px; background: var(--tint); flex: none; }
+.evo-tbl-name:hover span { text-decoration: underline; text-underline-offset: 3px; }
+.evo-tbl-car { position: relative; display: grid; justify-items: center; gap: 2px; padding: 4px; border-radius: 12px; transition: background-color 0.2s, transform 0.45s var(--spring); }
+.evo-tbl-car:hover { background: color-mix(in srgb, var(--tint) 14%, transparent); transform: translateY(-2px); }
+.evo-tbl-car:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.evo-tbl-car img { width: 100%; max-width: 132px; aspect-ratio: 16 / 6; object-fit: contain; filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.3)); }
+.evo-tbl-car small { font-size: 10.5px; font-weight: 650; color: var(--label-2); white-space: nowrap; }
+.evo-tbl-car.renamed small { color: var(--label); }
+.evo-tbl-car.renamed::before { content: ""; position: absolute; left: -4px; top: 18%; bottom: 18%; width: 2px; border-radius: 2px; background: color-mix(in srgb, var(--tint) 70%, transparent); }
+.evo-tbl-none { color: var(--label-4); font-size: 13px; }
+.evo-table-foot { padding: 10px 16px 14px; border-top: 1px solid var(--separator); }
+@media (max-width: 560px) {
+  .evo-tbl { min-width: 860px; }
+  .evo-tbl .evo-tbl-team { min-width: 120px; padding-left: 10px; }
+  .evo-tbl-name { font-size: 12.5px; gap: 6px; }
+  .evo-tbl-name .logo-badge { display: none; }
+}

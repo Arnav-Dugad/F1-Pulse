@@ -6,3 +6,5 @@ dist/
 artifacts/
 .playwright-mcp/
 .lighthouseci/
+dist-polish/
+__pycache__/

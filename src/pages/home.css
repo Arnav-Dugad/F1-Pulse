@@ -122,10 +122,19 @@
 .winner-stack > span { margin-left: -8px; border-radius: 50%; box-shadow: 0 0 0 3px var(--bg-elevated); transition: transform 0.4s var(--spring); }
 .winner-stack > span:hover { transform: translateY(-4px) scale(1.1); z-index: 2; }
 @media (max-width: 1080px) { .pulse-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 520px) { .pulse-grid { grid-template-columns: 1fr; } }
+@media (max-width: 520px) {
+  /* Ring on its own row, the three counters as compact tiles beneath it. */
+  .pulse-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .pulse-grid > :first-child { grid-column: 1 / -1; }
+  .pulse-grid > :last-child:nth-child(even) { grid-column: 1 / -1; }
+  .pulse-grid .kpi { padding: 16px; }
+  .pulse-grid .kpi .value { font-size: 38px; }
+}
 
 /* ───────────────────────── Headlines ───────────────────────── */
-.headlines { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.headlines { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 980px) { .headlines { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .headlines { grid-template-columns: minmax(0, 1fr); } }
 .headline { position: relative; display: grid; gap: 10px; align-content: start; padding: 20px 46px 20px 20px; border-radius: var(--r-lg); min-height: 128px; }
 .headline strong { font-size: 16.5px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.32; }
 .headline .eyebrow { font-size: 10.5px; }

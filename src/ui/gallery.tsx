@@ -14,11 +14,15 @@ export function Gallery({ images, label, className }: { images: GalleryImage[]; 
   const [open, setOpen] = useState<number | null>(null);
   if (!images.length) return null;
   const shown = images.slice(0, 9);
+  // The lead photo takes a 2×2 block (full width on phones); stretch the last tile over any cells its row leaves empty.
+  const k = shown.length, cols = k === 3 ? 3 : 4;
+  const fillWide = k >= 3 ? (cols - ((k + 3) % cols)) % cols : 0, fillNarrow = k >= 3 ? (k + 1) % 2 : 0;
   return (
     <>
       <ul className={cx("gal", `n${Math.min(shown.length, 5)}`, className)} aria-label={label}>
         {shown.map((img, i) => (
-          <li key={img.src} className="gal-cell reveal" style={{ "--i": i } as CSSProperties}>
+          <li key={img.src} className={cx("gal-cell reveal", i === k - 1 && i > 0 && fillWide + fillNarrow > 0 && "gal-fill")}
+            style={{ "--i": i, "--fill-w": fillWide + 1, "--fill-n": fillNarrow + 1 } as CSSProperties}>
           <button type="button" className="gal-tile" onClick={() => setOpen(i)}
             aria-label={`Open photo ${i + 1} of ${images.length}${img.caption ? `: ${img.caption}` : ""}`}>
             <Img src={img.src} alt={img.caption || `${label} — photo ${i + 1}`} />

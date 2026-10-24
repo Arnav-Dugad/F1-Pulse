@@ -19,7 +19,9 @@ type MediaFile = {
   teams: Record<string, TeamMedia>;
   circuits: Record<string, { hero?: string; map?: string }>;
   seasons?: Record<string, { drivers: Record<string, DriverMedia>; teams: Record<string, TeamMedia> }>;
-  galleries?: { drivers?: Record<string, GalleryImage[]>; teams?: Record<string, GalleryImage[]> };
+  galleries?: { drivers?: Record<string, GalleryImage[]>; teams?: Record<string, GalleryImage[]>; races?: Record<string, GalleryImage[]> };
+  /** Official helmet artwork: driverId -> season -> file. */
+  helmets?: Record<string, Record<string, string>>;
 };
 const file = media as MediaFile;
 
@@ -115,3 +117,119 @@ export const teamShortName = (name: string, year = "2026") => {
   const short = name.replace(/ F1 Team$/, "");
   return short === "RB" && +year >= 2025 ? "Racing Bulls" : short;
 };
+
+/* ───────────────────────── Historical & extended photography (round 3) ─────────────────────────
+ * Official season media (2019–2026) comes first; everything else uses freely licensed photos from
+ * Wikimedia Commons (`/data/wikimedia.json`, ~1 file per driver / constructor and up to 6 per circuit,
+ * fetched by scripts/fetch-wikimedia.py). The JSON is NOT bundled: it loads once, on first use.
+ * Every Commons photo carries a `credit` that must be shown next to it — use `<PhotoCredit>` from
+ * src/ui/media.tsx.
+ */
+/** Attribution for freely licensed photos (Wikimedia Commons) or official F1 media. */
+export type PhotoCredit = { artist?: string; license?: string; licenseUrl?: string; source: string; date?: string; title?: string; official?: boolean };
+/**
+ * `kind`: "photo" (framed photograph; the default when absent), "cutout" (transparent official render —
+ * a driver portrait or car side view, use object-fit: contain), "logo" (official team logo) or "map"
+ * (official circuit map). `head` is a 256 px square headshot when one exists.
+ */
+export type Photo = { src: string; head?: string; width?: number; height?: number; alt?: string; credit: PhotoCredit; kind?: "photo" | "cutout" | "logo" | "map";
+  /** In-period race photos only represent nearby seasons (see scripts/fetch-wikimedia.py `season_windows`). */
+  seasons?: [number, number] };
+type WikiFile = { drivers: Record<string, Photo>; constructors: Record<string, Photo>; circuits: Record<string, Photo[]> };
+
+const EMPTY_WIKI: WikiFile = { drivers: {}, constructors: {}, circuits: {} };
+let wiki: WikiFile | null = null;
+let wikiLoading: Promise<WikiFile> | null = null;
+/** `/data/wikimedia.json` (Commons photos + credits), fetched once and shared by every hook. */
+export const loadWikimedia = (): Promise<WikiFile> =>
+  (wikiLoading ??= fetch("/data/wikimedia.json")
+    .then((r) => (r.ok ? r.json() : EMPTY_WIKI))
+    .then((d: Partial<WikiFile>) => (wiki = { drivers: d.drivers || {}, constructors: d.constructors || {}, circuits: d.circuits || {} }))
+    .catch(() => (wiki = EMPTY_WIKI)));
+
+/** The Commons index once loaded (null before). Pass `enabled = false` to skip loading when not needed. */
+export function useWikimedia(enabled = true): WikiFile | null {
+  const [, ready] = useState(0);
+  useEffect(() => {
+    if (enabled && !wiki) {
+      let live = true;
+      loadWikimedia().then(() => live && ready((x) => x + 1));
+      return () => { live = false; };
+    }
+  }, [enabled]);
+  return wiki;
+}
+
+const OFFICIAL = (year: string): PhotoCredit => ({ artist: "Formula 1", source: "https://www.formula1.com/", date: year, official: true });
+const officialSeasons = () => [MEDIA_SEASON, ...Object.keys(file.seasons || {}).sort().reverse()];
+
+/** Official portrait for that season (or, without a season, the most recent one), as a Photo. */
+export function officialDriverPhoto(driverId: string | undefined, year?: string): Photo | null {
+  if (!driverId) return null;
+  for (const y of year ? [year] : officialSeasons()) {
+    const m = driverMedia(driverId, y);
+    const src = m?.photo || m?.front || m?.card || m?.head;
+    if (m && src) return { src, head: m.head, kind: m.photo ? "photo" : m.front || m.card ? "cutout" : "photo", credit: OFFICIAL(y) };
+  }
+  return null;
+}
+/** Official car (else logo) for that season (or the most recent one), as a Photo. */
+export function officialTeamPhoto(constructorId: string | undefined, year?: string): Photo | null {
+  if (!constructorId) return null;
+  for (const y of year ? [year] : officialSeasons()) {
+    const m = teamMedia(constructorId, y);
+    if (m?.car) return { src: m.car, kind: "cutout", credit: OFFICIAL(y) };
+    if (m?.logo) return { src: m.logo, kind: "logo", credit: OFFICIAL(y) };
+  }
+  return null;
+}
+/** Commons photo for a driver from a loaded index (`useWikimedia()`), or null. */
+export const commonsDriverPhoto = (w: WikiFile | null, driverId?: string): Photo | null =>
+  (driverId && w && (w.drivers[driverId] || w.drivers[driverAliases[driverId] || ""])) || null;
+export function commonsTeamPhoto(w: WikiFile | null, constructorId?: string, year?: string): Photo | null {
+  const photo = (constructorId && w && (w.constructors[constructorId] || w.constructors[teamAliases[constructorId] || ""])) || null;
+  if (photo?.seasons && year && (+year < photo.seasons[0] || +year > photo.seasons[1])) return null;
+  return photo;
+}
+
+/**
+ * Best available photo of any driver in history: the official portrait for `year` (or, without a year,
+ * the latest official one), else the Wikimedia Commons photo — whose `credit.date` is the year it was
+ * taken, so label it ("Photo: 1967"). Returns null while loading and when nothing exists.
+ *   const photo = useDriverPhoto("clark", "1965");
+ *   photo && <figure><Img src={photo.src} alt={photo.alt || name} /><PhotoCredit credit={photo.credit} /></figure>
+ */
+export function useDriverPhoto(driverId: string | undefined, year?: string): Photo | null {
+  const official = officialDriverPhoto(driverId, year);
+  const w = useWikimedia(!!driverId && !official);
+  return official || commonsDriverPhoto(w, driverId);
+}
+/** Best available photo for any constructor: official car / logo for that season first, then Commons. */
+export function useTeamPhoto(constructorId: string | undefined, year?: string): Photo | null {
+  const official = officialTeamPhoto(constructorId, year);
+  const w = useWikimedia(!!constructorId && !official);
+  return official || commonsTeamPhoto(w, constructorId, year);
+}
+/**
+ * Photos of a circuit and its surroundings ("places"), most representative first: the official F1
+ * race-hub photo and detailed map (`kind: "map"`) where present, then Commons photos.
+ */
+export function useCircuitPhotos(circuitId: string | undefined): Photo[] {
+  const w = useWikimedia(!!circuitId);
+  if (!circuitId) return [];
+  const m = circuitMedia(circuitId);
+  const out: Photo[] = [];
+  if (m.hero) out.push({ src: m.hero, kind: "photo", credit: OFFICIAL(MEDIA_SEASON) });
+  if (m.map) out.push({ src: m.map, kind: "map", credit: OFFICIAL(MEDIA_SEASON) });
+  return out.concat(w?.circuits[circuitId] || []);
+}
+/** Trackside photography for one race weekend (official F1 media), e.g. ("2026", "17"). */
+export function raceGallery(season: string, round: string): GalleryImage[] {
+  return file.galleries?.races?.[`${season}-${Number(round)}`] || [];
+}
+/** Official helmet artwork by season, newest first. */
+export function driverHelmets(driverId: string | undefined): { year: string; src: string }[] {
+  if (!driverId) return [];
+  const byYear = file.helmets?.[driverId] || file.helmets?.[driverAliases[driverId] || ""] || {};
+  return Object.entries(byYear).map(([year, src]) => ({ year, src })).sort((a, b) => +b.year - +a.year);
+}

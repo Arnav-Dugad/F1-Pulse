@@ -57,8 +57,11 @@
 .fw-since-list li.flag svg { color: var(--label-2); }
 
 /* Results + weather grid */
-.fw-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); align-items: start; }
+.fw-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); align-items: stretch; }
+/* Cards in a row share one height; a waiting card's placeholder grows to fill it. */
 .fw-res { display: grid; gap: 12px; align-content: start; }
+.fw-res:not(.has-rows) { grid-template-rows: auto 1fr; align-content: stretch; }
+.fw-res-wait { align-content: center; }
 .fw-res-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .fw-res-head .eyebrow { display: inline-flex; align-items: center; gap: 6px; }
 .fw-res-wait { display: grid; justify-items: center; gap: 8px; padding: 22px 12px; text-align: center; border-radius: 20px; background: var(--fill-4); border: 1.5px dashed var(--separator); }
@@ -95,3 +98,5 @@
 .fw-wx-sun svg:nth-of-type(2) { margin-left: 6px; }
 .fw-wx .source { display: flex; gap: 6px; align-items: flex-start; }
 @media (max-width: 380px) { .fw-wx-days li { grid-template-columns: 38px 56px 44px minmax(0, 1fr); gap: 6px; } .fw-wx-sun svg:nth-of-type(2) { margin-left: 2px; } }
+/* Two-column widths: an odd last card (usually the weather) spans the row instead of sitting alone. */
+@media (max-width: 1000px) { .fw-grid > :last-child:nth-child(odd):not(:first-child) { grid-column: 1 / -1; } }

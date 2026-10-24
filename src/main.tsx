@@ -62,6 +62,9 @@ const pages: Record<string, React.LazyExoticComponent<ComponentType<{ route: Rou
   eras: page(() => import("./pages/Eras")),
   lineage: page(() => import("./pages/Lineage")),
   story: page(() => import("./pages/Story")),
+  whatif: page(() => import("./pages/WhatIf")),
+  weather: page(() => import("./pages/Weather")),
+  ratings: page(() => import("./pages/Ratings")),
 };
 
 function NotFound() {

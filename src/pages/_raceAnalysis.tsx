@@ -165,6 +165,11 @@ function Tyres({ a, results, totalLaps }: { a: Analysis; results: Result[]; tota
                   ))}
                 </div>
                 <div className="rw-ty-dots-axis faint xsmall"><span>P1</span><span>P{fieldSize}</span></div>
+                <div className="rw-ty-who">
+                  {[...list].sort((x, y) => +x.result!.position - +y.result!.position).map((w) => (
+                    <span key={w.n} style={{ "--tint": w.color } as CSSProperties}><b>P{w.result!.position}</b>{w.code}</span>
+                  ))}
+                </div>
               </Glass>
             );
           })}

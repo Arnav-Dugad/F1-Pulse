@@ -135,7 +135,7 @@ export function LineChart({
               <text className="axis" x={pad.l - 10} y={y(t) + 4} textAnchor="end">{yFormat(t)}</text>
             </g>
           ))}
-          {labels.map((l, i) => i % labelEvery === 0 || i === labels.length - 1 ? (
+          {labels.map((l, i) => (i % labelEvery === 0 && (i === labels.length - 1 || labels.length - 1 - i >= labelEvery * 0.75)) || i === labels.length - 1 ? (
             <text key={i} className="axis" x={x(i)} y={height - 8} textAnchor="middle">{l}</text>
           ) : null)}
           {series.map((s) => {

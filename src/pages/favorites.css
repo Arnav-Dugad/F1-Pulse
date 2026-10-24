@@ -52,7 +52,9 @@
 .fav-empty-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 
 /* Suggestions */
-.fav-suggest { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
+.fav-suggest { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) { .fav-suggest { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .fav-suggest { grid-template-columns: minmax(0, 1fr); } }
 .fav-pick { display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 12px; border-radius: var(--r-lg); text-align: left; transition: transform 0.5s var(--spring), background-color 0.3s, box-shadow 0.3s; }
 .fav-pick:hover { transform: translateY(-3px); }
 .fav-pick:active { transform: scale(0.97); }

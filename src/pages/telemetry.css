@@ -150,3 +150,10 @@
 .tl-map-legend.split { flex-wrap: wrap; gap: 6px 18px; }
 .tl-map-legend.split span { display: inline-flex; align-items: center; gap: 7px; }
 .tl-ramp { flex: 1; height: 8px; border-radius: 99px; background: linear-gradient(90deg, rgb(72, 80, 214), rgb(36, 178, 214) 35%, rgb(96, 210, 130) 60%, rgb(250, 204, 21) 80%, rgb(255, 69, 58)); }
+/* Phones: the readout becomes a compact, fully visible table and no longer sticks over the traces. */
+@media (max-width: 560px) {
+  .tl-readout { position: relative; top: auto; grid-template-columns: minmax(0, 1fr); }
+  .tl-ro-grid { grid-auto-flow: row; grid-template-rows: none; grid-template-columns: minmax(0, 1fr) auto auto; grid-auto-columns: auto; overflow: visible; gap: 4px 12px; }
+  .tl-ro-grid b { text-align: right; }
+  .tl-ro-driver { justify-content: flex-end; }
+}

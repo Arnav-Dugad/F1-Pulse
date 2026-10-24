@@ -1,6 +1,6 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowDown, ArrowRight, ArrowUp, LayoutGrid, Table2, Trophy } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUp, History, LayoutGrid, Table2, Trophy } from "lucide-react";
 import { allResults, sprintResults, standings, teamStandings, teams, useData } from "../api";
 import { usePrefs } from "../app/prefs";
 import { Link, setQuery, type Route } from "../lib/router";
@@ -11,10 +11,12 @@ import { Counter, Glass, Page, Section, Segmented, Skeleton, Source, StateView, 
 import { CarImage, TeamLogo } from "../ui/media";
 import { TeamCard } from "../ui/cards";
 import type { Driver, Envelope, Race, Standing, Team } from "../types";
+import { EvolutionTable } from "./_evolution";
 import "./teams.css";
 
 type Row = { team: Team; position?: string; points?: string; wins?: string; drivers: Driver[] };
-type View = "cards" | "table";
+type View = "cards" | "table" | "evolution";
+const VIEWS: View[] = ["cards", "table", "evolution"];
 
 /**
  * Drivers who raced for a constructor, derived from the drivers' standings.
@@ -36,8 +38,8 @@ export default function Teams({ route }: { route: Route }) {
   const tl = useData(() => teams(season), [season]);
   const progress = useSeasonProgress(season, year);
   const latest = useMemo(() => progress.value ? new Map(progress.value.data.drivers.map((d) => [d.driver.driverId, d.team.constructorId])) : undefined, [progress.value]);
-  const [view, setView] = useState<View>(route.query.get("view") === "table" ? "table" : "cards");
-  const changeView = (v: View) => { setView(v); setQuery({ view: v === "table" ? "table" : null }); };
+  const [view, setView] = useState<View>(() => VIEWS.find((v) => v === route.query.get("view")) || "cards");
+  const changeView = (v: View) => { setView(v); setQuery({ view: v === "cards" ? null : v }); };
 
   const rows = useMemo<Row[]>(() => {
     const st = cs.value?.data || [];
@@ -74,6 +76,7 @@ export default function Teams({ route }: { route: Route }) {
           action={<Segmented<View> label="Layout" value={view} onChange={changeView} options={[
             { value: "cards", label: <span className="tms-seg"><LayoutGrid size={15} />Cards</span> },
             { value: "table", label: <span className="tms-seg"><Table2 size={15} />Compare</span> },
+            { value: "evolution", label: <span className="tms-seg"><History size={15} />Evolution</span> },
           ]} />}
         >
           <AnimatePresence mode="wait" initial={false}>
@@ -84,8 +87,10 @@ export default function Teams({ route }: { route: Route }) {
                     <TeamCard key={r.team.constructorId} team={r.team} year={year} drivers={r.drivers.slice(0, 3)} position={r.position} points={r.points !== undefined ? pts(r.points) : undefined} index={i} />
                   ))}
                 </div>
-              ) : (
+              ) : view === "table" ? (
                 <CompareTable rows={rows} season={season} year={year} />
+              ) : (
+                <EvolutionTable teams={rows.map((r) => ({ constructorId: r.team.constructorId, name: teamShortName(r.team.name, year) }))} year={year} />
               )}
             </motion.div>
           </AnimatePresence>

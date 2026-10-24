@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
 import {
@@ -9,10 +9,10 @@ import { circuitRaces, circuitWinners, climate, useData, weather, type Climate, 
 import { usePrefs } from "../app/prefs";
 import { Link, type Route } from "../lib/router";
 import { useCalendar } from "../lib/season";
-import { circuitMedia, fullName, loadTracks, teamColor, teamShortName } from "../lib/media";
+import { circuitMedia, fullName, loadTracks, teamColor, teamShortName, useCircuitPhotos, type Photo } from "../lib/media";
 import { formatClock, formatDateRange, formatSession, formatWeekday, hasStarted, plural, relativeTime, sessionDate, timezoneLabel } from "../lib/format";
 import { Counter, Glass, Img, Page, Section, Skeleton, Source, StateView, cx, useAmbient, useNow, useTitle } from "../ui/core";
-import { DriverAvatar, Flag, TeamLogo } from "../ui/media";
+import { DriverAvatar, Flag, PhotoCredit, TeamLogo } from "../ui/media";
 import { Track3D } from "../ui/track3d";
 import { emptyEnv, localClock, offsetLabel, prefZone, useSeen, weekendDates, zoneOffset } from "./_fan";
 import { Bar } from "../ui/charts";
@@ -60,6 +60,7 @@ export default function Circuit({ route }: { route: Route }) {
   useAmbient(latest ? teamColor(latest.Constructor) : undefined, prior ? teamColor(prior.Constructor) : undefined);
   const missing = !id || (!circuit && !history.loading && !cal.loading && !history.error);
   useTitle(circuit?.circuitName || (missing ? "Circuit not found" : "Circuit"));
+  const photos = useCircuitPhotos(id || undefined);
 
   if (!id) return <NotFound />;
   if (!circuit) {
@@ -69,13 +70,16 @@ export default function Circuit({ route }: { route: Route }) {
   }
 
   const media = circuitMedia(id);
+  // Hero: the official race-hub photo, else the best freely licensed Commons photo of the venue.
+  const heroPhoto = photos.find((p) => p.kind !== "map");
+  const places = photos.filter((p) => !p.credit.official && p !== heroPhoto);
   const heroCars = [...new Set(winList.slice(-3).reverse().map((w) => teamColor(w.result.Constructor)))];
 
   return (
     <Page className="ckt">
       <CircuitHero
         circuit={circuit}
-        hero={media.hero}
+        hero={heroPhoto}
         cars={heroCars.length ? heroCars : ["#ff3b30"]}
         held={history.loading ? undefined : held}
         winners={wins.loading ? undefined : new Set(winList.map((w) => w.result.Driver.driverId)).size}
@@ -106,6 +110,12 @@ export default function Circuit({ route }: { route: Route }) {
       <Section id="travel-guide" title="Grand Prix travel guide" subtitle="Local time, daylight and what the weather has typically done on race weekend — all computed from open data for these coordinates.">
         <TravelGuide circuit={circuit} race={seasonRaces.find((r) => !finished(r, now)) || seasonRaces.at(-1) || held.at(-1)} />
       </Section>
+
+      {places.length > 0 && (
+        <Section id="around-the-circuit" title="Around the circuit" subtitle={`The venue and its surroundings — ${plural(places.length, "freely licensed photo")} from Wikimedia Commons. Tap to enlarge.`}>
+          <Places photos={places} name={circuit.circuitName} />
+        </Section>
+      )}
 
       {media.map && (
         <Section id="circuit-map" title="Circuit map" subtitle="Official Formula 1 map of the current layout — sectors, corner numbers and 2026 aero zones. Click to zoom.">
@@ -148,7 +158,7 @@ function CircuitSkeleton() {
 
 /* ───────────────────────── Hero ───────────────────────── */
 function CircuitHero({ circuit, hero, cars, held, winners, seasonRace }: {
-  circuit: CircuitT; hero?: string; cars: string[]; held?: Race[]; winners?: number; seasonRace?: Race;
+  circuit: CircuitT; hero?: Photo; cars: string[]; held?: Race[]; winners?: number; seasonRace?: Race;
 }) {
   const hasOutline = useHasOutline(circuit.circuitId);
   const first = held?.[0];
@@ -156,9 +166,10 @@ function CircuitHero({ circuit, hero, cars, held, winners, seasonRace }: {
   return (
     <section className={cx("ckt-hero", hasOutline === false && "no-map")}>
       <div className="ckt-hero-media">
-        <Img src={hero} alt={`${circuit.circuitName}`} eager />
+        <Img src={hero?.src} alt={hero?.alt || circuit.circuitName} eager />
         <span className="ckt-hero-scrim" />
       </div>
+      {hero && !hero.credit.official && <PhotoCredit credit={hero.credit} overlay className="ckt-hero-credit" />}
       <div className="ckt-hero-inner">
         <div className="ckt-hero-copy">
           <span className="eyebrow ckt-hero-eyebrow rise"><Link to="circuits" className="ckt-crumb"><ChevronLeft size={14} />Circuits</Link><span aria-hidden>·</span>{loc.country}</span>
@@ -344,7 +355,9 @@ function MapFigure({ src, name }: { src: string; name: string }) {
 }
 
 const MIN = 1, MAX = 5;
-function Lightbox({ src, title, onClose }: { src: string; title: string; onClose: () => void }) {
+function Lightbox({ src, title, onClose, subtitle, alt, kind = "detailed circuit map", children }: {
+  src: string; title: string; onClose: () => void; subtitle?: ReactNode; alt?: string; kind?: string; children?: ReactNode;
+}) {
   const [view, setView] = useState({ s: 1, x: 0, y: 0 });
   const stage = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -430,7 +443,7 @@ function Lightbox({ src, title, onClose }: { src: string; title: string; onClose
       <motion.div
         role="dialog"
         aria-modal="true"
-        aria-label={`${title} — detailed circuit map`}
+        aria-label={`${title} — ${kind}`}
         className="ckt-lb"
         initial={{ opacity: 0, scale: 0.94, y: 24 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -438,7 +451,7 @@ function Lightbox({ src, title, onClose }: { src: string; title: string; onClose
         transition={{ type: "spring", stiffness: 360, damping: 32 }}
       >
         <div className="ckt-lb-head">
-          <div className="ckt-lb-title"><strong>{title}</strong><small>Official circuit map · Formula 1</small></div>
+          <div className="ckt-lb-title"><strong>{title}</strong><small>{subtitle ?? "Official circuit map · Formula 1"}</small></div>
           <div className="ckt-lb-tools" role="toolbar" aria-label="Zoom controls">
             <button type="button" className="icon-btn" onClick={() => zoomAt(1 / 1.4)} disabled={view.s <= MIN} aria-label="Zoom out"><ZoomOut /></button>
             <span className="ckt-lb-zoom" aria-live="polite">{Math.round(view.s * 100)}%</span>
@@ -460,10 +473,50 @@ function Lightbox({ src, title, onClose }: { src: string; title: string; onClose
             else zoomAt(2.5, cx, cy);
           }}
         >
-          <img src={src} alt={`Official detailed map of ${title}`} draggable={false} style={{ transform: `translate3d(${view.x}px, ${view.y}px, 0) scale(${view.s})` }} />
+          <img src={src} alt={alt || `Official detailed map of ${title}`} draggable={false} style={{ transform: `translate3d(${view.x}px, ${view.y}px, 0) scale(${view.s})` }} />
         </div>
+        {children}
         <p className="ckt-lb-hint">Scroll or pinch to zoom · drag to pan · double-click to toggle · <span className="kbd">Esc</span> to close</p>
       </motion.div>
+    </>
+  );
+}
+
+/* ───────────────────────── Around the circuit (Commons photos) ───────────────────────── */
+function Places({ photos, name }: { photos: Photo[]; name: string }) {
+  const [open, setOpen] = useState<number | null>(null);
+  const shown = photos[open ?? -1];
+  return (
+    <>
+      <ul className={cx("ckt-places", `n${Math.min(photos.length, 6)}`)} aria-label={`Photos around ${name}`}>
+        {photos.map((p, i) => (
+          <li key={p.src} className="ckt-place reveal" style={{ "--i": i } as CSSProperties}>
+            <button type="button" className="ckt-place-tile" onClick={() => setOpen(i)} aria-haspopup="dialog"
+              aria-label={`Enlarge photo ${i + 1} of ${photos.length}${p.alt ? `: ${p.alt}` : ""}`}>
+              <Img src={p.src} alt={p.alt || `${name} — photo ${i + 1}`} />
+              <span className="ckt-place-zoom" aria-hidden><ZoomIn size={14} /></span>
+            </button>
+            <div className="ckt-place-cap">
+              {p.credit.title && <p className="ckt-place-desc">{p.credit.title}</p>}
+              <PhotoCredit credit={p.credit} />
+            </div>
+          </li>
+        ))}
+      </ul>
+      {createPortal(
+        <AnimatePresence>
+          {shown && (
+            <Lightbox key="place-lb" src={shown.src} title={name} kind="photo viewer" alt={shown.alt || name} onClose={() => setOpen(null)}
+              subtitle={<>Photo {open! + 1} of {photos.length} · Wikimedia Commons</>}>
+              <div className="ckt-lb-credit">
+                {shown.credit.title && <span>{shown.credit.title}</span>}
+                <PhotoCredit credit={shown.credit} />
+              </div>
+            </Lightbox>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
     </>
   );
 }

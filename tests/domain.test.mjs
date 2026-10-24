@@ -8,6 +8,7 @@ import {
   validTimezone,
   seasonHref,
   buildCalendar,
+  alarmLeadMinutes,
   recordedRank,
   weekendSessions,
 } from "../src/domain.mjs";
@@ -112,4 +113,45 @@ test("calendar keeps missing session times all-day and folds long Unicode lines 
   for (const line of calendar.split("\r\n"))
     assert.ok(Buffer.byteLength(line) <= 75);
   assert.ok(calendar.includes("\r\n "));
+});
+test("calendar alarms are opt-in: no option leaves the export byte-for-byte unchanged", () => {
+  const stamp = new Date("2026-10-13T00:00:00Z");
+  const plain = buildCalendar([race], true, stamp);
+  assert.equal(buildCalendar([race], true, stamp, {}), plain);
+  assert.equal(buildCalendar([race], true, stamp, { alarmMinutes: undefined }), plain);
+  for (const bad of [0, -15, 1.5, "15m", NaN, 10081, null])
+    assert.equal(buildCalendar([race], true, stamp, { alarmMinutes: bad }), plain);
+  assert.ok(!plain.includes("VALARM"));
+  assert.equal(alarmLeadMinutes("15"), 15);
+  assert.equal(alarmLeadMinutes(0), null);
+});
+/** Undo RFC 5545 line folding (CRLF followed by one space). */
+const unfold = (ics) => ics.split("\r\n ").join("");
+test("calendar alarms add one RFC 5545 DISPLAY VALARM inside every timed VEVENT", () => {
+  const stamp = new Date("2026-10-13T00:00:00Z");
+  const ics = buildCalendar([race], true, stamp, { alarmMinutes: 15 });
+  assert.equal((ics.match(/BEGIN:VALARM/g) || []).length, 3);
+  assert.equal((ics.match(/END:VALARM/g) || []).length, 3);
+  assert.equal((ics.match(/TRIGGER;RELATED=START:-PT15M/g) || []).length, 3);
+  let inEvent = false, inAlarm = false, alarmProps = [];
+  for (const line of unfold(ics).split("\r\n")) {
+    if (line === "BEGIN:VEVENT") inEvent = true;
+    else if (line === "END:VEVENT") { assert.ok(!inAlarm, "alarm closed before its event"); inEvent = false; }
+    else if (line === "BEGIN:VALARM") { assert.ok(inEvent, "alarm nested in an event"); inAlarm = true; alarmProps = []; }
+    else if (line === "END:VALARM") {
+      // DISPLAY alarms require exactly ACTION, DESCRIPTION and TRIGGER.
+      assert.deepEqual(alarmProps.map((p) => p.split(/[:;]/)[0]).sort(), ["ACTION", "DESCRIPTION", "TRIGGER"]);
+      assert.ok(alarmProps.includes("ACTION:DISPLAY"));
+      inAlarm = false;
+    } else if (inAlarm) alarmProps.push(line);
+  }
+  assert.ok(unfold(ics).includes(String.raw`DESCRIPTION:Example\, Grand Prix\; Test — Qualifying starts in 15 minutes`));
+  for (const line of ics.split("\r\n")) assert.ok(Buffer.byteLength(line) <= 75);
+  assert.ok(ics.endsWith("END:VCALENDAR\r\n"));
+});
+test("calendar alarms skip date-only sessions whose start time is unknown", () => {
+  const ics = buildCalendar([{ ...race, time: undefined }], false, new Date("2026-10-13T00:00:00Z"), { alarmMinutes: 15 });
+  assert.match(ics, /DTSTART;VALUE=DATE:20250316/);
+  assert.ok(!ics.includes("VALARM"));
+  assert.match(buildCalendar([race], false, undefined, { alarmMinutes: 60 }), /TRIGGER;RELATED=START:-PT60M/);
 });

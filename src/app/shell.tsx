@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import {
   Search, Sun, Moon, Heart, ChevronDown, Home, CalendarDays, Trophy, Users, Shield, MapPin, FlaskConical,
   Newspaper, Settings, ArrowLeftRight, Gauge, PlayCircle, GitBranch, Sparkles, X, CornerDownLeft, MoreHorizontal, ArrowUpRight,
-  Library, Medal, CalendarClock, Swords, Baby, Scale, Network, BookOpen, LineChart, Target, Wind, Link2, History,
+  Library, Medal, CalendarClock, Swords, Baby, Scale, Network, BookOpen, LineChart, Target, Shuffle, CloudRain, Gem, Wind, Link2, History,
 } from "lucide-react";
 import { usePrefs } from "./prefs";
 import { Link, useHref, type Route } from "../lib/router";
@@ -30,6 +30,8 @@ export const labNav: NavItem[] = [
   { id: "scenarios", label: "Title Maths", icon: Sparkles, description: "What it takes to win the championship." },
   { id: "insights", label: "Insights", icon: LineChart, description: "Form, consistency, reliability and pace analytics." },
   { id: "predict", label: "Predict", icon: Target, description: "Call the podium before every race." },
+  { id: "whatif", label: "What If", icon: Shuffle, description: "Rewrite any result and watch the title reflow." },
+  { id: "weather", label: "Weather Impact", icon: CloudRain, description: "Who gains — and loses — when it rains." },
 ];
 export const archiveNav: NavItem[] = [
   { id: "records", label: "Record Book", icon: Medal, description: "Every all-time record since 1950." },
@@ -37,6 +39,7 @@ export const archiveNav: NavItem[] = [
   { id: "rivalry", label: "Rivalries", icon: Swords, description: "Career head-to-heads, across every season." },
   { id: "rookies", label: "Rookies", icon: Baby, description: "First seasons compared across the eras." },
   { id: "eras", label: "Across Eras", icon: Scale, description: "Seasons rescored on today's points system." },
+  { id: "ratings", label: "Career Ratings", icon: Gem, description: "Teammate-adjusted ratings for every driver." },
   { id: "lineage", label: "Team Lineage", icon: Network, description: "How today's teams descend from the past." },
   { id: "story", label: "Season Story", icon: BookOpen, description: "Relive any season, round by round." },
 ];
@@ -95,7 +98,7 @@ function NavMenu({ section, items, label, icon: Icon, eyebrow, id }: { section: 
       <AnimatePresence>
         {open && (
           <motion.div
-            className={cx("lab-menu glass glass-strong", items.length > 5 && "wide")}
+            className={cx("lab-menu glass glass-strong", items.length > 5 && "wide", items.length > 6 && items.length % 3 === 0 && "cols-3")}
             initial={{ opacity: 0, y: -8, scale: 0.96, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -6, scale: 0.97, filter: "blur(6px)" }}

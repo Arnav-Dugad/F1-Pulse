@@ -1,20 +1,22 @@
 import { sharedTransition } from "../ui/cards";
 import { ProgressNote } from "../ui/progress-note";
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, Cake, ChevronLeft, ChevronRight, Crown, ExternalLink, Flag as FlagIcon, Gauge, Hash, Medal, MoveRight, Swords, Timer, TrendingUp, Trophy, UserX, Users, Zap } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "motion/react";
+import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, Cake, ChevronLeft, ChevronRight, Crown, Expand, ExternalLink, Flag as FlagIcon, Gauge, Hash, Medal, MoveRight, Swords, Timer, TrendingUp, Trophy, UserX, Users, X, Zap } from "lucide-react";
 import { allResults, driverCareer, sprintResults, standings, standingsHistory, useData, wiki, wikiTitle, type StandingsList } from "../api";
 import { usePrefs } from "../app/prefs";
 import { Link, type Route } from "../lib/router";
 import { shortRace, useCalendar, useSeasonProgress } from "../lib/season";
-import { driverGallery, driverMedia, fullName, initials, isLightColor, MEDIA_SEASON, teamColor, teamOf, teamShortName } from "../lib/media";
+import { driverGallery, driverHelmets, driverMedia, fullName, initials, isLightColor, MEDIA_SEASON, teamColor, teamOf, teamShortName, useDriverPhoto } from "../lib/media";
 import { age, formatDay, hasStarted, ordinal, plural, pts } from "../lib/format";
-import { Counter, Glass, Img, Page, Section, Skeleton, Source, StateView, cx, useAmbient, useTitle } from "../ui/core";
+import { Counter, Glass, Img, Page, Section, Skeleton, Source, StateView, cx, useAmbient, useTilt, useTitle } from "../ui/core";
 import { DriverAvatar, DriverPortrait, Flag, NumberArt, TeamLogo } from "../ui/media";
 import { FavoriteButton } from "../ui/cards";
 import { LineChart } from "../ui/charts";
 import {
   driverInfo, driverQualifying, driverRaces, emptyEnvelope, findTeammate, finishDescription, finishDuel, finishLabel, finishTone,
-  isClassified, loadHistoryLite, pairColors, poleCount, qualiDuel, resultTeammates, roundRanges, seasonStats, seasonTeammates, teamStints, TugRow, useParallax,
+  CreditLine, isClassified, loadHistoryLite, pairColors, poleCount, qualiDuel, resultTeammates, roundRanges, seasonStats, seasonTeammates, teamStints, TugRow, useParallax,
   type Mate,
 } from "./_drivers";
 import { Gallery } from "../ui/gallery";
@@ -84,6 +86,7 @@ export default function DriverPage({ route }: { route: Route }) {
       )}
 
       <Career driver={driver} year={year} seasonRaces={res.value?.data} />
+      <Helmets driver={driver} tint={tint} />
       <DriverGallery driver={driver} />
       <Biography driver={driver} />
       <Adjacent id={id} standings={ds.value?.data} year={year} />
@@ -119,15 +122,17 @@ function DriverHero({ driver, team, year, standing, stints, inSeason, loadingSea
   const name = fullName(driver);
   const tint = teamColor(team);
   const photo = !!driverMedia(driver.driverId, year)?.front;
+  // Seasons without official photography: a freely licensed archive photo when one exists.
+  const archive = useDriverPhoto(photo ? undefined : driver.driverId, year);
   const currentYear = String(new Date().getFullYear());
   const live = year === currentYear;
   const born = new Date(driver.dateOfBirth + "T12:00:00Z").toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
   const others = stints.filter((s) => s.team.constructorId !== team?.constructorId);
   const ageLabel = live && inSeason ? `${age(driver.dateOfBirth)} years old` : firstRace ? `Aged ${age(driver.dateOfBirth, new Date(firstRace + "T12:00:00Z"))} at the ${year} opener` : null;
   return (
-    <section ref={ref} className={cx("drv-hero", photo ? "has-photo" : "is-mono", isLightColor(tint) && "light-tint")} style={{ "--tint": tint } as CSSProperties}>
+    <section ref={ref} className={cx("drv-hero", photo ? "has-photo" : archive ? "has-archive" : "is-mono", isLightColor(tint) && "light-tint")} style={{ "--tint": tint } as CSSProperties}>
       <div className="drv-hero-bg" aria-hidden />
-      <div className="drv-hero-art" aria-hidden={!photo}>
+      <div className="drv-hero-art" aria-hidden={!photo && !archive}>
         {photo ? (
           <>
             <NumberArt id={driver.driverId} number={driver.permanentNumber} year={year} className="drv-hero-number" eager />
@@ -135,6 +140,14 @@ function DriverHero({ driver, team, year, standing, stints, inSeason, loadingSea
             <span className="drv-hero-glow" />
             <DriverPortrait id={driver.driverId} name={name} year={year} variant="front" eager className="drv-hero-photo" style={sharedTransition("driver", driver.driverId)} />
           </>
+        ) : archive ? (
+          <div className="drv-archive">
+            <span className="drv-mono-num" aria-hidden>{driver.permanentNumber || driver.code || initials(name)}</span>
+            <span className="drv-hero-streak" />
+            <span className="drv-archive-frame" style={sharedTransition("driver", driver.driverId)}>
+              <Img src={archive.src} alt={archive.alt || `${name}, ${year}`} eager />
+            </span>
+          </div>
         ) : (
           <div className="drv-mono">
             <span className="drv-mono-num">{driver.permanentNumber || driver.code || initials(name)}</span>
@@ -172,6 +185,7 @@ function DriverHero({ driver, team, year, standing, stints, inSeason, loadingSea
           {ageLabel && <li><Cake size={13} /><b>{ageLabel}</b></li>}
           <li><span>Born</span><b>{born}</b></li>
         </ul>
+        {!photo && archive && <CreditLine credit={archive.credit} className="drv-hero-credit rise" />}
         <div className="drv-actions rise" style={{ "--i": 4 } as CSSProperties}>
           <Link to={`compare?a=${driver.driverId}`} className="btn lg primary"><Swords />Compare</Link>
           {team && <Link to={"team/" + team.constructorId} className="btn lg glass-btn">Team<ArrowRight /></Link>}
@@ -741,6 +755,145 @@ function CareerRibbon({ driverId, rows, mates, year, seasonRaces }: {
       </ol>
       <p className="source">Logos are season-appropriate where official imagery exists (monograms otherwise). Team-mates are drivers classified in that season's standings for the same constructor.</p>
     </Glass>
+  );
+}
+
+/* ───────────────────────── Helmets ───────────────────────── */
+/** Official helmet artwork by season: a 3D coverflow carousel (arrow keys, swipe) with a lightbox. */
+function Helmets({ driver, tint }: { driver: Driver; tint: string }) {
+  const helmets = useMemo(() => driverHelmets(driver.driverId), [driver.driverId]);
+  const [index, setIndex] = useState(0);
+  const [open, setOpen] = useState<number | null>(null);
+  const tilt = useTilt<HTMLButtonElement>(10);
+  const swipe = useRef<{ x: number; y: number } | null>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const n = helmets.length;
+  useEffect(() => {
+    // Keep keyboard focus on the centred helmet as the carousel turns (roving tabindex).
+    const el = stage.current;
+    if (el && el.contains(document.activeElement) && document.activeElement?.classList.contains("drv-helm-btn"))
+      el.querySelector<HTMLElement>(".drv-helm-item.active .drv-helm-btn")?.focus({ preventScroll: true });
+  }, [index]);
+  if (!n) return null;
+  const name = fullName(driver);
+  const go = (d: number) => setIndex((i) => Math.max(0, Math.min(n - 1, i + d)));
+  const key = (e: ReactKeyboardEvent) => {
+    if (e.key === "ArrowRight") { e.preventDefault(); go(1); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); go(-1); }
+    else if (e.key === "Home") { e.preventDefault(); setIndex(0); }
+    else if (e.key === "End") { e.preventDefault(); setIndex(n - 1); }
+  };
+  const down = (e: ReactPointerEvent) => { swipe.current = { x: e.clientX, y: e.clientY }; };
+  const up = (e: ReactPointerEvent) => {
+    const s = swipe.current;
+    swipe.current = null;
+    if (!s) return;
+    const dx = e.clientX - s.x, dy = e.clientY - s.y;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+  };
+  const current = helmets[Math.min(index, n - 1)];
+  return (
+    <Section id="helmets" title="Helmets" subtitle={`${name}'s official helmet designs, season by season${n > 1 ? " — newest first" : ""}.`}>
+      <Glass className="card drv-helm reveal" style={{ "--tint": tint } as CSSProperties}>
+        <div ref={stage} className="drv-helm-stage" role="group" aria-roledescription="carousel" aria-label={`${name} helmets`} onKeyDown={key} onPointerDown={down} onPointerUp={up}
+          onPointerCancel={() => { swipe.current = null; }} data-swipe-ignore>
+          <ol className="drv-helm-track">
+            {helmets.map((h, i) => {
+              const d = i - index;
+              const active = d === 0;
+              return (
+                <li key={h.year + h.src} className={cx("drv-helm-item", active && "active", Math.abs(d) > 3 && "far")} style={{ "--d": d, "--ad": Math.abs(d) } as CSSProperties}
+                  aria-hidden={Math.abs(d) > 3 || undefined}>
+                  <button type="button" className="drv-helm-btn" tabIndex={active ? 0 : -1} {...(active ? tilt : {})}
+                    onClick={() => (active ? setOpen(i) : setIndex(i))}
+                    aria-label={active ? `${h.year} helmet — open full size` : `Show the ${h.year} helmet`} aria-current={active || undefined}>
+                    <span className="drv-helm-glare" aria-hidden />
+                    <Img src={h.src} alt={`${name}'s ${h.year} helmet`} />
+                    {active && <span className="drv-helm-zoom" aria-hidden><Expand size={14} /></span>}
+                  </button>
+                  <span className="drv-helm-year" aria-hidden={!active}>{h.year}</span>
+                </li>
+              );
+            })}
+          </ol>
+          {n > 1 && (
+            <>
+              <button type="button" className="drv-helm-nav prev" onClick={() => go(-1)} disabled={index === 0} aria-label="Newer helmet"><ChevronLeft /></button>
+              <button type="button" className="drv-helm-nav next" onClick={() => go(1)} disabled={index === n - 1} aria-label="Older helmet"><ChevronRight /></button>
+            </>
+          )}
+        </div>
+        {n > 1 && (
+          <div className="drv-helm-years" aria-label="Helmet seasons">
+            {helmets.map((h, i) => (
+              <button key={h.year + h.src} type="button" aria-pressed={i === index} className={cx("drv-helm-chip", i === index && "on")} onClick={() => setIndex(i)}>{h.year}</button>
+            ))}
+          </div>
+        )}
+        <p className="sr-only" aria-live="polite">{current.year} helmet, {index + 1} of {n}</p>
+        <p className="source">Official helmet artwork published by Formula 1 for each season.</p>
+      </Glass>
+      {createPortal(
+        <AnimatePresence>{open !== null && <HelmetViewer key="helm-lb" helmets={helmets} index={open} onIndex={(i) => { setOpen(i); setIndex(i); }} onClose={() => setOpen(null)} name={name} />}</AnimatePresence>,
+        document.body,
+      )}
+    </Section>
+  );
+}
+
+function HelmetViewer({ helmets, index, onIndex, onClose, name }: {
+  helmets: { year: string; src: string }[]; index: number; onIndex: (i: number) => void; onClose: () => void; name: string;
+}) {
+  const root = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const n = helmets.length;
+  const nav = useRef((d: number) => onIndex((index + d + n) % n));
+  nav.current = (d: number) => onIndex((index + d + n) % n);
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    closeRef.current?.focus();
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowRight") nav.current(1);
+      else if (e.key === "ArrowLeft") nav.current(-1);
+      else if (e.key === "Tab" && root.current) {
+        const f = [...root.current.querySelectorAll<HTMLElement>("button")];
+        if (!f.length) return;
+        if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+        else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = overflow; previous?.focus?.(); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const h = helmets[index];
+  return (
+    <>
+      <motion.div className="backdrop gal-backdrop" onClick={onClose} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+      <motion.div ref={root} className="gal-lb drv-helm-lb" role="dialog" aria-modal="true" aria-label={`${name} helmets — viewer`} data-swipe-ignore
+        initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }} transition={{ type: "spring", stiffness: 360, damping: 34 }}>
+        <div className="gal-lb-head">
+          <span className="gal-lb-count" aria-live="polite">{h.year} · {index + 1} / {n}</span>
+          <button type="button" ref={closeRef} className="icon-btn gal-lb-close" onClick={onClose} aria-label="Close helmet viewer"><X /></button>
+        </div>
+        <div className="gal-lb-stage">
+          <AnimatePresence initial={false} mode="popLayout">
+            <motion.img key={h.src} src={h.src} alt={`${name}'s ${h.year} helmet`} draggable={false}
+              initial={{ opacity: 0, rotateY: -25, scale: 0.92 }} animate={{ opacity: 1, rotateY: 0, scale: 1 }} exit={{ opacity: 0, rotateY: 25, scale: 0.92 }}
+              transition={{ type: "spring", stiffness: 260, damping: 30 }} />
+          </AnimatePresence>
+          {n > 1 && (
+            <>
+              <button type="button" className="gal-lb-nav prev" onClick={() => nav.current(-1)} aria-label="Previous helmet"><ChevronLeft /></button>
+              <button type="button" className="gal-lb-nav next" onClick={() => nav.current(1)} aria-label="Next helmet"><ChevronRight /></button>
+            </>
+          )}
+        </div>
+        <p className="gal-lb-cap"><span>{name} · {h.year} helmet</span><small>Official Formula 1 artwork</small></p>
+      </motion.div>
+    </>
   );
 }
 

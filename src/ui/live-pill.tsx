@@ -7,6 +7,7 @@ import { Link, type Route } from "../lib/router";
 import { countdown, formatSession, timezoneLabel } from "../lib/format";
 import { weekendSessions } from "../domain.mjs";
 import { Flag } from "./media";
+import { ReminderNote, ReminderToggle, syncReminders, useReminderScheduler } from "./reminders";
 import { cx, useMedia, useNow } from "./core";
 import type { Race } from "../types";
 
@@ -54,6 +55,11 @@ export function LivePill({ route }: { route: Route }) {
   const ref = useRef<HTMLDivElement>(null);
   const hoverTimer = useRef(0);
   const hoverOpenedAt = useRef(0);
+  const [reminderMsg, setReminderMsg] = useState("");
+  // The pill is mounted on every page, so it hosts the single reminder scheduler for this tab.
+  useReminderScheduler();
+  useEffect(() => { if (res.value?.data.length) syncReminders(res.value.data); }, [res.value]);
+  useEffect(() => { if (!open) setReminderMsg(""); }, [open]);
 
   const state = useMemo(() => {
     const list = res.value?.data || [];
@@ -155,11 +161,15 @@ export function LivePill({ route }: { route: Route }) {
                   return (
                     <li key={s.label} className={cx("lp-row", isLive && "live", done && "done", s === next && !live && "next")}>
                       <span className="lp-row-label">{isLive && <span className="lp-dot live" aria-hidden />}{s.label}</span>
-                      <span className="lp-row-time">{isLive ? "Live now" : done ? "Finished" : formatSession(s.date, s.time, timezone)}</span>
+                      <span className="lp-row-side">
+                        <span className="lp-row-time">{isLive ? "Live now" : done ? "Finished" : formatSession(s.date, s.time, timezone)}</span>
+                        {!isLive && !done && <ReminderToggle race={race} session={s} onMessage={setReminderMsg} />}
+                      </span>
                     </li>
                   );
                 })}
               </ol>
+              <ReminderNote compact className="rmd-pill-note" races={[race]} filename={`f1-pulse-${race.season}-round-${race.round}-reminders.ics`} message={reminderMsg} />
               <div className="lp-foot">
                 <span className="xsmall faint">Times in {timezoneLabel(timezone)}. "Live" uses each session's published start and typical length.</span>
                 <Link to={"race/" + race.round + "?season=current"} className="btn sm primary">Weekend hub <ArrowRight /></Link>

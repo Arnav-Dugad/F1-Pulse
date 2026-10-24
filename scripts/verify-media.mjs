@@ -3,7 +3,10 @@
 // - every referenced file exists under public/ and is recorded in public/media/sources.json
 // - every driver who started a race in a season has at least a `head` (coverage %)
 // - the media `team` equals the constructor of the driver's latest race that season
-// - every gallery image exists
+// - every gallery image exists (driver/team galleries, 2026 race-weekend galleries, helmets)
+// - Wikimedia Commons photos (public/data/wikimedia.json): file exists and is recorded, free licence,
+//   non-empty artist credit, Commons file page as source, plausible photo year, no orphan files;
+//   prints coverage for all drivers, race winners, champions, constructors and circuits
 // Jolpica responses are cached in $F1PULSE_CACHE (shared with scripts/fetch-media-seasons.py).
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -107,5 +110,82 @@ for (const [id, t] of Object.entries(media.teams)) checkFile(t.carLeft, `2026 te
 const g = media.galleries || {};
 console.log(`galleries: ${Object.keys(g.drivers || {}).length} drivers, ${Object.keys(g.teams || {}).length} teams, ${galleryImages} entries, ${seen.size} unique files, ${((bytes - gb) / 1e6).toFixed(2)} MB (incl. 2026 left-side cars)`);
 console.log(`total season + gallery media: ${(bytes / 1e6).toFixed(2)} MB`);
+
+// ── Race-weekend galleries and helmets (official, scripts/fetch-media-extra.py) ──
+const extraStart = bytes;
+let raceImages = 0;
+for (const [key, list] of Object.entries(media.galleries?.races || {})) {
+  if (!/^\d{4}-\d{1,2}$/.test(key)) fail(`race gallery key ${key} is not "<season>-<round>"`);
+  if (list.length > 8) fail(`race gallery ${key}: ${list.length} photos (max 8)`);
+  if (new Set(list.map((i) => i.src)).size !== list.length) fail(`race gallery ${key}: duplicate photos`);
+  for (const img of list) {
+    raceImages++;
+    checkFile(img.src, `race gallery ${key}`);
+    if (!img.caption || !img.credit) fail(`race gallery ${key}: ${img.src} lacks caption/credit`);
+  }
+}
+let helmetFiles = 0;
+for (const [id, years] of Object.entries(media.helmets || {}))
+  for (const [year, src] of Object.entries(years)) {
+    helmetFiles++;
+    checkFile(src, `helmet ${id} ${year}`);
+  }
+console.log(`race galleries: ${Object.keys(media.galleries?.races || {}).length} rounds, ${raceImages} photos · helmets: ${helmetFiles} files for ${Object.keys(media.helmets || {}).length} drivers · ${((bytes - extraStart) / 1e6).toFixed(2)} MB`);
+
+// ── Wikimedia Commons photos (public/data/wikimedia.json, scripts/fetch-wikimedia.py) ──
+// Every file exists locally, is recorded in sources.json, has a free licence and a non-empty credit,
+// and its photo year is plausible for the person (not before they were 12).
+const FREE = /^(cc0|cc[- ]?zero|public domain|pd\b|pd[- ]|cc[- ]by(?:[- ]sa)?(?:[- ]\d(?:\.\d)?)?|cc[- ]by[- ]sa|gfdl|gnu free documentation|attribution|copyrighted free use|free art licen[cs]e|fal\b|no restrictions|mit|bsd|ogl|open government licen[cs]e)/i;
+const NONFREE = /(non[- ]?free|fair use|all rights reserved|\bnc\b|non[- ]?commercial|\bnd\b|no[- ]?deriv)/i;
+const wikiPath = join(root, "public/data/wikimedia.json");
+if (existsSync(wikiPath)) {
+  const wiki = JSON.parse(readFileSync(wikiPath, "utf8"));
+  const archive = JSON.parse(readFileSync(join(root, "public/data/archive.json"), "utf8"));
+  const history = JSON.parse(readFileSync(join(root, "public/data/history.json"), "utf8"));
+  const commonsStart = bytes;
+  const born = Object.fromEntries(archive.drivers.map((d) => [d[0], +d[3].slice(0, 4)]));
+  const referenced = new Set();
+  const checkPhoto = (p, where, birth) => {
+    for (const key of ["src", "head"]) if (p[key]) { referenced.add(p[key]); checkFile(p[key], `${where}.${key}`); }
+    const c = p.credit || {};
+    if (!c.artist?.trim()) fail(`${where}: empty artist credit`);
+    if (!c.license || !FREE.test(c.license) || NONFREE.test(c.license)) fail(`${where}: licence "${c.license}" is not a free licence`);
+    if (!/^https:\/\/(commons|en)\.wikimedia\.org\/wiki\/File:|^https:\/\/en\.wikipedia\.org\/wiki\/File:/.test(c.source || "")) fail(`${where}: source ${c.source} is not a Wikimedia file page`);
+    if (c.licenseUrl && !/^https?:\/\//.test(c.licenseUrl)) fail(`${where}: bad licence URL ${c.licenseUrl}`);
+    if (birth && c.date && +c.date < birth + 12) fail(`${where}: photo dated ${c.date} but the driver was born in ${birth} (wrong person?)`);
+  };
+  for (const [id, p] of Object.entries(wiki.drivers)) checkPhoto(p, `commons driver ${id}`, born[id]);
+  for (const [id, p] of Object.entries(wiki.constructors)) checkPhoto(p, `commons constructor ${id}`);
+  for (const [id, list] of Object.entries(wiki.circuits)) list.forEach((p, i) => checkPhoto(p, `commons circuit ${id}[${i}]`));
+  const { readdirSync } = await import("node:fs");
+  for (const dir of ["drivers", "teams", "circuits"]) {
+    const folder = join(root, "public/media/commons", dir);
+    if (!existsSync(folder)) continue;
+    for (const f of readdirSync(folder))
+      if (/\.(webp|jpe?g|png)$/.test(f) && !/-800\.(webp|avif)$/.test(f) && !referenced.has(`/media/commons/${dir}/${f}`)) fail(`orphan Commons file /media/commons/${dir}/${f}`);
+  }
+  // Coverage: all drivers / race winners / world champions, constructors, circuits (archive + current season).
+  const winners = new Set(), champions = new Set();
+  for (const race of archive.races) for (const row of race[6]) if (row[3] === "1") winners.add(archive.drivers[row[0]][0]);
+  for (const rows of Object.values(history.drivers)) if (rows[0]?.[1] === "1") champions.add(rows[0][0]);
+  const pct = (have, all) => `${[...all].filter((x) => have[x]).length}/${all.size} (${(([...all].filter((x) => have[x]).length / Math.max(1, all.size)) * 100).toFixed(1)}%)`;
+  const allDrivers = new Set(archive.drivers.map((d) => d[0]));
+  const constructorsAll = new Set(archive.constructors.map((c) => c[0]));
+  const circuitsAll = new Set(archive.circuits.map((c) => c[0]));
+  const heads = Object.values(wiki.drivers).filter((p) => p.head).length;
+  console.table({
+    "drivers 1950-2025": pct(wiki.drivers, allDrivers),
+    "race winners": pct(wiki.drivers, winners),
+    "world champions": pct(wiki.drivers, champions),
+    "constructors": pct(wiki.constructors, constructorsAll),
+    "circuits": pct(wiki.circuits, circuitsAll),
+  });
+  const places = Object.values(wiki.circuits).reduce((n, l) => n + l.length, 0);
+  console.log(`commons: ${Object.keys(wiki.drivers).length} driver photos (${heads} headshots), ${Object.keys(wiki.constructors).length} constructor photos, ${places} circuit photos · ${((bytes - commonsStart) / 1e6).toFixed(2)} MB`);
+  const missingChamps = [...champions].filter((c) => !wiki.drivers[c]);
+  if (missingChamps.length) console.log(`  champions without a Commons photo: ${missingChamps.join(", ")}`);
+} else console.log("commons: public/data/wikimedia.json not found (run python scripts/fetch-wikimedia.py)");
+
+console.log(`total checked media: ${(bytes / 1e6).toFixed(2)} MB`);
 console.log(problems ? `${problems} problem(s)` : "media OK");
 process.exit(problems ? 1 : 0);

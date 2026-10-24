@@ -22,7 +22,8 @@
     "lighthouse": "npx --yes @lhci/cli@0.15.1 autorun",
     "media:images": "python scripts/images.py",
     "media:icons": "node scripts/icons.mjs",
-    "data:archive": "node scripts/fetch-archive.mjs"
+    "data:archive": "node scripts/fetch-archive.mjs",
+    "data:wet": "node scripts/fetch-wet-races.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

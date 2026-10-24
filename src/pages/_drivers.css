@@ -41,3 +41,8 @@
   .tug-label strong { font-size: 12.5px; }
   .tug-label small { display: none; }
 }
+
+/* ───────────────────────── Shared: photo credit line ───────────────────────── */
+.fan-credit { display: block; font-size: 10.5px; font-weight: 500; line-height: 1.35; color: var(--label-3); overflow-wrap: anywhere; }
+.fan-credit a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); text-underline-offset: 2px; }
+.fan-credit a:hover { color: var(--label); }

@@ -36,7 +36,6 @@ export default function Home(_: { route: Route }) {
   const latest = useMemo(() => new Map((progress.value?.data.drivers || []).map((d) => [d.driver.driverId, d.team.constructorId])), [progress.value]);
   const top = ds.value?.data || [];
   useAmbient(teamColor(top[0] && teamOf(top[0], year, latest)), teamColor(top[1] && teamOf(top[1], year, latest)));
-  const topColors = top.slice(0, 3).map((s) => teamColor(teamOf(s, year, latest)));
   const winners = useMemo(() => {
     const m = new Map<string, Result>();
     for (const r of results.value?.data || []) {
@@ -55,7 +54,7 @@ export default function Home(_: { route: Route }) {
       ) : weekRace ? (
         <RaceWeekHub race={weekRace} total={list.length} season={season} last={lastVisit} />
       ) : next ? (
-        <NextRaceHero race={next} total={list.length} cars={topColors} />
+        <NextRaceHero race={next} total={list.length} />
       ) : (
         <SeasonHero year={year} leader={ds.value?.data[0]} latestTeams={latest} latest={latestRace} complete={!!list.length} />
       )}
@@ -111,7 +110,7 @@ export default function Home(_: { route: Route }) {
 }
 
 /* ───────────────────────── Hero: next race ───────────────────────── */
-function NextRaceHero({ race, total, cars }: { race: Race; total: number; cars: string[] }) {
+function NextRaceHero({ race, total }: { race: Race; total: number }) {
   const { timezone } = usePrefs();
   const media = circuitMedia(race.Circuit.circuitId);
   const start = race.FirstPractice?.date || race.SprintQualifying?.date || race.date;
@@ -148,7 +147,7 @@ function NextRaceHero({ race, total, cars }: { race: Race; total: number; cars: 
           </div>
         </div>
         <Link to={"circuit/" + race.Circuit.circuitId} className="hero-track" aria-label={`${race.Circuit.circuitName} circuit guide`}>
-          <TrackMap circuitId={race.Circuit.circuitId} cars={cars} label={`${race.Circuit.circuitName} layout`} />
+          <TrackMap circuitId={race.Circuit.circuitId} label={`${race.Circuit.circuitName} layout`} />
           <span className="hero-track-label">Circuit guide <ArrowRight size={14} /></span>
         </Link>
       </div>

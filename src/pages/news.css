@@ -78,3 +78,12 @@
 /* ───────────────────────── Credit ───────────────────────── */
 .nws-credit { display: flex; gap: 14px; align-items: flex-start; margin-top: 48px; padding: 18px 20px; border-radius: var(--r-lg); font-size: 13.5px; color: var(--label-2); line-height: 1.5; }
 .nws-credit > svg { width: 20px; height: 20px; flex: none; color: var(--orange); margin-top: 1px; }
+
+/* Polish: on wide screens each day becomes a timeline row — the sticky date pill in a left rail and the
+   stories beside it — so single-story days read as part of a list instead of an orphaned card. */
+@media (min-width: 981px) {
+  .nws-day { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 0 24px; align-items: start; margin-top: 0; padding: 18px 0; border-top: 1px solid var(--separator); }
+  .nws-day:first-of-type { border-top: 0; padding-top: 4px; }
+  .nws-day-head { justify-self: stretch; display: grid; gap: 2px; margin: 0; padding: 10px 14px; border-radius: 18px; line-height: 1.25; }
+  .nws-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
+}

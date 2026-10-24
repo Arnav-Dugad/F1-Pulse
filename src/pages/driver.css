@@ -226,3 +226,49 @@ a.drv-team:hover { background: rgba(255, 255, 255, 0.18); transform: translateY(
 .drv-adj-text strong { font-size: 15px; font-weight: 700; letter-spacing: -0.015em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .drv-adjacent + .drv-foot { margin-top: 18px; }
 @media (max-width: 560px) { .drv-adj { padding: 10px; gap: 8px; } .drv-adj .avatar { display: none; } }
+
+/* ───────────────────────── Hero · archive photo (seasons without official media) ───────────────────────── */
+.drv-archive { position: absolute; inset: 0; display: grid; place-items: center; }
+.drv-archive .drv-mono-num { position: absolute; }
+.drv-archive-frame { position: relative; width: clamp(220px, 25vw, 350px); aspect-ratio: 4 / 5; border-radius: 30px; overflow: hidden; rotate: 3deg; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.22); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 40px 80px -30px rgba(0, 0, 0, 0.8), 0 0 90px -30px var(--tint); transform: translate3d(calc(var(--px) * 12px), calc(var(--py) * 8px + var(--sy) * -0.06px), 0); transition: transform 1s var(--ease); animation: drv-rise 1.2s var(--spring) backwards 0.45s; }
+.drv-archive-frame img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; }
+.drv-hero .drv-hero-credit { color: rgba(255, 255, 255, 0.6); margin-top: -8px; max-width: 52ch; }
+.drv-hero .drv-hero-credit a:hover { color: #fff; }
+@media (max-width: 900px) { .drv-archive-frame { width: min(62vw, 300px); rotate: 2deg; } }
+
+/* ───────────────────────── Helmets carousel ───────────────────────── */
+.drv-helm { display: grid; gap: 16px; overflow: hidden; }
+.drv-helm-stage { position: relative; height: clamp(250px, 30vw, 360px); perspective: 1100px; touch-action: pan-y; user-select: none; }
+.drv-helm-track { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; transform-style: preserve-3d; }
+.drv-helm-item { --w: clamp(150px, 21vw, 250px); position: absolute; left: 50%; top: 0; width: var(--w); margin-left: calc(var(--w) / -2); display: grid; justify-items: center; gap: 8px; z-index: calc(10 - var(--ad));
+  transform: translateX(calc(var(--d) * 64%)) translateZ(calc(var(--ad) * -170px)) rotateY(calc(var(--d) * -34deg)); opacity: calc(1 - var(--ad) * 0.25); transition: transform 0.75s var(--spring), opacity 0.4s; }
+.drv-helm-item.far { opacity: 0; pointer-events: none; }
+.drv-helm-btn { position: relative; width: 100%; aspect-ratio: 1; border-radius: 30px; display: grid; place-items: center; padding: 6%; transform: perspective(700px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform 0.5s var(--spring); cursor: pointer; }
+.drv-helm-item.active .drv-helm-btn { cursor: zoom-in; background: radial-gradient(60% 60% at 50% 55%, color-mix(in srgb, var(--tint, var(--accent)) 22%, transparent), transparent 72%); }
+.drv-helm-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.drv-helm-btn img { position: relative; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 22px 22px rgba(0, 0, 0, 0.45)); pointer-events: none; }
+.drv-helm-item:not(.active) .drv-helm-btn img { filter: drop-shadow(0 16px 16px rgba(0, 0, 0, 0.4)) saturate(0.75) brightness(0.82); }
+.drv-helm-glare { position: absolute; inset: 0; z-index: 1; border-radius: inherit; pointer-events: none; background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 30%), rgba(255, 255, 255, 0.3), transparent 55%); opacity: 0; transition: opacity 0.3s; mix-blend-mode: soft-light; }
+.drv-helm-btn.active .drv-helm-glare { opacity: 1; }
+.drv-helm-zoom { position: absolute; z-index: 2; right: 10%; bottom: 10%; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: rgba(0, 0, 0, 0.45); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); opacity: 0; transform: scale(0.8); transition: opacity 0.25s, transform 0.4s var(--spring); }
+.drv-helm-btn:hover .drv-helm-zoom, .drv-helm-btn:focus-visible .drv-helm-zoom { opacity: 1; transform: none; }
+.drv-helm-year { font-family: var(--font-display); font-size: 14px; font-weight: 800; letter-spacing: -0.02em; color: var(--label-3); font-variant-numeric: tabular-nums; transition: color 0.3s, font-size 0.3s; }
+.drv-helm-item.active .drv-helm-year { color: var(--label); font-size: 22px; }
+.drv-helm-nav { position: absolute; z-index: 20; top: 42%; translate: 0 -50%; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; color: var(--label); background: var(--glass-strong); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); transition: transform 0.35s var(--spring), opacity 0.2s; }
+.drv-helm-nav:hover:not(:disabled) { transform: scale(1.06); }
+.drv-helm-nav:disabled { opacity: 0.3; cursor: default; }
+.drv-helm-nav svg { width: 20px; height: 20px; }
+.drv-helm-nav.prev { left: 4px; }
+.drv-helm-nav.next { right: 4px; }
+.drv-helm-years { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.drv-helm-chip { height: 30px; padding: 0 12px; border-radius: 99px; font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--label-2); background: var(--fill-4); border: 1px solid var(--separator); transition: background-color 0.2s, color 0.2s; }
+.drv-helm-chip:hover { color: var(--label); background: var(--fill-3); }
+.drv-helm-chip.on { color: var(--bg); background: var(--label); border-color: transparent; }
+.drv-helm-lb .gal-lb-stage { perspective: 1200px; }
+.drv-helm-lb .gal-lb-stage img { box-shadow: none; filter: drop-shadow(0 40px 50px rgba(0, 0, 0, 0.6)); }
+:root[data-motion="reduced"] .drv-helm-item, :root[data-motion="reduced"] .drv-helm-btn { transition: none; }
+@media (prefers-reduced-motion: reduce) { :root:not([data-motion="full"]) .drv-helm-item { transition: none; } }
+@media (max-width: 560px) {
+  .drv-helm-item { --w: 52vw; transform: translateX(calc(var(--d) * 70%)) translateZ(calc(var(--ad) * -200px)) rotateY(calc(var(--d) * -40deg)); }
+  .drv-helm-nav { width: 38px; height: 38px; }
+}

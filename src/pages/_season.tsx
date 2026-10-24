@@ -4,10 +4,10 @@ import { ArrowDownRight, ArrowRight, ArrowUpRight, Award, Info, Minus } from "lu
 import { request, sprintResults, useData } from "../api";
 import { Link } from "../lib/router";
 import { shortRace } from "../lib/season";
-import { fullName, teamColor, teamShortName } from "../lib/media";
+import { fullName, teamColor, teamShortName, useDriverPhoto, type PhotoCredit } from "../lib/media";
 import { plural, pts } from "../lib/format";
-import { Glass, Segmented, Skeleton, StateView, cx } from "../ui/core";
-import { DriverAvatar, Flag, TeamLogo } from "../ui/media";
+import { Glass, Img, Segmented, Skeleton, StateView, cx } from "../ui/core";
+import { DriverAvatar, Flag, PhotoCredit as SharedCredit, TeamLogo } from "../ui/media";
 import { consistency, pointsMatrix, type ConsistencyRow, type HeatCell, type PointsMatrix, type TeamHeatCell } from "../season-analytics.mjs";
 import { emptyEnvelope } from "./_champ";
 import type { SeasonProgress } from "../lib/season";
@@ -64,6 +64,31 @@ export function Trend({ dir, delta, unit = "pts" }: { dir: "up" | "down" | "flat
 /** A "this is a model" badge. */
 export function ModelBadge({ children = "Model, not prediction" }: { children?: ReactNode }) {
   return <span className="chip purple sa-model-chip"><Info size={12} />{children}</span>;
+}
+
+/* ───────────────────────── Historical driver photos ───────────────────────── */
+
+/** Attribution line for a photo (artist + licence linked). Required for every Wikimedia image. */
+export function PhotoCreditLine({ credit, className }: { credit: PhotoCredit; className?: string }) {
+  return <SharedCredit credit={credit} className={cx("sa-credit", className)} />;
+}
+
+/**
+ * A driver's face for any season in history: the media hook's photo (official season media first,
+ * then Wikimedia Commons) with its credit, falling back to the team-tinted monogram avatar.
+ */
+export function PhotoFace({ id, name, year, team, size = 96, credit = true, className }: {
+  id: string; name: string; year: string; team?: string; size?: number; credit?: boolean; className?: string;
+}) {
+  const photo = useDriverPhoto(id, year);
+  const [failed, setFailed] = useState(false);
+  if (!photo || failed) return <DriverAvatar id={id} name={name} year={year} team={team} size={size} className={className} />;
+  return (
+    <figure className={cx("sa-photo", className)} style={{ "--s": size + "px", "--tint": teamColor(team) } as CSSProperties}>
+      <span className="sa-photo-img"><Img src={photo.head || photo.src} alt={photo.alt || name} onError={() => setFailed(true)} /></span>
+      {credit && <figcaption><PhotoCreditLine credit={photo.credit} /></figcaption>}
+    </figure>
+  );
 }
 
 /* ───────────────────────── Championship history (static snapshot) ───────────────────────── */

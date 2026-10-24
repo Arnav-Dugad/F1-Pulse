@@ -1,27 +1,64 @@
 import { useId, useMemo, useState, type CSSProperties } from "react";
 import { Img, cx } from "./core";
 import {
-  driverMedia, initials, isLightColor, teamColor, teamMedia, useTrackOutline,
+  commonsDriverPhoto, commonsTeamPhoto, driverMedia, initials, isLightColor, teamColor, teamMedia, useTrackOutline, useWikimedia,
+  type PhotoCredit as Credit,
 } from "../lib/media";
+import "./media.css";
 import { countryFlag, nationalityFlag } from "../lib/countries";
 
+/* ─────────── Photo credit ─────────── */
+const httpUrl = (s?: string) => (s && /^https?:\/\//.test(s) ? s : undefined);
+/** One-line text credit, e.g. for `title` tooltips: "Photo (1967): Artist · CC BY-SA 4.0 (Wikimedia Commons)". */
+export function creditText(credit: Credit): string {
+  if (credit.official) return "Photo: Formula 1";
+  return `Photo${credit.date ? ` (${credit.date})` : ""}: ${credit.artist || "Unknown author"}${credit.license ? " · " + credit.license : ""} (Wikimedia Commons)`;
+}
+/**
+ * Attribution for a photo — required next to every Wikimedia Commons image:
+ * "Photo (1967): Artist · CC BY-SA 4.0", artist linked to the Commons file page and licence to its
+ * deed. Official media reads "Photo: Formula 1". `overlay` styles it for placement over an image.
+ */
+export function PhotoCredit({ credit, className, overlay, showDate = true }: { credit: Credit; className?: string; overlay?: boolean; showDate?: boolean }) {
+  if (credit.official) return <small className={cx("photo-credit", overlay && "overlay", className)}>Photo: Formula 1</small>;
+  const source = httpUrl(credit.source);
+  const licence = httpUrl(credit.licenseUrl);
+  const who = credit.artist || "Unknown author";
+  return (
+    <small className={cx("photo-credit", overlay && "overlay", className)}>
+      <span className="photo-credit-label">Photo{showDate && credit.date ? ` (${credit.date})` : ""}:</span>{" "}
+      {source ? <a href={source} target="_blank" rel="noopener noreferrer" title="Wikimedia Commons file page">{who}</a> : <span>{who}</span>}
+      {credit.license && (
+        <>
+          <span aria-hidden> · </span>
+          {licence ? <a href={licence} target="_blank" rel="noopener noreferrer license">{credit.license}</a> : <span>{credit.license}</span>}
+        </>
+      )}
+    </small>
+  );
+}
+
 /* ─────────── Driver headshot (circle) ─────────── */
+/** Official season headshot; otherwise a Wikimedia Commons headshot (credit in the tooltip); otherwise initials. */
 export function DriverAvatar({ id, name, year, team, size = 44, className, square }: {
   id?: string; name: string; year: string; team?: string; size?: number; className?: string; square?: boolean;
 }) {
   const m = driverMedia(id, year);
-  const src = m?.head;
+  const w = useWikimedia(!!id && !m?.head);
+  const commons = m?.head ? null : commonsDriverPhoto(w, id);
+  const src = m?.head || commons?.head;
   const tint = teamColor(team || m?.team);
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState<string | null>(null);
   return (
     <span
-      className={cx("avatar", square && "sq", className)}
+      className={cx("avatar", square && "sq", commons?.head && "commons", className)}
       style={{ "--s": size + "px", "--tint": tint } as CSSProperties}
       role="img"
       aria-label={name}
+      title={commons?.head ? `${name} — ${creditText(commons.credit)}` : undefined}
     >
-      {src && !failed ? (
-        <Img src={src} alt="" onError={() => setFailed(true)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: "none", top: 0 }} />
+      {src && failed !== src ? (
+        <Img src={src} alt="" onError={() => setFailed(src)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: "none", top: 0 }} />
       ) : (
         <span className="initials" aria-hidden>{initials(name)}</span>
       )}
@@ -30,13 +67,25 @@ export function DriverAvatar({ id, name, year, team, size = 44, className, squar
 }
 
 /* ─────────── Full-length portrait ─────────── */
-export function DriverPortrait({ id, name, year, variant = "front", className, eager, style }: {
-  id?: string; name: string; year: string; variant?: "front" | "card"; className?: string; eager?: boolean; style?: CSSProperties;
+/**
+ * Official transparent portrait for the season. With `fallback`, seasons without one show the driver's
+ * Wikimedia Commons photo instead, framed, with its credit underneath (`.portrait-archive`).
+ */
+export function DriverPortrait({ id, name, year, variant = "front", className, eager, style, fallback }: {
+  id?: string; name: string; year: string; variant?: "front" | "card"; className?: string; eager?: boolean; style?: CSSProperties; fallback?: boolean;
 }) {
   const m = driverMedia(id, year);
   const src = m?.[variant];
-  if (!src) return null;
-  return <Img src={src} alt={`${name}, ${year} portrait`} className={className} eager={eager} style={style} />;
+  const w = useWikimedia(!!fallback && !!id && !src);
+  if (src) return <Img src={src} alt={`${name}, ${year} portrait`} className={className} eager={eager} style={style} />;
+  const commons = fallback ? commonsDriverPhoto(w, id) : null;
+  if (!commons) return null;
+  return (
+    <figure className={cx("portrait-archive", className)} style={style}>
+      <Img src={commons.src} alt={commons.alt || name} eager={eager} />
+      <PhotoCredit credit={commons.credit} overlay />
+    </figure>
+  );
 }
 
 /* ─────────── Race number artwork ─────────── */
@@ -76,13 +125,25 @@ export function TeamLogo({ id, name, year, size = 40, variant = "badge", classNa
   );
 }
 
-export function CarImage({ id, name, year, view = "side", className, eager, style }: {
-  id?: string; name: string; year: string; view?: "side" | "front"; className?: string; eager?: boolean; style?: CSSProperties;
+/**
+ * Official car render for the season. With `fallback`, seasons without one show the constructor's
+ * Wikimedia Commons photo (framed, credited) instead.
+ */
+export function CarImage({ id, name, year, view = "side", className, eager, style, fallback }: {
+  id?: string; name: string; year: string; view?: "side" | "front"; className?: string; eager?: boolean; style?: CSSProperties; fallback?: boolean;
 }) {
   const m = teamMedia(id, year);
   const src = view === "front" ? m?.carFront : m?.car;
-  if (!src) return null;
-  return <Img src={src} alt={`${name} ${year} car`} className={className} eager={eager} style={style} />;
+  const w = useWikimedia(!!fallback && !!id && !src);
+  if (src) return <Img src={src} alt={`${name} ${year} car`} className={className} eager={eager} style={style} />;
+  const commons = fallback ? commonsTeamPhoto(w, id, year) : null;
+  if (!commons) return null;
+  return (
+    <figure className={cx("car-archive", className)} style={style}>
+      <Img src={commons.src} alt={commons.alt || `${name} car`} eager={eager} />
+      <PhotoCredit credit={commons.credit} overlay />
+    </figure>
+  );
 }
 
 /* ─────────── Flags ─────────── */

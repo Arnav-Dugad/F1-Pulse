@@ -497,7 +497,12 @@ function Stage({ a, b, abs, colours, names }: { a: LocationSample[]; b: Location
         {geo.first && (
           <g className="rp-start">
             <circle cx={geo.first.x} cy={geo.first.y} r={r * 0.75} />
-            <text x={geo.first.x + r * 1.4} y={geo.first.y - r * 1.2} fontSize={font * 0.62}>WINDOW START</text>
+            {(() => {
+              // Keep the label inside the drawing: anchor it away from whichever edge the start sits near.
+              const [vx, , vw] = geo.viewBox.split(/\s+/).map(Number);
+              const right = geo.first.x > vx + vw / 2;
+              return <text x={geo.first.x + (right ? -r * 1.4 : r * 1.4)} y={geo.first.y - r * 1.2} fontSize={font * 0.62} textAnchor={right ? "end" : "start"}>WINDOW START</text>;
+            })()}
           </g>
         )}
         {cars.map((c, k) => c.head ? (

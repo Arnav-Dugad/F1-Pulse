@@ -8,6 +8,7 @@ import { usePrefs, type Theme } from "../app/prefs";
 import { normalizePreference } from "../domain.mjs";
 import { Link, type Route } from "../lib/router";
 import { download, plural, timezoneLabel } from "../lib/format";
+import { loadWikimedia } from "../lib/media";
 import { Glass, Page, Segmented, Skeleton, Toggle, cx, useAmbient, useNow, useTitle } from "../ui/core";
 import "./settings.css";
 
@@ -64,6 +65,7 @@ export default function Settings(_: { route: Route }) {
   const years = useMemo(() => Array.from({ length: thisYear - 1949 }, (_, i) => String(thisYear - i)), [thisYear]);
 
   const sources = useSources();
+  const commons = useCommonsCounts();
 
   const exportPrefs = () => {
     const data = { app: "F1 Pulse", version: 2, exportedAt: new Date().toISOString(), season, timezone, theme, motion: reducedMotion, favorites };
@@ -243,6 +245,24 @@ export default function Settings(_: { route: Route }) {
               )}
               <a className="link" href="/media/sources.json" target="_blank" rel="noopener noreferrer"><FileJson />Open the provenance register (sources.json)<ArrowUpRight /></a>
             </div>
+            <div className="set-credits set-commons">
+              <p>
+                Historical drivers, constructors and circuits are illustrated with freely licensed photographs from Wikimedia Commons (CC0, public domain, CC BY, CC BY-SA or GFDL). Each photo is credited where it appears — author and licence, linked to the original file — and the year it was taken is shown, as it may differ from the season you are viewing.
+              </p>
+              {commons.loading ? (
+                <Skeleton h={58} r={16} />
+              ) : commons.error ? (
+                <p className="set-muted"><AlertTriangle size={14} />The Commons photo index couldn't be loaded right now.</p>
+              ) : (
+                <ul className="set-kinds">
+                  <li><span>Drivers with a photo</span><b className="tabular">{commons.drivers}</b></li>
+                  <li><span>Constructors with a photo</span><b className="tabular">{commons.constructors}</b></li>
+                  <li><span>Circuits with photos</span><b className="tabular">{commons.circuits}</b></li>
+                  <li><span>Circuit &amp; surroundings photos</span><b className="tabular">{commons.places}</b></li>
+                </ul>
+              )}
+              <a className="link" href="/media/credits.html" target="_blank" rel="noopener noreferrer"><Image />Full photo credits — every Commons file, author and licence<ArrowUpRight /></a>
+            </div>
             <SourceRow icon={<FlagIcon />} color="#34c759" name="Flags" detail="Country flags from flagcdn / Flagpedia" href="https://flagpedia.net/" />
             <SourceRow icon={<Type />} color="#636366" name="Inter typeface" detail="By Rasmus Andersson, SIL Open Font License" href="/assets/Inter-OFL.txt" />
           </Group>
@@ -258,7 +278,7 @@ export default function Settings(_: { route: Route }) {
               </p>
               <ul className="set-facts">
                 <li><Shield />Preferences and favourites are stored in this browser's local storage.</li>
-                <li><Image />Driver and team photography is shown for the 2026 season only; earlier seasons use neutral monograms.</li>
+                <li><Image />Official driver, team and car imagery covers 2019–2026; earlier seasons use credited Wikimedia Commons photos where one exists, otherwise neutral monograms.</li>
                 <li><Info />Estimates and simulations are always labelled as such.</li>
               </ul>
             </div>
@@ -331,4 +351,23 @@ function useSources() {
   }, [state.items]);
   const bytes = state.items.reduce((a, s) => a + (Number(s?.bytes) || 0), 0);
   return { ...state, kinds, total: state.items.length, bytes };
+}
+
+/** Counts from the lazily loaded Wikimedia Commons index (`/data/wikimedia.json`). */
+function useCommonsCounts() {
+  const [state, setState] = useState({ loading: true, error: false, drivers: 0, constructors: 0, circuits: 0, places: 0 });
+  useEffect(() => {
+    let live = true;
+    loadWikimedia().then((w) => {
+      if (!live) return;
+      const circuits = Object.values(w.circuits);
+      const drivers = Object.keys(w.drivers).length;
+      setState({
+        loading: false, error: !drivers && !circuits.length, drivers, constructors: Object.keys(w.constructors).length,
+        circuits: circuits.filter((l) => l.length).length, places: circuits.reduce((n, l) => n + l.length, 0),
+      });
+    });
+    return () => { live = false; };
+  }, []);
+  return state;
 }

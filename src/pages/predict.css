@@ -134,3 +134,13 @@
 .pr-rule-pts { font-family: var(--font-display); font-size: 44px; font-weight: 850; letter-spacing: -0.05em; line-height: 1; background: linear-gradient(180deg, var(--label), var(--label-3)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .pr-rule strong { font-size: 15px; font-weight: 700; letter-spacing: -0.015em; }
 .pr-rules-note { grid-column: 1 / -1; }
+
+/* Polish: nine badges and six scorecard tiles always land in full rows. */
+.pr-badge-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 640px) { .pr-badge-list { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 1100px) { .pr-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .pr-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
+/* The four scoring rules share the full row (the spanning note had been reserving an empty fifth track). */
+.pr-rules { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 900px) { .pr-rules { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .pr-rules { grid-template-columns: minmax(0, 1fr); } }

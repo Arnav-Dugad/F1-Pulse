@@ -1,6 +1,6 @@
 import { useMemo, useState, type CSSProperties, type ReactElement } from "react";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
-import { ArrowRight, CalendarPlus, Check, ChevronRight, Clock, LayoutGrid, ListTree, Search, Trophy, X, Zap } from "lucide-react";
+import { ArrowRight, Bell, BellRing, CalendarPlus, Check, ChevronDown, ChevronRight, Clock, LayoutGrid, ListTree, Search, Trophy, X, Zap } from "lucide-react";
 import { allResults, useData } from "../api";
 import { usePrefs } from "../app/prefs";
 import { Link, setQuery, type Route } from "../lib/router";
@@ -12,7 +12,9 @@ import { Glass, Img, Page, Segmented, Skeleton, Source, StateView, cx, useAmbien
 import { DriverAvatar, Flag, TrackMap } from "../ui/media";
 import { RaceCard } from "../ui/cards";
 import type { Driver, Race, Team } from "../types";
+import { downloadWithAlarms, LEAD_MIN, ReminderNote, SessionReminders, useReminders } from "../ui/reminders";
 import "./calendar.css";
+import "./_calendar-alarms.css";
 
 type Filter = "all" | "upcoming" | "completed" | "sprint";
 type View = "grid" | "timeline";
@@ -226,8 +228,10 @@ function CalendarHero({ races, year, next, winners, now }: { races: Race[]; year
           <div className="cal-hero-actions rise" style={{ "--i": 4 } as CSSProperties}>
             <button className="btn lg primary" onClick={() => ics(false)}><CalendarPlus />Race calendar</button>
             <button className="btn lg glass-btn" onClick={() => ics(true)}><CalendarPlus />Every session</button>
+            <button className="btn lg glass-btn calx-alarm-btn" onClick={() => downloadWithAlarms(races, `f1-pulse-${year}-all-sessions-reminders.ics`)}
+              aria-label={`Download every session with reminders ${LEAD_MIN} minutes before each start`}><Bell />Download with reminders</button>
           </div>
-          <p className="cal-hero-note rise" style={{ "--i": 5 } as CSSProperties}>.ics files work with Apple Calendar, Google Calendar and Outlook. Times follow the published schedule.</p>
+          <p className="cal-hero-note rise" style={{ "--i": 5 } as CSSProperties}>.ics files work with Apple Calendar, Google Calendar and Outlook. Times follow the published schedule. “Download with reminders” adds a {LEAD_MIN}-minute alert before every session — your calendar app fires it even when F1 Pulse is closed.</p>
         </div>
 
         {next ? <NextCard race={next} /> : <SeasonCard races={races} winners={winners} year={year} />}
@@ -314,6 +318,7 @@ function Timeline({ races, next, winners, now, year }: { races: Race[]; next?: R
   // The progress line is lit from the top of the timeline down to the "now" marker.
   const litUntil = !next || markerAtEnd ? groups.length : markerBefore ? groups.findIndex((g) => g.races.some((r) => r.round === markerBefore)) : -1;
   const today = new Date(now).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+  const [remOpen, setRemOpen] = useState<string | null>(null);
   const nowMarker = (
     <motion.li key="now" layout className={cx("cal-now", !markerAtStart && "lit")} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <span className="cal-now-dot" aria-hidden />
@@ -346,9 +351,19 @@ function Timeline({ races, next, winners, now, year }: { races: Race[]; next?: R
                         transition={{ type: "spring", stiffness: 420, damping: 38 }}
                         className={cx("cal-tl-item", isDone(r, now) && "done")}
                       >
-                        <TimelineRow race={r} next={r.round === next?.round} done={isDone(r, now)} winner={winners.get(r.round)} year={year} />
+                        <div className="calx-item">
+                          <TimelineRow race={r} next={r.round === next?.round} done={isDone(r, now)} winner={winners.get(r.round)} year={year} />
+                          {!isDone(r, now) && <RowReminderToggle race={r} open={remOpen === r.round} onToggle={() => setRemOpen((o) => (o === r.round ? null : r.round))} />}
+                        </div>
                       </motion.li>,
                     );
+                    if (remOpen === r.round && !isDone(r, now))
+                      items.push(
+                        <motion.li key={r.round + "-reminders"} layout className="calx-panel-li" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, transition: { duration: 0.12 } }}
+                          transition={{ type: "spring", stiffness: 420, damping: 38 }}>
+                          <RowReminderPanel race={r} />
+                        </motion.li>,
+                      );
                     return items;
                   })}
                 </AnimatePresence>
@@ -394,5 +409,32 @@ function TimelineRow({ race, next, done, winner, year }: { race: Race; next: boo
       </span>
       <ChevronRight size={18} className="cal-row-arrow" aria-hidden />
     </Link>
+  );
+}
+
+/* ───────────────────────── Session reminders ───────────────────────── */
+/** Bell beside an upcoming round; opens that weekend's session list (one round at a time). */
+function RowReminderToggle({ race, open, onToggle }: { race: Race; open: boolean; onToggle: () => void }) {
+  const { items } = useReminders();
+  const count = items.filter((r) => r.season === race.season && r.round === race.round).length;
+  return (
+    <button type="button" className={cx("calx-toggle", count > 0 && "on", open && "open")} aria-expanded={open} aria-controls={`calx-rem-${race.round}`} onClick={onToggle}
+      aria-label={`Session reminders for the ${race.raceName}${count ? ` (${plural(count, "reminder")} set)` : ""}`}>
+      {count ? <BellRing size={16} aria-hidden /> : <Bell size={16} aria-hidden />}
+      {count > 0 && <span className="calx-count" aria-hidden>{count}</span>}
+      <ChevronDown size={13} className="calx-chev" aria-hidden />
+    </button>
+  );
+}
+
+function RowReminderPanel({ race }: { race: Race }) {
+  const { timezone } = usePrefs();
+  const [message, setMessage] = useState("");
+  return (
+    <div id={`calx-rem-${race.round}`} className="calx-panel-inner" role="group" aria-label={`${race.raceName} session reminders`}>
+      <span className="eyebrow">Remind me · {LEAD_MIN} min before</span>
+      <SessionReminders race={race} onMessage={setMessage} timezoneFormat={(s) => formatSession(s.date, s.time, timezone)} />
+      <ReminderNote races={[race]} filename={`f1-pulse-${race.season}-round-${race.round}-reminders.ics`} message={message} />
+    </div>
   );
 }

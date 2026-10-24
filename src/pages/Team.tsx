@@ -9,7 +9,7 @@ import { paginate, standings, standingsHistory, teamSeasonResults, teamStandings
 import { usePrefs } from "../app/prefs";
 import { Link, type Route } from "../lib/router";
 import { shortRace, useSeasonProgress } from "../lib/season";
-import { driverMedia, fullName, initials, isLightColor, MEDIA_SEASON, teamColor, teamGallery, teamMedia, teamShortName } from "../lib/media";
+import { driverMedia, fullName, initials, isLightColor, MEDIA_SEASON, teamColor, teamGallery, teamMedia, teamShortName, useDriverPhoto, useTeamPhoto } from "../lib/media";
 import { plural, pts } from "../lib/format";
 import { headToHead } from "../math.mjs";
 import { Counter, Glass, Img, Page, Section, Skeleton, Source, StateView, cx, useAmbient, useTitle } from "../ui/core";
@@ -18,6 +18,8 @@ import { FavoriteButton } from "../ui/cards";
 import { LineChart } from "../ui/charts";
 import type { Driver, Envelope, Race, Standing, Team as TeamT, TeamStanding } from "../types";
 import { Gallery } from "../ui/gallery";
+import { CreditLine } from "./_drivers";
+import { EVO_FIRST, EVO_LAST, evolutionCars, TeamEvolution } from "./_evolution";
 import "./team.css";
 
 const EMPTY = { data: [] as Race[], meta: undefined } as unknown as Envelope<Race[]>;
@@ -183,6 +185,7 @@ export default function Team({ route }: { route: Route }) {
           </>
         )}
 
+        <Evolution id={id} year={year} name={name} />
         <TeamGallery id={id} name={name} />
         <History id={id} name={name} hist={hist} year={year} />
         <Link to={`lineage?team=${id}`} className="tm-lineage glass interactive reveal">
@@ -223,9 +226,11 @@ function Hero({ id, team, year, standing, count, points, wins }: {
   const tint = teamColor(id);
   const light = isLightColor(tint);
   const media = teamMedia(id, year);
+  // Seasons without official imagery: a freely licensed archive photo when the media layer has one.
+  const archive = useTeamPhoto(media ? undefined : id, year);
   const name = teamShortName(team.name, year);
   return (
-    <section ref={ref} className={cx("tm-hero", light && "light", media ? "has-car" : "no-car")} style={{ "--tint": tint } as CSSProperties}>
+    <section ref={ref} className={cx("tm-hero", light && "light", media ? "has-car" : "no-car", !media && archive && "has-archive")} style={{ "--tint": tint } as CSSProperties}>
       <div className="tm-hero-bg" aria-hidden>
         <span className="tm-hero-sheen" />
         <span className="tm-hero-lines" />
@@ -250,6 +255,12 @@ function Hero({ id, team, year, standing, count, points, wins }: {
             <FavoriteButton id={"team:" + id} label={name} className="tm-fav" />
           </div>
         </div>
+        {!media && archive && (
+          <figure className="tm-hero-archive rise" style={{ "--i": 2 } as CSSProperties}>
+            <span className="tm-hero-archive-frame"><Img src={archive.src} alt={archive.alt || `${name}, ${year}`} eager /></span>
+            <figcaption><span>{name} · {year}</span><CreditLine credit={archive.credit} className="tm-hero-credit" /></figcaption>
+          </figure>
+        )}
         {media && (
           <motion.div className="tm-front" style={still ? undefined : { y: frontY }}>
             <CarImage id={id} name={name} year={year} view="front" eager className="tm-front-img" />
@@ -312,15 +323,19 @@ function DuoCard({ line, standing, year, index, teamName, latest }: { line: Line
   const name = fullName(d);
   const media = driverMedia(d.driverId, year);
   const variant = media?.front ? "front" : media?.card ? "card" : null;
+  const archive = useDriverPhoto(variant ? undefined : d.driverId, year);
   const teamPts = line.racePts + line.sprintPts;
   const movedOn = line.lastRound < latest;
   const elsewhere = standing && standing.Constructors.length > 1;
   return (
-    <Link to={"driver/" + d.driverId} className="tm-duo-card reveal" style={{ "--i": index } as CSSProperties} aria-label={`${name} — driver profile`}>
+    <div className="tm-duo-wrap reveal" style={{ "--i": index } as CSSProperties}>
+    <Link to={"driver/" + d.driverId} className="tm-duo-card" aria-label={`${name} — driver profile`}>
       <span className="tm-duo-bg" aria-hidden />
       <NumberArt id={d.driverId} number={d.permanentNumber} year={year} className="tm-duo-num" />
-      <span className="tm-duo-photo" aria-hidden={!variant}>
-        {variant ? <DriverPortrait id={d.driverId} name={name} year={year} variant={variant} className={cx("tm-duo-img", variant)} /> : <span className="tm-duo-mono">{initials(name)}</span>}
+      <span className={cx("tm-duo-photo", !variant && archive && "archive")} aria-hidden={!variant && !archive}>
+        {variant ? <DriverPortrait id={d.driverId} name={name} year={year} variant={variant} className={cx("tm-duo-img", variant)} />
+          : archive ? <Img src={archive.head || archive.src} alt={archive.alt || `${name}, ${year}`} className="tm-duo-img archive" />
+          : <span className="tm-duo-mono">{initials(name)}</span>}
       </span>
       <span className="tm-duo-top">
         {movedOn ? <span className="tm-duo-flag">{roundRanges(line.rounds)}</span> : <span className="tm-duo-flag">{year} line-up</span>}
@@ -338,6 +353,8 @@ function DuoCard({ line, standing, year, index, teamName, latest }: { line: Line
         {elsewhere && <span className="tm-duo-note">{pts(teamPts)} of those points scored with {teamName}</span>}
       </span>
     </Link>
+    {!variant && archive && <CreditLine credit={archive.credit} className="tm-duo-credit" />}
+    </div>
   );
 }
 
@@ -831,6 +848,17 @@ function About({ team, name }: { team: TeamT; name: string }) {
           </div>
         </Glass>
       )}
+    </Section>
+  );
+}
+
+/* ───────────────────────── Evolution ───────────────────────── */
+function Evolution({ id, year, name }: { id: string; year: string; name: string }) {
+  const count = useMemo(() => evolutionCars(id, +year).length, [id, year]);
+  if (!count) return null;
+  return (
+    <Section id="evolution" title="Evolution" subtitle={`${name}'s lineage car by car, ${EVO_FIRST}–${EVO_LAST} — through every name the team raced under. Tap a season to open it.`}>
+      <TeamEvolution id={id} year={year} name={name} />
     </Section>
   );
 }

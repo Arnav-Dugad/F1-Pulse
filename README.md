@@ -19,19 +19,19 @@ Version 3 is a ground-up rebuild: new design system, new components, new pages, 
 | Page | What it does |
 | --- | --- |
 | Home | Next-race hero with a lights-out countdown (five red lights in the final seconds) and animated circuit; turns into a live race-week hub from Thursday (session timeline, results as they publish, weather, "since your last visit"); latest podium, both championships, title-fight chart, the grid, headlines |
-| Calendar | Photo grid and month timeline of every round, filters, search, ICS export |
-| Race weekend | Data-only race report, official starting grid, qualifying deep dive, classifications, movers, lap chart, gap-to-leader and head-to-head worm charts, race-pace box plots, pit lane, tyre story, overtakes, race-control timeline, in-page team radio, race-day historical weather, podium celebration |
+| Calendar | Photo grid and month timeline of every round, filters, search, ICS export with alarms, per-session reminders (notifications while the site is open) |
+| Race weekend | Data-only race report, official starting grid, qualifying deep dive, classifications, movers, lap chart, gap-to-leader and head-to-head worm charts, race-pace box plots, qualifying lap overlay (speed trace, estimated delta, corner minimums), strategy explorer (every undercut and overcut judged, pit-loss maths), pit lane, tyre story, overtakes, race-control timeline, in-page team radio, race-day historical weather, podium celebration |
 | Standings | Tables, Monte Carlo title odds (labelled model), points heatmap, consistency ranking, scroll-driven season bar race, bump chart, official round rewind |
-| Drivers / Driver | Tilt-card grid; cinematic profiles with number-art reveal, season stats, race strip, form curve, teammate battle, career timeline ribbon, championship history, trackside gallery, Wikipedia summary |
-| Teams / Team | Car parade; team profiles with line-up, race-by-race points, rivals, history, lineage link, gallery |
+| Drivers / Driver | Tilt-card grid; cinematic profiles with number-art reveal, season stats, race strip, form curve, teammate battle, career timeline ribbon, championship history, helmet gallery by season, trackside gallery, Wikipedia summary |
+| Teams / Team | Car parade; team profiles with line-up, race-by-race points, rivals, history, car evolution gallery (2019 onward, with a before/after slider), lineage link, gallery |
 | Circuits / Circuit | 3D circuit hero, official maps, Grand Prix travel guide (local time, daylight, ten-year typical conditions), winners history, weather |
-| Lab | Head to Head; Telemetry (linked traces, mini-sector timing map, automated corner analysis); Race Replay (duel or full field with motion trails, follow-the-race); Strategy (model plus tyre degradation fitted from a real race); Title Maths (championship decider and simulator); Insights (teammate gap index, reliability, form curves, pit-stop league, positions gained); Predict (local prediction game with badges and share card) |
-| Archive | Record Book, On This Day, Rivalries, Rookies, Across Eras (rescored on today's points), Team Lineage, Season Story (round-by-round story mode for any season) |
+| Lab | Head to Head; Telemetry (linked traces, mini-sector timing map, automated corner analysis); Race Replay (duel or full field with motion trails, follow-the-race); Strategy (model plus tyre degradation fitted from a real race); Title Maths (championship decider and simulator); Insights (constructor upgrade tracker with statistical step detection, start performance, teammate gap index, reliability, form curves, pit-stop league, positions gained); Predict (local prediction game with badges and share card); What If (edit any result in any season and watch both championships reflow, under any points system); Weather Impact (every race since 1950 tagged wet or dry from ERA5 rainfall: rain masters, team wet performance, wettest races, OpenF1 trackside rain since 2023) |
+| Archive | Record Book, On This Day, Rivalries, Rookies, Across Eras (rescored on today's points), Career Ratings (era-normalised teammate model with uncertainty), Team Lineage, Season Story (round-by-round story mode for any season) |
 | News, Favourites, Settings | BBC Sport headlines; saved drivers and teams; theme, motion, time zone, data export/import and full credits |
 
-Also everywhere: a Dynamic-Island-style live session pill, ⌘K palette with actions ("norris vs piastri", "go to 1988"), section jump chips, swipe between rounds/drivers, pull-to-refresh, shared-element morphs from cards to profiles, and an installable offline-capable app (PWA).
+Also everywhere: a Dynamic-Island-style live session pill with one-tap session reminders, ⌘K palette with actions ("norris vs piastri", "go to 1988"), section jump chips, swipe between rounds/drivers, pull-to-refresh, shared-element morphs from cards to profiles, and an installable offline-capable app (PWA).
 
-Every season from 1950 works. Photography exists for the 2026 grid; other seasons use era-neutral monograms rather than reusing modern photos.
+Every season from 1950 works. Official photography covers 2019–2026; earlier seasons use freely licensed Wikimedia Commons photos (every champion, 113 of 115 race winners, 588 drivers, 108 constructors, 66 circuits), each credited with author, licence and the year it was taken. Where no suitable free photo exists the site shows an era-neutral monogram rather than a modern photo.
 
 ## Data and accuracy
 
@@ -50,11 +50,15 @@ Round-by-round charts are derived from race and sprint classifications with each
 
 `npm run verify:accuracy [seasons… | all]` repeats that audit against live data. It also checks that every 2026 driver maps to a portrait of the team they last raced for, and that every 2026 circuit has an outline, map and photograph. Jolpica lists a driver's constructors in no particular order (Liam Lawson 2026 is listed `[rb, red_bull]` after three stand-in rounds at Red Bull), so the current team always comes from the latest race.
 
+Weather Impact uses `public/data/wet-races.json` (`npm run data:wet`): ERA5 rainfall summed over each race window at the circuit, a model rather than race control's wet declaration; it agrees with OpenF1's trackside rain flag on 65 of 70 races from 2023 to 2025.
+
 The Archive section runs on `public/data/archive.json` (every result 1950–2025, about 217 KB gzipped; `npm run data:archive`) plus the live season. Career and team histories use `public/data/history.json`, a snapshot of every completed season's final tables (Jolpica serves standings one season at a time). Regenerate it with `npm run data:history`; the running season is always fetched live.
 
 ## Media
 
 Official Formula 1 imagery — 2024–2026 driver portraits, headshots and number artwork, 2019–2023 studio portraits, team logos and cars for 2019–2026, 2026 trackside galleries for every driver and team, circuit maps and outlines, race-hub photography — is used with the site owner's stated permission. Everything is self-hosted under `public/media/`, and every file's source URL is recorded in `public/media/sources.json`. Flags come from flagcdn.com (Flagpedia). Inter is bundled under the OFL.
+
+Historical photography comes from Wikimedia Commons, free licences only (CC0, public domain, CC BY, CC BY-SA, GFDL; fair-use and NC/ND files are rejected). `python scripts/fetch-wikimedia.py [drivers|constructors|circuits]` fetches it politely (descriptive User-Agent, rate-limited, cached), face-crops headshots and writes `public/data/wikimedia.json` (lazy-loaded) plus a full credits page at `/media/credits.html`. Manual review decisions live in `scripts/wikimedia-overrides.json`. A team photo dated inside the team's racing years only represents nearby seasons; museum and historic-event shots of a period car fit any season. `python scripts/fetch-media-extra.py races|helmets` adds official 2026 race-weekend galleries and 2019–2024 helmet artwork.
 
 Refresh media with `npm run media:fetch` (Python 3 + Pillow): it downloads to `public/media/`, writes `src/data/media.json` and `public/data/tracks.json`, crops headshots and records provenance. Processing never re-encodes a photo twice.
 
@@ -78,7 +82,7 @@ npm run preview &      # then:
 npm run test:e2e       # every route × desktop/tablet/phone × dark/light: errors, CSP, overflow, headings, images
 npm run test:visual    # pixel comparison against tests/visual baselines (recorded API fixtures)
 npm run lighthouse     # Lighthouse CI budgets (desktop)
-node scripts/verify-media.mjs  # every season's photo maps to the driver's latest team
+node scripts/verify-media.mjs  # every season's photo maps to the driver's latest team; every Commons file is free, credited and recorded
 ```
 
 ## Deploy

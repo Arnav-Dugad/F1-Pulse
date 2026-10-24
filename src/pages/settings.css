@@ -88,3 +88,4 @@
 .set-disclaimer { display: flex; gap: 12px; padding: 16px 18px; border-radius: var(--r-lg); background: var(--fill-4); border: 1px solid var(--separator); font-size: 12.5px; line-height: 1.55; color: var(--label-2); }
 .set-disclaimer > svg { width: 18px; height: 18px; flex: none; color: var(--orange); margin-top: 1px; }
 .set-disclaimer strong { color: var(--label); }
+.set-credits + .set-credits::before { content: ""; position: absolute; top: 0; right: 0; left: 18px; height: 1px; background: var(--separator); }
