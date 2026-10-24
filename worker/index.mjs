@@ -301,7 +301,7 @@ async function getData(spec) {
 }
 
 /* ─────────── Precomputed season data ─────────── */
-export const VERSION = "3.1.0";
+export const VERSION = "3.2.0";
 const JOLPICA = "https://api.jolpi.ca/ergast/f1/";
 const UA = "F1Pulse/3.1 (independent noncommercial fan site)";
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
