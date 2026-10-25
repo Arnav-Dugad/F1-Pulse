@@ -4,7 +4,7 @@ import { Link } from "../lib/router";
 import { usePrefs } from "../app/prefs";
 import { cx, Img, useTilt } from "./core";
 import { CarImage, DriverAvatar, DriverPortrait, Flag, NumberArt, TeamLogo, TrackMap } from "./media";
-import { circuitMedia, driverMedia, fullName, initials, isLightColor, teamColor, teamShortName } from "../lib/media";
+import { circuitMedia, driverMedia, fullName, initials, isLightColor, teamColor, teamShortName, useEraCircuitPhoto } from "../lib/media";
 import { formatDateRange, hasStarted } from "../lib/format";
 import type { Driver, Race, Team } from "../types";
 import "../styles/cards.css";
@@ -188,7 +188,8 @@ export function RaceCard({ race, winner, next, index = 0, compact }: {
   race: Race; winner?: { driver: Driver; team: Team }; next?: boolean; index?: number; compact?: boolean;
 }) {
   const { year } = usePrefs();
-  const media = circuitMedia(race.Circuit.circuitId);
+  // Modern circuit photos only for modern seasons (no room for a Commons credit on a card).
+  const photo = useEraCircuitPhoto(race.Circuit.circuitId, race.season, { commons: false });
   const done = hasStarted(race.date, race.time) && !!winner;
   const start = race.FirstPractice?.date || race.SprintQualifying?.date || race.Qualifying?.date || race.date;
   const tint = winner ? teamColor(winner.team) : "var(--accent)";
@@ -199,7 +200,7 @@ export function RaceCard({ race, winner, next, index = 0, compact }: {
       style={{ "--i": index % 6, "--tint": tint } as CSSProperties}
     >
       <span className="rc-media">
-        {media.hero ? <Img src={media.hero} alt="" /> : <span className="rc-placeholder" />}
+        {photo ? <Img src={photo.src} alt="" /> : <span className="rc-placeholder" />}
         <span className="rc-scrim" />
         <span className="rc-track"><TrackMap circuitId={race.Circuit.circuitId} mode="static" label={race.Circuit.circuitName} /></span>
         <span className="rc-chips">

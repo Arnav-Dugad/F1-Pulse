@@ -8,15 +8,23 @@ import type {
   Driver,
   Team,
 } from "./types";
-import { mergeRacePage, snapshotMatches } from "./domain.mjs";
+import { mergeRacePage, seasonalNumbers, snapshotMatches } from "./domain.mjs";
 const pending = new Map<string, Promise<Envelope<any>>>();
 const memory = new Map<string, Envelope<any>>();
 let slot = 0;
 let openTimes: number[] = [];
+/** Who is waiting on each queued URL: a signal per caller, or null for callers that can't cancel. */
+const wants = new Map<string, Set<AbortSignal | null>>();
+/**
+ * One upstream document through the rate-limit-aware queue. Pass `signal` to give up a request that
+ * is still waiting for its slot (e.g. the page was left) — it is skipped only if every caller
+ * waiting on that URL has aborted.
+ */
 export async function request<T>(
   source: string,
   path = "",
   params: Record<string, string | number> = {},
+  signal?: AbortSignal,
 ): Promise<Envelope<T>> {
   const q = new URLSearchParams(
     Object.entries({ ...params, ...(path ? { path } : {}) }).map(([k, v]) => [
@@ -27,21 +35,27 @@ export async function request<T>(
   const url = `/api/${source}?${q}`;
   const old = memory.get(url);
   if (old && Date.now() - Date.parse(old.meta.fetchedAt) < 300000) return old;
+  const waiting = wants.get(url) || new Set<AbortSignal | null>();
+  waiting.add(signal || null);
+  wants.set(url, waiting);
   if (pending.has(url)) return pending.get(url)!;
   const work = (async () => {
-    const start = Math.max(
+    // Only requests that reach Jolpica/OpenF1 one-to-one are spaced; the Worker paces everything else.
+    const paced = source === "jolpica" || source === "openf1";
+    const start = paced ? Math.max(
       Date.now(),
       slot,
       source === "openf1" && openTimes.length >= 28
         ? openTimes[openTimes.length - 28] + 61000
         : 0,
-    );
-    slot = start + 400;
+    ) : Date.now();
+    if (paced) slot = start + 400;
     if (source === "openf1") {
       openTimes.push(start);
       openTimes = openTimes.slice(-30);
     }
     await new Promise((r) => setTimeout(r, Math.max(0, start - Date.now())));
+    if ([...(wants.get(url) || [])].every((w) => w?.aborted)) throw new DOMException("Request no longer needed", "AbortError");
     let saved: Envelope<T> | null = null;
     try {
       saved = JSON.parse(sessionStorage.getItem(url) || "null");
@@ -50,10 +64,15 @@ export async function request<T>(
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const r = await fetch(url, { signal: AbortSignal.timeout(25000) });
-        const data = await r.json();
-        if (!r.ok) {
-          error = new Error(data.error || `Source returned ${r.status}`);
-          if (r.status === 429 && attempt < 2) {
+        // An edge or proxy error page is HTML, not our JSON envelope: never surface parser errors.
+        const data = await r.json().catch(() => null);
+        if (!r.ok || !data) {
+          error = new Error(
+            r.status === 429 ? "The data source is busy right now (rate limit)."
+              : data?.error || (r.ok ? "The data source sent an unreadable response." : `The data source is unavailable (HTTP ${r.status}).`),
+          );
+          // Rate limits and transient gateway errors are worth another try.
+          if ((r.status === 429 || r.status >= 500) && attempt < 2) {
             await new Promise((r) => setTimeout(r, attempt ? 7000 : 2500));
             continue;
           }
@@ -61,6 +80,10 @@ export async function request<T>(
         }
         if (!data.meta || !("data" in data))
           throw Error("Invalid source response");
+        if (source === "jolpica" || source === "season") {
+          const year = /^(\d{4})\//.exec(path)?.[1] || (/^\d{4}$/.test(String(params.year)) ? String(params.year) : undefined);
+          seasonalNumbers(data.data, year ? +year : undefined);
+        }
         memory.set(url, data);
         try {
           if (JSON.stringify(data).length < 500000)
@@ -119,6 +142,7 @@ export async function request<T>(
     return await work;
   } finally {
     pending.delete(url);
+    wants.delete(url);
   }
 }
 export function useData<T>(
@@ -343,7 +367,7 @@ let historyFile: Promise<HistoryFile> | null = null;
 const loadHistory = () =>
   (historyFile ??= fetch("/data/history.json").then((r) => {
     if (!r.ok) throw Error("Championship history unavailable");
-    return r.json();
+    return r.json().catch(() => { throw Error("Championship history unavailable"); });
   }).catch((e) => { historyFile = null; throw e; }));
 
 /**

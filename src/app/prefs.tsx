@@ -52,14 +52,7 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = useStored<string[]>("favorites", () => read("favorites", []));
   const [reducedMotion, setReducedMotion] = useStored("motion", () => read("motion", false));
 
-  useEffect(() => {
-    const sync = () => {
-      const s = querySeason();
-      if (s) setSeason(s);
-    };
-    window.addEventListener("hashchange", sync);
-    return () => window.removeEventListener("hashchange", sync);
-  }, []);
+  // URL ?season= changes are applied by useRoute (lib/router), in the same update as the route.
   useEffect(() => {
     const root = document.documentElement;
     root.dataset.theme = theme;

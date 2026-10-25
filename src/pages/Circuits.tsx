@@ -115,7 +115,7 @@ export default function Circuits({ route }: { route: Route }) {
         <div className="cir-toolbar reveal">
           <label className="search-input cir-search">
             <Search />
-            <input className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search circuit, city or country" aria-label="Search circuits" />
+            <input className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Circuit, city or country" aria-label="Search circuits" />
             {q && <button type="button" className="cir-clear" onClick={() => setQ("")} aria-label="Clear search"><X size={15} /></button>}
           </label>
           <Segmented<Filter>

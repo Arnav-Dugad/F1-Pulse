@@ -9,11 +9,11 @@ import { allResults, roundStandings, standings, teamStandings, useData, type Sta
 import { usePrefs } from "../app/prefs";
 import { Link, navigate, setQuery, useHref, type Route } from "../lib/router";
 import { shortRace, useCalendar, useSeasonProgress, type SeasonProgress } from "../lib/season";
-import { circuitMedia, driverMedia, fullName, initials, teamColor, teamMedia, teamOf, teamShortName } from "../lib/media";
+import { circuitMedia, driverMedia, fullName, initials, teamColor, teamMedia, teamOf, teamShortName, useEraCircuitPhoto } from "../lib/media";
 import { download, formatDay, plural, pts, toCSV } from "../lib/format";
 import { recordedRank } from "../domain.mjs";
 import { Counter, Glass, Img, Page, Section, Segmented, Skeleton, Source, StateView, cx, useAmbient, useTitle } from "../ui/core";
-import { CarImage, DriverAvatar, DriverPortrait, Flag, NumberArt, TeamLogo } from "../ui/media";
+import { CarImage, DriverAvatar, DriverPortrait, Flag, NumberArt, PhotoCredit, TeamLogo } from "../ui/media";
 import { Bar, LineChart } from "../ui/charts";
 import { RankDelta, Tween, emptyEnvelope, reducedMotionNow } from "./_champ";
 import { ConsistencyBoard, Lazy, PointsHeatmap, useOfficialRound, useSprints } from "./_season";
@@ -167,11 +167,11 @@ type DS = ReturnType<typeof useData<Standing[]>>;
 type CS = ReturnType<typeof useData<TeamStanding[]>>;
 
 function StandingsHero({ view, ds, cs, p, total, year, latest }: { view: View; ds: DS; cs: CS; p?: SeasonProgress; total: number; year: string; latest: Map<string, string> }) {
+  const photo = useEraCircuitPhoto(p?.rounds.at(-1)?.circuitId, year);
   if (ds.loading) return <Skeleton h="min(64vh, 600px)" r={36} className="st-hero-skel" />;
   if (ds.error) return <StateView error={ds.error} onRetry={ds.reload} />;
   const done = p?.rounds.length || 0;
   const complete = total > 0 && done >= total;
-  const photo = circuitMedia(p?.rounds.at(-1)?.circuitId).hero;
   const teamMode = view === "constructors" && !!cs.value?.data.length;
   const list = ds.value?.data || [];
   const teams = cs.value?.data || [];
@@ -201,9 +201,10 @@ function StandingsHero({ view, ds, cs, p, total, year, latest }: { view: View; d
   return (
     <section className="st-hero" style={{ "--tint": tint } as CSSProperties}>
       <div className="st-hero-media">
-        {photo && <Img src={photo} alt="" eager />}
+        {photo && <Img src={photo.src} alt="" eager />}
         <span className="st-hero-scrim" />
       </div>
+      {photo && !photo.credit.official && <PhotoCredit credit={photo.credit} overlay className="hero-photo-credit" />}
       <div className="st-hero-inner">
         <div className="st-hero-copy">
           <span className="eyebrow st-hero-eyebrow rise"><Trophy size={14} />{label}</span>
@@ -238,7 +239,7 @@ function StandingsHero({ view, ds, cs, p, total, year, latest }: { view: View; d
 function DriverHeroName({ s, year, team }: { s: Standing; year: string; team?: Team }) {
   return (
     <>
-      <h1 className="display st-hero-title rise" style={{ "--i": 1 } as CSSProperties}>{s.Driver.givenName}<span>{s.Driver.familyName}</span></h1>
+      <h1 className="display st-hero-title rise" style={{ "--i": 1 } as CSSProperties}><span>{s.Driver.givenName}</span>{s.Driver.familyName}</h1>
       <p className="st-hero-line rise" style={{ "--i": 2 } as CSSProperties}>
         <Flag nationality={s.Driver.nationality} large />
         {team && <TeamLogo id={team.constructorId} name={team.name} year={year} size={30} />}
@@ -365,7 +366,8 @@ function DriverTable({ list, p, podiums, podiumsReady, year, latest }: { list: S
       return {
         s, id: s.Driver.driverId, pos: recordedRank(s.position), name: fullName(s.Driver), team, teamName: team ? teamShortName(team.name, year) : "",
         points: +s.points, wins: +s.wins, podiums: podiums.get(s.Driver.driverId) || 0,
-        change: derivedChange(byId.get(s.Driver.driverId)?.rank, last),
+        // Ranks among unclassified or pointless entries are arbitrary ties: no movement shown.
+        change: recordedRank(s.position) === null || +s.points === 0 ? null : derivedChange(byId.get(s.Driver.driverId)?.rank, last),
         gapLeader: lead - +s.points, gapAhead: i ? +list[i - 1].points - +s.points : null,
       };
     });
@@ -397,17 +399,17 @@ function DriverTable({ list, p, podiums, podiumsReady, year, latest }: { list: S
 
   return (
     <Glass className="card flush st-table-card reveal">
-      <TableToolbar term={term} setTerm={setTerm} placeholder="Search driver, team or nationality" count={shown.length} total={rows.length} onExport={exportCSV} />
-      <div className="table-wrap">
+      <TableToolbar term={term} setTerm={setTerm} placeholder="Driver, team or nation" count={shown.length} total={rows.length} onExport={exportCSV} />
+      <div className="table-wrap" tabIndex={0}>
         <table className="tbl st-tbl">
           <thead>
             <tr>
               <SortTh k="pos" label="Pos" sort={sort} toggle={toggle} />
-              <SortTh k="change" label="±" sort={sort} toggle={toggle} natural={-1} title={CHANGE_NOTE} className="c" />
+              <SortTh k="change" label="±" sort={sort} toggle={toggle} natural={-1} title={CHANGE_NOTE} className="c st-hide-xs" />
               <SortTh k="name" label="Driver" sort={sort} toggle={toggle} />
-              <SortTh k="team" label="Team" sort={sort} toggle={toggle} />
+              <SortTh k="team" label="Team" sort={sort} toggle={toggle} className="st-hide-xs" />
               <SortTh k="wins" label="Wins" sort={sort} toggle={toggle} natural={-1} className="r" />
-              <SortTh k="podiums" label="Podiums" sort={sort} toggle={toggle} natural={-1} className="r" />
+              <SortTh k="podiums" label="Podiums" sort={sort} toggle={toggle} natural={-1} className="r st-hide-xs" />
               <SortTh k="points" label="Points" sort={sort} toggle={toggle} natural={-1} className="r" />
               <th className="r" scope="col">Gap</th>
               <th className="r st-hide-sm" scope="col">To ahead</th>
@@ -429,17 +431,17 @@ function DriverTable({ list, p, podiums, podiumsReady, year, latest }: { list: S
                   onClick={(e) => { if (!(e.target as HTMLElement).closest("a,button")) navigate(href("driver/" + r.id)); }}
                 >
                   <td><span className={cx("pos", r.pos !== null && r.pos <= 3 && "p" + r.pos)}>{r.pos ?? "—"}</span></td>
-                  <td className="c"><RankDelta value={r.change} title={CHANGE_NOTE} /></td>
+                  <td className="c st-hide-xs"><RankDelta value={r.change} title={CHANGE_NOTE} /></td>
                   <td>
                     <span className="st-ident">
                       <DriverAvatar id={r.id} name={r.name} year={year} team={r.team?.constructorId} size={38} />
                       <span className="st-ident-text">
                         <Link to={"driver/" + r.id} className="st-ident-name">{r.s.Driver.givenName} <b>{r.s.Driver.familyName}</b></Link>
-                        <small><Flag nationality={r.s.Driver.nationality} />{r.s.Driver.code || r.s.Driver.nationality}{r.s.Driver.permanentNumber ? ` · #${r.s.Driver.permanentNumber}` : ""}</small>
+                        <small><Flag nationality={r.s.Driver.nationality} />{r.s.Driver.code || r.s.Driver.nationality}{r.s.Driver.permanentNumber ? ` · #${r.s.Driver.permanentNumber}` : ""}{r.teamName && <span className="st-show-xs"> · {r.teamName}</span>}</small>
                       </span>
                     </span>
                   </td>
-                  <td>
+                  <td className="st-hide-xs">
                     {r.team && (
                       <Link to={"team/" + r.team.constructorId} className="st-team">
                         <i className="team-bar" />
@@ -449,10 +451,10 @@ function DriverTable({ list, p, podiums, podiumsReady, year, latest }: { list: S
                     )}
                   </td>
                   <td className="r">{r.wins || <span className="faint">0</span>}</td>
-                  <td className="r">{podiumsReady ? r.podiums || <span className="faint">0</span> : <span className="faint">…</span>}</td>
+                  <td className="r st-hide-xs">{podiumsReady ? r.podiums || <span className="faint">0</span> : <span className="faint">…</span>}</td>
                   <td className="r"><strong className="st-points">{pts(r.points)}</strong></td>
-                  <td className="r st-gap">{r.pos === 1 ? <span className="chip solid st-leader">Leader</span> : `−${pts(r.gapLeader)}`}</td>
-                  <td className="r st-gap st-hide-sm">{r.gapAhead === null ? "—" : `−${pts(r.gapAhead)}`}</td>
+                  <td className="r st-gap">{r.pos === 1 ? <span className="chip solid st-leader">Leader</span> : r.gapLeader === 0 ? <span className="faint">Level</span> : `−${pts(r.gapLeader)}`}</td>
+                  <td className="r st-gap st-hide-sm">{r.gapAhead === null ? "—" : r.gapAhead === 0 ? <span className="faint">Level</span> : `−${pts(r.gapAhead)}`}</td>
                   <td className="st-hide-sm st-bar-cell"><Bar value={r.points} max={max} color={teamColor(r.team)} index={i} /></td>
                 </motion.tr>
               ))}
@@ -495,7 +497,7 @@ function TeamTable({ list, drivers, p, podiums, podiumsReady, year }: { list: Te
     return list.map((s, i) => ({
       s, id: s.Constructor.constructorId, pos: recordedRank(s.position), name: teamShortName(s.Constructor.name, year),
       points: +s.points, wins: +s.wins, podiums: podiums.get(s.Constructor.constructorId) || 0,
-      change: derivedChange(byId.get(s.Constructor.constructorId)?.rank, last),
+      change: recordedRank(s.position) === null || +s.points === 0 ? null : derivedChange(byId.get(s.Constructor.constructorId)?.rank, last),
       gapLeader: lead - +s.points, gapAhead: i ? +list[i - 1].points - +s.points : null,
       drivers: drivers.filter((d) => d.Constructors.some((c) => c.constructorId === s.Constructor.constructorId)),
     }));
@@ -520,16 +522,16 @@ function TeamTable({ list, drivers, p, podiums, podiumsReady, year }: { list: Te
   return (
     <Glass className="card flush st-table-card reveal">
       <TableToolbar term={term} setTerm={setTerm} placeholder="Search team or driver" count={shown.length} total={rows.length} onExport={exportCSV} />
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="tbl st-tbl">
           <thead>
             <tr>
               <SortTh k="pos" label="Pos" sort={sort} toggle={toggle} />
-              <SortTh k="change" label="±" sort={sort} toggle={toggle} natural={-1} title={CHANGE_NOTE} className="c" />
+              <SortTh k="change" label="±" sort={sort} toggle={toggle} natural={-1} title={CHANGE_NOTE} className="c st-hide-xs" />
               <SortTh k="name" label="Constructor" sort={sort} toggle={toggle} />
-              <th scope="col">Drivers</th>
+              <th scope="col" className="st-hide-xs">Drivers</th>
               <SortTh k="wins" label="Wins" sort={sort} toggle={toggle} natural={-1} className="r" />
-              <SortTh k="podiums" label="Podiums" sort={sort} toggle={toggle} natural={-1} className="r" />
+              <SortTh k="podiums" label="Podiums" sort={sort} toggle={toggle} natural={-1} className="r st-hide-xs" />
               <SortTh k="points" label="Points" sort={sort} toggle={toggle} natural={-1} className="r" />
               <th className="r" scope="col">Gap</th>
               <th className="r st-hide-sm" scope="col">To ahead</th>
@@ -551,7 +553,7 @@ function TeamTable({ list, drivers, p, podiums, podiumsReady, year }: { list: Te
                   onClick={(e) => { if (!(e.target as HTMLElement).closest("a,button")) navigate(href("team/" + r.id)); }}
                 >
                   <td><span className={cx("pos", r.pos !== null && r.pos <= 3 && "p" + r.pos)}>{r.pos ?? "—"}</span></td>
-                  <td className="c"><RankDelta value={r.change} title={CHANGE_NOTE} /></td>
+                  <td className="c st-hide-xs"><RankDelta value={r.change} title={CHANGE_NOTE} /></td>
                   <td>
                     <span className="st-ident">
                       <i className="team-bar" />
@@ -562,7 +564,7 @@ function TeamTable({ list, drivers, p, podiums, podiumsReady, year }: { list: Te
                       </span>
                     </span>
                   </td>
-                  <td>
+                  <td className="st-hide-xs">
                     <span className="st-pair">
                       {r.drivers.slice(0, 4).map((d) => (
                         <Link key={d.Driver.driverId} to={"driver/" + d.Driver.driverId} title={`${fullName(d.Driver)} · ${pts(d.points)} pts`}>
@@ -574,10 +576,10 @@ function TeamTable({ list, drivers, p, podiums, podiumsReady, year }: { list: Te
                     </span>
                   </td>
                   <td className="r">{r.wins || <span className="faint">0</span>}</td>
-                  <td className="r">{podiumsReady ? r.podiums || <span className="faint">0</span> : <span className="faint">…</span>}</td>
+                  <td className="r st-hide-xs">{podiumsReady ? r.podiums || <span className="faint">0</span> : <span className="faint">…</span>}</td>
                   <td className="r"><strong className="st-points">{pts(r.points)}</strong></td>
-                  <td className="r st-gap">{r.pos === 1 ? <span className="chip solid st-leader">Leader</span> : `−${pts(r.gapLeader)}`}</td>
-                  <td className="r st-gap st-hide-sm">{r.gapAhead === null ? "—" : `−${pts(r.gapAhead)}`}</td>
+                  <td className="r st-gap">{r.pos === 1 ? <span className="chip solid st-leader">Leader</span> : r.gapLeader === 0 ? <span className="faint">Level</span> : `−${pts(r.gapLeader)}`}</td>
+                  <td className="r st-gap st-hide-sm">{r.gapAhead === null ? "—" : r.gapAhead === 0 ? <span className="faint">Level</span> : `−${pts(r.gapAhead)}`}</td>
                   <td className="st-hide-sm st-bar-cell"><Bar value={r.points} max={max} color={teamColor(r.s.Constructor)} index={i} /></td>
                 </motion.tr>
               ))}
@@ -1082,7 +1084,7 @@ function RoundRewind({ rounds, kind, round, setRound, teamMap }: { rounds: Seaso
             <div className="st-rk"><span>Biggest climber</span><b>{biggest ? name(biggest.row) : "—"}</b><small>{biggest ? `Up ${plural(biggest.gain, "place")}` : previous ? "No gains this round" : "First round"}</small></div>
             <div className="st-rk"><span>Leader's wins</span><b>{leader.wins}</b><small>after round {current.round}</small></div>
           </div>
-          <div className="table-wrap">
+          <div className="table-wrap" tabIndex={0}>
             <table className="tbl st-tbl st-rewind-tbl">
               <thead>
                 <tr>

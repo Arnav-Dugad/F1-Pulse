@@ -1,6 +1,6 @@
-import { useEffect, useState, type ComponentProps, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
 import { flushSync } from "react-dom";
-import { seasonHref } from "../domain.mjs";
+import { seasonHref, validSeason } from "../domain.mjs";
 import { usePrefs } from "../app/prefs";
 
 export type Route = { path: string; parts: string[]; query: URLSearchParams };
@@ -27,6 +27,11 @@ const reducedMotion = () =>
 
 export function useRoute() {
   const [route, setRoute] = useState(parseRoute);
+  // A ?season= in the new URL is applied in the same update as the route: separate hashchange
+  // listeners let React commit the new page with the old season first (and fetch its data).
+  const { setSeason } = usePrefs();
+  const seasonRef = useRef(setSeason);
+  seasonRef.current = setSeason;
   useEffect(() => {
     let previous = parseRoute().path;
     const change = () => {
@@ -34,6 +39,8 @@ export function useRoute() {
       const pageChanged = next.path !== previous;
       previous = next.path;
       const apply = () => {
+        const season = next.query.get("season");
+        if (season && validSeason(season)) seasonRef.current(season);
         setRoute(next);
         if (pageChanged) window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
       };

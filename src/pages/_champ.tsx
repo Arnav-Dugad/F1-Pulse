@@ -47,10 +47,10 @@ export function RankDelta({ value, title }: { value: number | null | undefined; 
   if (value === null || value === undefined)
     return <span className="rank-delta none" title={title || "No earlier round to compare"}>—</span>;
   if (value === 0)
-    return <span className="rank-delta level" title={title || "No change"} aria-label="No change"><Minus size={12} /></span>;
+    return <span role="img" className="rank-delta level" title={title || "No change"} aria-label="No change"><Minus size={12} /></span>;
   const up = value > 0;
   return (
-    <span className={cx("rank-delta", up ? "up" : "down")} title={title} aria-label={`${up ? "Up" : "Down"} ${Math.abs(value)} place${Math.abs(value) === 1 ? "" : "s"}`}>
+    <span role="img" className={cx("rank-delta", up ? "up" : "down")} title={title} aria-label={`${up ? "Up" : "Down"} ${Math.abs(value)} place${Math.abs(value) === 1 ? "" : "s"}`}>
       {up ? <ArrowUp size={12} /> : <ArrowDown size={12} />}{Math.abs(value)}
     </span>
   );

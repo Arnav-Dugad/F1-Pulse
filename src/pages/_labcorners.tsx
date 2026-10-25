@@ -82,7 +82,7 @@ export function CornerAnalysis({ rowsA, rowsB, delta, colours, names, cursor, on
             <Segmented<Exit> label="Exit speed distance after the apex" value={exitPref} onChange={setExit} options={EXITS.map((e) => ({ value: e, label: `${e} m` }))} />
           </span>
         </div>
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table className="tbl lab-tbl">
             <thead>
               <tr>

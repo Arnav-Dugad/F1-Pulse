@@ -203,7 +203,7 @@ function FitResults({ data, degree, fuel, onUse }: { data: Loaded; degree: 1 | 2
 
       <Section2 title="Compound comparison" sub={<>Median slope across fitted stints, ± median absolute deviation. Base = fitted lap time at tyre age 0.</>}>
         <Glass className="card flush reveal">
-          <div className="table-wrap">
+          <div className="table-wrap" tabIndex={0}>
             <table className="tbl lab-tbl lab-compound-tbl">
               <thead>
                 <tr>

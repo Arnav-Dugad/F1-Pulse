@@ -167,7 +167,7 @@ function FaceOff({ A, B, ca, cb, year, duel }: { A: Option; B: Option; ca: strin
       <div className="cmp-vs rise" style={{ "--i": 2 } as CSSProperties}>
         <span className="cmp-vs-badge"><span>VS</span></span>
         {duel && duel.paired > 0 && (
-          <span className="cmp-vs-score" aria-label={`Race finishes ahead: ${A.driver.familyName} ${duel.a}, ${B.driver.familyName} ${duel.b}`}>
+          <span role="img" className="cmp-vs-score" aria-label={`Race finishes ahead: ${A.driver.familyName} ${duel.a}, ${B.driver.familyName} ${duel.b}`}>
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.b key={"a" + duel.a + A.driver.driverId} initial={{ y: -14, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 14, opacity: 0 }}>{duel.a}</motion.b>
             </AnimatePresence>
@@ -487,12 +487,14 @@ function RoundGrid({ A, B, ca, cb, races }: { A: Option; B: Option; ca: string; 
 function GridReliability({ races, options, aId, bId, ca, cb, source }: { races: Race[]; options: Option[]; aId: string; bId: string; ca: string; cb: string; source?: Parameters<typeof Source>[0]["value"] }) {
   const rows = options
     .map((o) => ({ o, s: seasonStats(driverRaces(races, o.driver.driverId).map((e) => e.result)) }))
-    .filter((r) => r.s.starts > 0)
-    .sort((x, y) => x.s.dnfs / x.s.starts - y.s.dnfs / y.s.starts || (x.s.avg ?? 99) - (y.s.avg ?? 99));
+    .filter((r) => r.s.starts > 0);
+  // Part-season drivers (under half the starts) rank after full-timers: 3 of 3 isn't a better record than 16 of 17.
+  const most = Math.max(0, ...rows.map((r) => r.s.starts));
+  rows.sort((x, y) => Number(x.s.starts * 2 < most) - Number(y.s.starts * 2 < most) || x.s.dnfs / x.s.starts - y.s.dnfs / y.s.starts || (x.s.avg ?? 99) - (y.s.avg ?? 99));
   return (
     <Section title="Across the grid" subtitle="Finishing record for every driver this season. A non-classification isn't automatically a mechanical failure.">
       <Glass className="card flush reveal">
-        <div className="table-wrap cmp-grid-wrap">
+        <div className="table-wrap cmp-grid-wrap" tabIndex={0}>
           <table className="tbl cmp-grid-tbl">
             <thead><tr><th>Driver</th><th className="r">Starts</th><th className="r">Classified</th><th className="r">DNFs</th><th>Finish rate</th><th className="r">Avg finish</th></tr></thead>
             <tbody>

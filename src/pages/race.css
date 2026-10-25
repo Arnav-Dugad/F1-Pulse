@@ -207,7 +207,8 @@
 .rw-slope-line.on .lbl .num { fill: var(--label); }
 .rw-slope-line.dim .ln { opacity: 0.08; }
 .rw-slope-line.dim circle, .rw-slope-line.dim .lbl { opacity: 0.35; }
-.rw-mover-lists { display: grid; gap: 16px; }
+.rw-mover-lists { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.rw-mover-lists > * { min-width: 0; }
 .rw-mover-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .rw-mover { display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 8px; border-radius: 16px; transition: background-color 0.2s, transform 0.4s var(--spring); }
 .rw-mover:hover, .rw-mover.on { background: var(--fill-4); }
@@ -371,3 +372,20 @@
 .rw-404 .title-1, .rw-404 .lede { position: relative; max-width: 22ch; }
 .rw-404 .lede { max-width: 52ch; }
 .rw-404-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+@media (max-width: 560px) { .rw-hide-xs { display: none; } }
+/* Narrow phones: long surnames shrink instead of breaking mid-word; the race time may wrap. */
+@media (max-width: 400px) {
+  .rw-spot-name strong { font-size: clamp(30px, 11vw, 44px); overflow-wrap: normal; }
+  .rw-spot-stats { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .rw-spot-stat .value, .rw-spot-stat b { white-space: normal; overflow-wrap: anywhere; text-overflow: clip; }
+  .rw-hero-eyebrow { white-space: normal; }
+  .rw-hero-actions .btn { max-width: 100%; }
+}
+@media (max-width: 360px) {
+  .rw-tt-row { grid-template-columns: 40px 16px minmax(0, 1fr) auto; gap: 6px; padding: 9px 8px; }
+  .rw-tt-row:not(:last-child)::after { left: calc(8px + 40px + 6px + 7px); }
+  .rw-tt-dot { width: 16px; height: 16px; }
+  .rw-tt-name strong, .rw-tt-row.gp .rw-tt-name strong { font-size: 14px; }
+  .rw-tt-time b { font-size: 14px; }
+  .rw-tt-time small { display: none; }
+}

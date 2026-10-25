@@ -594,7 +594,7 @@ function FieldLab({ ax, origin, loadedEnd, field, position, follow, onNeedMore, 
             <p className="muted small rp-empty">No position reported yet at this moment of the session.</p>
           ) : (
             <LayoutGroup>
-              <ol className="rp-tower-list">
+              <ol className="rp-tower-list" tabIndex={0} aria-label="Running order">
                 {rows.map((r) => {
                   const change = r.startPos !== undefined ? r.startPos - r.pos : 0;
                   return (

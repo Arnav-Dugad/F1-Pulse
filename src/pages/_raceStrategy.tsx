@@ -126,7 +126,7 @@ function Explorer({ a, pits, results, year, env }: { a: Analysis; pits: PitRow[]
         </div>
         {battles.length ? (
           <>
-            <div className="table-wrap">
+            <div className="table-wrap" tabIndex={0}>
               <table className="tbl rsx-tbl">
                 <caption className="sr-only">Pit-stop battles: the car that stopped first, its rival, gaps before and after both stops, and the outcome</caption>
                 <thead>

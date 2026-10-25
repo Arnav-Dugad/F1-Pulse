@@ -15,8 +15,8 @@
 .st-hero-copy { display: grid; gap: 20px; align-content: end; min-width: 0; }
 .st-hero-eyebrow { color: rgba(255, 255, 255, 0.8); }
 .st-hero-eyebrow svg { color: var(--gold); }
-.st-hero-title { display: grid; color: #fff; text-shadow: 0 10px 50px rgba(0, 0, 0, 0.35); overflow-wrap: anywhere; }
-.st-hero-title span { font-size: 0.5em; font-weight: 600; letter-spacing: -0.035em; color: rgba(255, 255, 255, 0.62); margin-top: 0.1em; }
+.st-hero-title { display: grid; color: #fff; text-shadow: 0 10px 50px rgba(0, 0, 0, 0.35); overflow-wrap: break-word; }
+.st-hero-title span { font-size: 0.42em; font-weight: 600; letter-spacing: -0.03em; color: rgba(255, 255, 255, 0.7); margin-bottom: 0.08em; }
 .st-hero-line { display: flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 650; letter-spacing: -0.02em; flex-wrap: wrap; }
 .st-hero-line small { display: block; font-size: 13.5px; font-weight: 500; color: rgba(255, 255, 255, 0.64); margin-top: 1px; }
 .st-hero-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; max-width: 640px; }
@@ -270,3 +270,11 @@ a.st-ident-name:hover, a.st-ident:hover .st-ident-name { text-decoration: none; 
 }
 @media (max-width: 900px) { .st .sa-model-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 560px) { .st .sa-model-link { max-width: 100%; white-space: normal; height: auto; min-height: 38px; padding-block: 8px; text-align: left; } }
+@media (max-width: 1100px) { .st-hero-stat-label { white-space: normal; line-height: 1.25; } }
+/* Phones: keep position, driver, wins, points and gap on screen; the team moves under the name. */
+.st-show-xs { display: none; }
+@media (max-width: 560px) {
+  .st-hide-xs { display: none; }
+  .st-show-xs { display: inline; }
+}
+@media (max-width: 900px) { .st-hide-sm { display: none; } }

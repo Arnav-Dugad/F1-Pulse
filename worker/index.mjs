@@ -224,32 +224,44 @@ export function parseNews(xml) {
       (x) => x.title && /^https:\/\/(www\.)?bbc\.(com|co\.uk)\//.test(x.url),
     );
 }
+/**
+ * True once a session has finished (OpenF1's free tier serves only the archive). A failed lookup is
+ * an upstream problem, not a verdict: it returns that status so the reader is told to retry rather
+ * than that the session doesn't exist.
+ */
 async function archiveAllowed(key) {
   if (archives.has(key)) return archives.get(key);
-  const r = await fetch(
-    "https://api.openf1.org/v1/sessions?session_key=" + key,
-    { signal: AbortSignal.timeout(12000) },
-  );
-  if (!r.ok) return false;
+  // A finished session stays finished: remember it at the edge so new isolates skip the lookup.
+  const memo = new Request("https://pulse.internal/openf1-archive/" + encodeURIComponent(key));
+  if (await globalThis.caches?.default?.match(memo).catch(() => null)) {
+    archives.set(key, true);
+    return true;
+  }
+  const get = () => fetch("https://api.openf1.org/v1/sessions?session_key=" + key, { signal: AbortSignal.timeout(12000) });
+  let r = await get();
+  if (r.status === 429) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    r = await get();
+  }
+  if (!r.ok) return r.status;
   const a = await r.json();
   const ok =
     Array.isArray(a) &&
     a.length > 0 &&
     Date.parse(a[0].date_end) < Date.now() - 30 * 60000;
-  if (ok) archives.set(key, true);
+  if (ok) {
+    archives.set(key, true);
+    await globalThis.caches?.default?.put(memo, new Response("1", { headers: { "Cache-Control": "public, max-age=2592000" } })).catch(() => {});
+  }
   return ok;
 }
 async function getData(spec) {
-  if (
-    spec.kind === "openf1" &&
-    spec.url.searchParams.has("session_key") &&
-    spec.url.pathname != "/v1/sessions" &&
-    !(await archiveAllowed(spec.url.searchParams.get("session_key")))
-  )
-    return fail(
-      "This session is not available in the free historical archive.",
-      403,
-    );
+  if (spec.kind === "openf1" && spec.url.searchParams.has("session_key") && spec.url.pathname != "/v1/sessions") {
+    const allowed = await archiveAllowed(spec.url.searchParams.get("session_key"));
+    if (typeof allowed === "number")
+      return fail(allowed === 429 ? "Source rate limit reached. Please try again shortly." : `Source unavailable (HTTP ${allowed}).`, allowed === 429 ? 429 : 502);
+    if (!allowed) return fail("This session is not available in the free historical archive.", 403);
+  }
   const upstream = () =>
     fetch(spec.url, {
       headers: {
@@ -301,7 +313,7 @@ async function getData(spec) {
 }
 
 /* ─────────── Precomputed season data ─────────── */
-export const VERSION = "3.2.0";
+export const VERSION = "3.3.0";
 const JOLPICA = "https://api.jolpi.ca/ergast/f1/";
 const UA = "F1Pulse/3.1 (independent noncommercial fan site)";
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -417,6 +429,14 @@ async function seasonResponse(year, env, { persist = false } = {}) {
     const stored = await env.PULSE_KV.get(`season:${year}`, "json").catch(() => null);
     if (stored?.data) return ok(stored);
   }
+  // Current season: the scheduled refresh saves a copy every 15 minutes. Serving it while recent
+  // spares readers a multi-second rebuild from paginated Jolpica requests.
+  if (year === "current" && !persist && env?.PULSE_KV) {
+    const saved = await env.PULSE_KV.get("season:current", "json").catch(() => null);
+    const age = Date.now() - Date.parse(saved?.meta?.fetchedAt || "");
+    if (saved?.data && age >= 0 && age < 20 * 60e3)
+      return Response.json(saved, { headers: { ...headers, "Cache-Control": "public, max-age=120" } });
+  }
   try {
     const body = await seasonData(year);
     // Completed: global copy (written on a KV miss only). Current: last-known-good copy for when
@@ -437,22 +457,76 @@ async function seasonResponse(year, env, { persist = false } = {}) {
 }
 
 /* ─────────── Edge cache ─────────── */
+/**
+ * Isolate memory cache. The Cache API is a no-op on *.workers.dev, so without this every reader's
+ * request went to the upstream source (slow, and quickly rate-limited). Isolates serve many requests,
+ * so a small LRU absorbs most traffic. Entries stay usable for a week as a stale-if-error backup.
+ */
+const memory = new Map();
+const MEMORY_ENTRIES = 400, MEMORY_MAX_BYTES = 2_000_000, STALE_MS = 7 * 86400e3;
+const maxAge = (r) => Number(r.headers.get("cache-control")?.match(/max-age=(\d+)/)?.[1] || 0);
+const fromMemory = (entry, extra = {}) => {
+  const res = new Response(entry.body.slice(0), { status: entry.status, headers: entry.headers });
+  for (const [k, v] of Object.entries(extra)) res.headers.set(k, v);
+  return res;
+};
+/** Test hook: `expire()` makes every entry stale (as if its max-age passed); `clear()` empties it. */
+export const memoryCache = {
+  expire: () => memory.forEach((e) => (e.fresh = 0)),
+  clear: () => memory.clear(),
+};
+async function remember(id, response) {
+  const ttl = maxAge(response);
+  if (!response.ok || !ttl) return;
+  const body = await response.clone().arrayBuffer();
+  if (body.byteLength > MEMORY_MAX_BYTES) return;
+  memory.delete(id);
+  memory.set(id, { body, status: response.status, headers: [...response.headers], fresh: Date.now() + ttl * 1000, stale: Date.now() + STALE_MS });
+  while (memory.size > MEMORY_ENTRIES) memory.delete(memory.keys().next().value);
+}
+
 async function edgeCached(url, ctx, produce, { fresh = false } = {}) {
   const canonical = new URL(url);
   canonical.searchParams.sort();
   const key = new Request(canonical);
+  const id = canonical.toString();
   const cache = globalThis.caches?.default;
+  const held = memory.get(id);
   if (!fresh) {
-    const hit = await cache?.match(key);
+    if (held && held.fresh > Date.now()) return fromMemory(held);
+    const hit = await cache?.match(key).catch(() => null);
     if (hit) return hit;
   }
-  const id = canonical.toString();
   if (inflight.has(id)) return (await inflight.get(id)).clone();
-  const promise = produce().catch(() => fail("Source timed out or could not be reached.", 502));
+  // Stale-if-error: when the source is rate-limited or down, readers get the last good copy (memory,
+  // else a week-long Cache API backup) — its meta.fetchedAt still says how old it is.
+  const backup = new URL(canonical);
+  backup.searchParams.set("__stale", "1");
+  const backupKey = new Request(backup);
+  const stale = { "Cache-Control": "public, max-age=60", "X-Pulse-Stale": "1" };
+  const promise = produce()
+    .catch(() => fail("Source timed out or could not be reached.", 502))
+    .then(async (response) => {
+      if (response.ok || response.status < 429) return response;
+      const kept = memory.get(id);
+      if (kept && kept.stale > Date.now()) return fromMemory(kept, stale);
+      const old = cache ? await cache.match(backupKey).catch(() => null) : null;
+      if (!old) return response;
+      const out = new Response(old.body, old);
+      for (const [k, v] of Object.entries(stale)) out.headers.set(k, v);
+      return out;
+    });
   inflight.set(id, promise);
   try {
     const response = await promise;
-    if (response.ok && cache) ctx?.waitUntil?.(cache.put(key, response.clone()));
+    if (response.ok && !response.headers.has("X-Pulse-Stale")) {
+      await remember(id, response).catch(() => {});
+      if (cache) {
+        const copy = new Response(response.clone().body, response);
+        copy.headers.set("Cache-Control", "public, max-age=604800");
+        ctx?.waitUntil?.(Promise.all([cache.put(key, response.clone()), cache.put(backupKey, copy)]).catch(() => {}));
+      }
+    }
     return response.clone();
   } finally {
     inflight.delete(id);

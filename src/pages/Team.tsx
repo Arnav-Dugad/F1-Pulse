@@ -9,7 +9,7 @@ import { paginate, standings, standingsHistory, teamSeasonResults, teamStandings
 import { usePrefs } from "../app/prefs";
 import { Link, type Route } from "../lib/router";
 import { shortRace, useSeasonProgress } from "../lib/season";
-import { driverMedia, fullName, initials, isLightColor, MEDIA_SEASON, teamColor, teamGallery, teamMedia, teamShortName, useDriverPhoto, useTeamPhoto } from "../lib/media";
+import { driverMedia, fullName, initials, isGreyColor, isLightColor, MEDIA_SEASON, teamColor, teamGallery, teamMedia, teamShortName, useDriverPhoto, useTeamPhoto } from "../lib/media";
 import { plural, pts } from "../lib/format";
 import { headToHead } from "../math.mjs";
 import { Counter, Glass, Img, Page, Section, Skeleton, Source, StateView, cx, useAmbient, useTitle } from "../ui/core";
@@ -156,7 +156,7 @@ export default function Team({ route }: { route: Route }) {
 
   return (
     <Page className="tm">
-      <div className={cx("tm-root", isLightColor(tint) && "light")} style={{ "--tint": tint } as CSSProperties}>
+      <div className={cx("tm-root", isLightColor(tint) && "light", isGreyColor(tint) && "grey")} style={{ "--tint": tint } as CSSProperties}>
         <Hero id={id} team={team} year={year} standing={standing} count={cs.value?.data.length || 0} points={competed ? points : null} wins={model.wins} />
 
         {!competed ? (
@@ -170,8 +170,13 @@ export default function Team({ route }: { route: Route }) {
         ) : (
           <>
             <Lineup model={model} loading={res.loading} error={res.error} onRetry={res.reload} standings={ds.value?.data} year={year} teamName={name} />
-            <SeasonNumbers model={model} standing={standing} total={cs.value?.data.length || 0} points={points} loading={res.loading || cs.loading} year={year} source={res.value} />
-            {model.rounds.length > 0 && (
+            {/* Season figures are built from race + sprint results together: never from half of them. */}
+            {(res.error || spr.error) && !res.loading && !spr.loading ? (
+              <Section title="Season in numbers">
+                <StateView error={res.error || spr.error} onRetry={() => { res.reload(); spr.reload(); }} />
+              </Section>
+            ) : <SeasonNumbers model={model} standing={standing} total={cs.value?.data.length || 0} points={points} loading={res.loading || spr.loading || cs.loading} year={year} source={res.value} />}
+            {model.rounds.length > 0 && !res.error && !spr.error && !spr.loading && (
               <>
                 <Section title="Race by race" subtitle={`Points scored each round, split by driver${+year >= 2021 ? " — sprint points included" : ""}. Hover or use the arrow keys.`}>
                   <RoundsChart model={model} year={year} />
@@ -186,7 +191,7 @@ export default function Team({ route }: { route: Route }) {
         )}
 
         <Evolution id={id} year={year} name={name} />
-        <TeamGallery id={id} name={name} />
+        <TeamGallery id={id} name={name} year={year} />
         <History id={id} name={name} hist={hist} year={year} />
         <Link to={`lineage?team=${id}`} className="tm-lineage glass interactive reveal">
           <span className="tm-lineage-icon" aria-hidden><GitBranch size={20} /></span>
@@ -408,7 +413,8 @@ function SeasonNumbers({ model, standing, total, points, loading, year, source }
 function niceStep(max: number) {
   const raw = max / 4;
   const mag = Math.pow(10, Math.floor(Math.log10(raw || 1)));
-  return [1, 2, 2.5, 5, 10].map((n) => n * mag).find((n) => n >= raw) || raw;
+  // Points come in whole (occasionally half) units: never ticks like 0.3.
+  return Math.max(1, [1, 2, 5, 10].map((n) => n * mag).find((n) => n >= raw) || raw);
 }
 
 function RoundsChart({ model, year }: { model: SeasonModel; year: string }) {
@@ -421,6 +427,8 @@ function RoundsChart({ model, year }: { model: SeasonModel; year: string }) {
   for (let t = 0; t <= top + 1e-9; t += step) ticks.push(Math.round(t * 10) / 10);
   const hr = hover !== null ? rounds[hover] : null;
   const totals = lines.map((l) => l.racePts + l.sprintPts);
+  if (!rounds.some((r) => r.total > 0))
+    return <StateView empty emptyTitle="No points scored yet" emptyText={`The race-by-race split appears once the team scores its first points of ${year}.`} />;
   return (
     <Glass className="card tm-bars-card reveal">
       <div className="tm-bars-legend">
@@ -453,7 +461,7 @@ function RoundsChart({ model, year }: { model: SeasonModel; year: string }) {
             <span key={t} className="tm-bars-tick" style={{ bottom: `${(t / top) * 100}%` }}><i>{t}</i></span>
           ))}
           {rounds.map((r, i) => (
-            <div key={r.round} className={cx("tm-bar-col", hover === i && "on", hover !== null && hover !== i && "dim")} onPointerEnter={() => setHover(i)} onPointerDown={() => setHover(i)}
+            <div role="img" key={r.round} className={cx("tm-bar-col", hover === i && "on", hover !== null && hover !== i && "dim")} onPointerEnter={() => setHover(i)} onPointerDown={() => setHover(i)}
               aria-label={`Round ${r.round}, ${r.raceName}: ${pts(r.total)} points`}>
               <span className="tm-bar-stack" style={{ height: `${(r.total / top) * 100}%`, "--i": i } as CSSProperties}>
                 {lines.map((l, k) => {
@@ -692,7 +700,7 @@ function RaceRecord({ model, year, source }: { model: SeasonModel; year: string;
   return (
     <Section title="Race record" subtitle="Every classification, round by round.">
       <Glass className="card flush reveal">
-        <div className="table-wrap tm-rec-wrap">
+        <div className="table-wrap tm-rec-wrap" tabIndex={0}>
           <table className="tbl tm-rec">
             <thead>
               <tr>
@@ -750,7 +758,7 @@ function History({ id, name, hist, year }: { id: string; name: string; hist: Ret
   const tint = ink(teamColor(id));
   const kpis = [
     { label: "Constructors' titles", value: titles.length, detail: titles.length ? `Last in ${titles.at(-1)!.season}` : "Completed seasons only" },
-    { label: "Seasons classified", value: rows.length, detail: `${first}–${last}` },
+    { label: "Seasons classified", value: rows.length, detail: first === last ? String(first) : `${first}–${last}` },
     { label: "Best finish", value: best, detail: best ? `${rows.filter((r) => +r.s.position === best).length}× in the table` : "", fmt: "P" },
     { label: "Race wins", value: wins, detail: "Across classified seasons" },
   ];
@@ -795,7 +803,7 @@ function History({ id, name, hist, year }: { id: string; name: string; hist: Ret
           {years.length > rows.length && <p className="source">Gaps are seasons without a constructors' standings entry.</p>}
         </Glass>
         <Glass className="card flush reveal" style={{ "--i": 1 } as CSSProperties}>
-          <div className="table-wrap tm-hist-wrap">
+          <div className="table-wrap tm-hist-wrap" tabIndex={0}>
             <table className="tbl tm-hist">
               <thead><tr><th>Season</th><th className="c">Pos</th><th className="r">Points</th><th className="r">Wins</th></tr></thead>
               <tbody>
@@ -816,7 +824,7 @@ function History({ id, name, hist, year }: { id: string; name: string; hist: Ret
           </div>
         </Glass>
       </div>
-      <p className="source">Titles count completed seasons only; the {CURRENT_YEAR} season is still running.</p>
+      {rows.some((r) => +r.season >= CURRENT_YEAR) && <p className="source">Titles count completed seasons only; the {CURRENT_YEAR} season is still running.</p>}
       <Source value={hist.value} />
     </Section>
   );
@@ -864,11 +872,13 @@ function Evolution({ id, year, name }: { id: string; year: string; name: string 
 }
 
 /* ───────────────────────── Gallery ───────────────────────── */
-function TeamGallery({ id, name }: { id: string; name: string }) {
+function TeamGallery({ id, name, year }: { id: string; name: string; year: string }) {
   const images = teamGallery(id);
   if (!images.length) return null;
+  const latest = year !== MEDIA_SEASON;
   return (
-    <Section id="gallery" title="Trackside gallery" subtitle={`${name} on track · ${MEDIA_SEASON} season photography`}>
+    <Section id="gallery" title={latest ? `Latest photography · ${MEDIA_SEASON}` : "Trackside gallery"}
+      subtitle={latest ? `${name} on track in the ${MEDIA_SEASON} season — not the ${year} season shown above.` : `${name} on track · ${MEDIA_SEASON} season photography`}>
       <Gallery images={images} label={`${name} trackside photos`} />
     </Section>
   );

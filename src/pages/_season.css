@@ -23,7 +23,7 @@
 .sa-heat-key { display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; }
 .sa-heat-key .sa-dot { position: static; }
 .sa-heat-scroll { position: relative; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
-.sa-heat-tbl { border-collapse: separate; border-spacing: 3px; padding: 8px 10px 10px 0; min-width: 100%; }
+.sa-heat-tbl { border-collapse: separate; border-spacing: 3px; padding: 8px 10px 10px 0; width: max-content; min-width: 0; }
 .sa-heat-tbl th { font-weight: 650; }
 .sa-heat-name { position: sticky; left: 0; z-index: 2; text-align: left; padding: 0 10px 0 14px; background: var(--bg-elevated); min-width: 150px; max-width: 170px;
   background: color-mix(in srgb, var(--bg-elevated) 92%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 1px 0 0 var(--separator); }
@@ -131,7 +131,7 @@ thead .sa-heat-total { font-size: 11px; letter-spacing: 0.07em; text-transform: 
   .sa-odds-row { grid-template-columns: 104px minmax(0, 1fr) 52px; gap: 8px; }
   .sa-odds-who .avatar, .sa-odds-who .logo-badge { display: none; }
   .sa-odds-pct { font-size: 16px; }
-  .sa-range li { grid-template-columns: 70px minmax(0, 1fr) 64px; gap: 8px; }
+  .sa-range li { grid-template-columns: 86px minmax(0, 1fr) 60px; gap: 8px; }
 }
 
 /* ───────────────────────── Championship decider ───────────────────────── */
@@ -194,3 +194,5 @@ thead .sa-heat-total { font-size: 11px; letter-spacing: 0.07em; text-transform: 
 .sa-photo figcaption { max-width: max(var(--s), 180px); text-align: center; }
 .sa-credit { display: inline; font-size: 10.5px; line-height: 1.35; color: var(--label-3); overflow-wrap: anywhere; }
 .sa-credit a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); }
+.sa-sigma { text-transform: none; }
+@media (min-width: 981px) { .sa-mrc { position: sticky; top: 96px; align-self: start; } }

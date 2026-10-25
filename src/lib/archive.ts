@@ -69,7 +69,7 @@ export const loadHistory = () =>
   (historyPromise ??= fetch("/data/history.json")
     .then((r) => {
       if (!r.ok) throw Error("Championship history unavailable");
-      return r.json() as Promise<HistoryFile>;
+      return r.json().catch(() => { throw Error("Championship history unavailable"); }) as Promise<HistoryFile>;
     })
     .catch((e) => { historyPromise = null; throw e; }));
 

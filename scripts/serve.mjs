@@ -1,12 +1,14 @@
 /**
  * Local verification server running the same Worker handler, with filesystem static assets and the
  * response headers from dist/_headers (CSP, caching) applied as Cloudflare would. Set
- * PULSE_NO_HEADERS=1 to serve without them.
+ * PULSE_NO_HEADERS=1 to serve without them. PULSE_API_PROXY=<origin> forwards /api/* to a deployed
+ * Worker (whose edge cache absorbs the load) — useful for long QA sweeps within upstream rate limits.
  */
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { resolve, extname, sep } from "node:path";
 import worker from "../worker/index.mjs";
+const apiProxy = process.env.PULSE_API_PROXY?.replace(/\/$/, "");
 const root = resolve(process.env.PULSE_DIST || "dist"),
   port = Number(process.env.PULSE_PORT || 8787),
   types = {
@@ -102,11 +104,14 @@ createServer(async (req, res) => {
       headers: Object.fromEntries(Object.entries(req.headers).filter(([, v]) => typeof v === "string")),
       ...(chunks.length && !["GET", "HEAD"].includes(req.method) ? { body: Buffer.concat(chunks) } : {}),
     });
-    const response = await worker.fetch(request, env, {
-      waitUntil: (p) => p.catch(() => {}),
-    });
-    const extra = new URL(request.url).pathname.startsWith("/api/") ? {} : ruleHeaders(new URL(request.url).pathname);
-    res.writeHead(response.status, { ...Object.fromEntries(response.headers), ...extra });
+    const { pathname, search } = new URL(request.url);
+    const response = apiProxy && pathname.startsWith("/api/")
+      ? await fetch(apiProxy + pathname + search, { method: req.method, headers: { accept: req.headers.accept || "*/*" } })
+      : await worker.fetch(request, env, { waitUntil: (p) => p.catch(() => {}) });
+    const extra = pathname.startsWith("/api/") ? {} : ruleHeaders(pathname);
+    const headers = Object.fromEntries(response.headers);
+    if (apiProxy) delete headers["content-encoding"], delete headers["content-length"]; // fetch() already decoded the body
+    res.writeHead(response.status, { ...headers, ...extra });
     res.end(Buffer.from(await response.arrayBuffer()));
   } catch (e) {
     res.writeHead(500);

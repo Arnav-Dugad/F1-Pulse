@@ -164,9 +164,11 @@ export function useAnalysis(race: RaceData, results: Result[]): AnalysisState {
   );
   const running = useRef(false);
   const live = useRef(true);
+  const abort = useRef<AbortController | null>(null);
   const resultsRef = useRef(results);
   resultsRef.current = results;
-  useEffect(() => { live.current = true; return () => { live.current = false; }; }, []);
+  // Leaving the page drops the analysis requests still queued behind the rate limiter.
+  useEffect(() => { live.current = true; return () => { live.current = false; abort.current?.abort(); }; }, []);
 
   const start = useCallback(async () => {
     if (!eligible || running.current || cache.has(key)) return;
@@ -183,12 +185,14 @@ export function useAnalysis(race: RaceData, results: Result[]): AnalysisState {
       const sk = session.session_key;
       let done = 1;
       put({ status: "loading", done, total, current: JOB_LABEL[JOBS[0]] });
+      abort.current = new AbortController();
+      const signal = abort.current.signal;
       const fetchJob = async (job: Job): Promise<Envelope<unknown[]>> => {
-        if (job !== "starting_grid") return request<unknown[]>("openf1", job, { session_key: sk });
+        if (job !== "starting_grid") return request<unknown[]>("openf1", job, { session_key: sk }, signal);
         // The archive files the grid under the race or (in older data) the qualifying session.
-        const a = await request<unknown[]>("openf1", job, { session_key: sk });
+        const a = await request<unknown[]>("openf1", job, { session_key: sk }, signal);
         if ((a.data || []).length || !quali) return a;
-        return request<unknown[]>("openf1", job, { session_key: quali.session_key });
+        return request<unknown[]>("openf1", job, { session_key: quali.session_key }, signal);
       };
       const settled = await Promise.allSettled(JOBS.map((job) =>
         fetchJob(job).finally(() => { done++; put({ status: "loading", done, total, current: JOB_LABEL[JOBS[Math.min(done - 1, JOBS.length - 1)]] }); }),

@@ -55,3 +55,5 @@
   .otd-card-head { flex-direction: column; align-items: flex-start; gap: 6px; }
   .otd-select { padding-left: 12px; }
 }
+.otd-person-main strong { white-space: normal; overflow-wrap: anywhere; line-height: 1.2; }
+.otd-person-main small { white-space: normal; }

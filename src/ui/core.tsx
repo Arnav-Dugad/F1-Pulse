@@ -1,5 +1,5 @@
 import {
-  useCallback, useEffect, useLayoutEffect, useRef, useState,
+  startTransition, useCallback, useEffect, useLayoutEffect, useRef, useState,
   type CSSProperties, type HTMLAttributes, type ReactNode, type PointerEvent as ReactPointerEvent,
 } from "react";
 import { motion, useSpring, useTransform, useVelocity } from "motion/react";
@@ -17,8 +17,25 @@ export const prefersReducedMotion = () =>
   (document.documentElement.dataset.motion !== "full" && matchMedia("(prefers-reduced-motion: reduce)").matches);
 
 /* ─────────── Page scaffolding ─────────── */
+let firstPage = true;
+let sectionSeq = 0;
+const EAGER_SECTIONS = 2;
+/**
+ * Every route renders one Page. After an in-app navigation, keyboard focus would otherwise stay on
+ * the link that was just removed, so the new page's <main> takes focus (screen readers announce it
+ * and the next Tab starts inside the content). The first load keeps the browser's default so the
+ * skip link stays the first Tab stop.
+ */
 export function Page({ children, className }: { children: ReactNode; className?: string }) {
-  return <main id="main" tabIndex={-1} className={cx("page", className)}>{children}</main>;
+  sectionSeq = 0; // the first sections of each page render eagerly (see Section)
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (firstPage) { firstPage = false; return; }
+    const active = document.activeElement;
+    if (active && active !== document.body && active.isConnected && !ref.current?.contains(active) && !active.closest("main")) return;
+    ref.current?.focus({ preventScroll: true });
+  }, []);
+  return <main ref={ref} id="main" tabIndex={-1} className={cx("page", className)}>{children}</main>;
 }
 
 export function PageHeader({ eyebrow, title, lede, actions, live }: {
@@ -36,11 +53,20 @@ export function PageHeader({ eyebrow, title, lede, actions, live }: {
   );
 }
 
+/**
+ * The first sections of a page render with it; the rest render right after
+ * first paint inside a transition, which React time-slices — so long pages no longer block the main
+ * thread for a second while every chart and table mounts at once. Everything is in the DOM moments
+ * later (find-in-page and screen readers see the full page).
+ */
 export function Section({ title, subtitle, action, children, className, id }: {
   title?: ReactNode; subtitle?: ReactNode; action?: ReactNode; children: ReactNode; className?: string; id?: string;
 }) {
+  // Mount order, not measurement: reading layout in every section's effect forced a layout per commit.
+  const [shown, setShown] = useState(() => sectionSeq++ < EAGER_SECTIONS);
+  useEffect(() => { if (!shown) startTransition(() => setShown(true)); }, [shown]);
   return (
-    <section className={cx("section", className)} id={id}>
+    <section className={cx("section", className, !shown && "section-pending")} id={id}>
       {(title || action) && (
         <div className="section-head reveal">
           <div>
@@ -50,7 +76,7 @@ export function Section({ title, subtitle, action, children, className, id }: {
           {action}
         </div>
       )}
-      {children}
+      {shown ? children : <div className="section-placeholder" aria-hidden />}
     </section>
   );
 }

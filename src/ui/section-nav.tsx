@@ -50,13 +50,15 @@ export function SectionNav({ path }: { path: string }) {
       const main = document.getElementById("main");
       if (!main) return false;
       build();
-      mo = new MutationObserver(() => { frame ||= requestAnimationFrame(build); });
-      mo.observe(main, { childList: true, subtree: true, characterData: true });
+      // Debounced and structural only: countdowns and odometers change text every second, and each
+      // rebuild measures sections (offsetParent forces layout).
+      mo = new MutationObserver(() => { clearTimeout(frame); frame = window.setTimeout(build, 300); });
+      mo.observe(main, { childList: true, subtree: true });
       return true;
     };
     // <main> mounts after the lazy page chunk resolves.
     if (!attach()) poll = window.setInterval(() => { if (attach()) clearInterval(poll); }, 250);
-    return () => { mo?.disconnect(); cancelAnimationFrame(frame); clearInterval(poll); };
+    return () => { mo?.disconnect(); clearTimeout(frame); clearInterval(poll); };
   }, [path]);
 
   // Visibility (hero scrolled away) + scroll-spy.

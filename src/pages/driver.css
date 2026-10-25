@@ -29,7 +29,8 @@
 .drv-eyebrow { color: rgba(255, 255, 255, 0.82); }
 .drv-name { display: grid; font-family: var(--font-display); line-height: 0.88; text-shadow: 0 12px 50px rgba(0, 0, 0, 0.4); }
 .drv-given { font-size: clamp(22px, 2.6vw, 36px); font-weight: 500; letter-spacing: -0.03em; color: rgba(255, 255, 255, 0.78); margin-bottom: 0.12em; }
-.drv-family { font-size: clamp(54px, 7.6vw, 120px); font-weight: 900; letter-spacing: -0.055em; text-transform: uppercase; overflow-wrap: anywhere; }
+/* Long surnames step down a size rather than breaking mid-word (--chars = letters in the name). */
+.drv-family { font-size: min(clamp(54px, 7.6vw, 120px), calc(44vw / (var(--chars, 8) * 0.66))); font-weight: 900; letter-spacing: -0.055em; text-transform: uppercase; overflow-wrap: normal; }
 .drv-team-line { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
 .drv-team { display: inline-flex; align-items: center; gap: 12px; padding: 6px 18px 6px 6px; border-radius: 99px; background: rgba(255, 255, 255, 0.1); -webkit-backdrop-filter: blur(20px) saturate(170%); backdrop-filter: blur(20px) saturate(170%); border: 1px solid rgba(255, 255, 255, 0.16); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22); transition: background-color 0.25s, transform 0.5s var(--spring); }
 a.drv-team:hover { background: rgba(255, 255, 255, 0.18); transform: translateY(-2px); }
@@ -56,7 +57,7 @@ a.drv-team:hover { background: rgba(255, 255, 255, 0.18); transform: translateY(
   .drv-hero-number { width: 86%; right: 7%; top: 6%; }
   .drv-hero::after { background: linear-gradient(180deg, transparent 40%, rgba(4, 4, 8, 0.7) 80%); }
   .drv-hero-copy { padding: 0 20px 24px; margin-top: -60px; }
-  .drv-family { font-size: clamp(42px, 13vw, 72px); }
+  .drv-family { font-size: min(clamp(42px, 13vw, 72px), calc(88vw / (var(--chars, 8) * 0.66))); }
 }
 
 /* ───────────────────────── KPIs ───────────────────────── */
@@ -97,7 +98,7 @@ a.drv-team:hover { background: rgba(255, 255, 255, 0.18); transform: translateY(
 .drv-round-name { font-size: 11.5px; font-weight: 600; color: var(--label-2); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .drv-round-sprint { height: 18px; padding: 0 7px; border-radius: 99px; font-size: 10px; font-weight: 750; letter-spacing: 0.03em; background: color-mix(in srgb, var(--yellow) 16%, transparent); color: var(--yellow); display: inline-grid; place-items: center; }
 .drv-round-sprint.empty { background: none; }
-.drv-round-pts { position: absolute; top: 8px; right: 8px; font-size: 9.5px; font-weight: 750; color: var(--green); }
+.drv-round-pts { order: 9; margin-top: -3px; line-height: 1; font-size: 10.5px; font-weight: 750; color: var(--green); }
 
 /* ───────────────────────── Charts / duel ───────────────────────── */
 .drv-chart .card-title { margin-bottom: 8px; }
@@ -128,8 +129,9 @@ a.drv-team:hover { background: rgba(255, 255, 255, 0.18); transform: translateY(
 .drv-ckpi { display: grid; gap: 4px; align-content: start; padding: 18px 20px; border-radius: var(--r-lg); }
 .drv-ckpi-value { font-family: var(--font-display); font-size: clamp(32px, 3.2vw, 44px); font-weight: 800; letter-spacing: -0.05em; line-height: 1.05; font-variant-numeric: tabular-nums; }
 .drv-ckpi.titles { background: linear-gradient(150deg, color-mix(in srgb, var(--gold) 28%, transparent), transparent 70%), var(--glass); }
-.drv-ckpi.titles .drv-ckpi-value { background: linear-gradient(180deg, #ffe08a, #d9a21b); -webkit-background-clip: text; background-clip: text; color: transparent; }
-:root[data-theme="light"] .drv-ckpi.titles .drv-ckpi-value { background: linear-gradient(180deg, #c99700, #8a6200); -webkit-background-clip: text; background-clip: text; }
+/* Solid gold: a background-clip:text gradient paints nothing through the odometer's transformed digit strips. */
+.drv-ckpi.titles .drv-ckpi-value { color: #f5c04a; text-shadow: 0 1px 12px color-mix(in srgb, #f5c04a 35%, transparent); }
+:root[data-theme="light"] .drv-ckpi.titles .drv-ckpi-value { color: #9a6c00; text-shadow: none; }
 .drv-ckpi.titles .drv-kpi-label svg { color: var(--gold); }
 .drv-timeline { margin-bottom: 16px; }
 .drv-tl-bar { display: flex; gap: 3px; height: 12px; margin-bottom: 18px; }
@@ -272,3 +274,15 @@ a.drv-team:hover { background: rgba(255, 255, 255, 0.18); transform: translateY(
   .drv-helm-item { --w: 52vw; transform: translateX(calc(var(--d) * 70%)) translateZ(calc(var(--ad) * -200px)) rotateY(calc(var(--d) * -40deg)); }
   .drv-helm-nav { width: 38px; height: 38px; }
 }
+.drv-suggest { display: grid; gap: 8px; justify-items: center; margin: 4px 0 14px; }
+.drv-suggest-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.drv-suggest-list .chip { min-height: 32px; padding-inline: 12px; }
+@media (max-width: 480px) {
+  .drv-duel-side { gap: 8px; }
+  .drv-duel-side .avatar { --s: 30px !important; }
+  .drv-duel-side strong { font-size: 14px; white-space: normal; overflow-wrap: normal; }
+}
+/* Six career cards (champions) split 3 + 3 instead of leaving one orphan on a second row. */
+@media (max-width: 1200px) and (min-width: 561px) { .drv-career-kpis:has(> :nth-child(6):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.drv-notfound { min-height: min(60vh, 560px); align-content: center; }
+.drv-notfound h1 { color: var(--label); }

@@ -6,10 +6,10 @@ import { usePrefs } from "../app/prefs";
 import { Link, setQuery, type Route } from "../lib/router";
 import { buildCalendar } from "../domain.mjs";
 import { splitCalendar, useCalendar } from "../lib/season";
-import { circuitMedia, fullName, teamColor, teamShortName } from "../lib/media";
+import { circuitMedia, fullName, teamColor, teamShortName, useEraCircuitPhoto } from "../lib/media";
 import { countdown, download, formatDateRange, formatSession, plural, sessionDate, timezoneLabel } from "../lib/format";
 import { Glass, Img, Page, Segmented, Skeleton, Source, StateView, cx, useAmbient, useNow, useTitle } from "../ui/core";
-import { DriverAvatar, Flag, TrackMap } from "../ui/media";
+import { DriverAvatar, Flag, PhotoCredit, TrackMap } from "../ui/media";
 import { RaceCard } from "../ui/cards";
 import type { Driver, Race, Team } from "../types";
 import { downloadWithAlarms, LEAD_MIN, ReminderNote, SessionReminders, useReminders } from "../ui/reminders";
@@ -176,16 +176,17 @@ function CalendarHero({ races, year, next, winners, now }: { races: Race[]; year
   const sprints = races.filter((r) => r.Sprint).length;
   const countries = new Set(races.map((r) => r.Circuit.Location.country)).size;
   const feature = next || races.at(-1)!;
-  const media = circuitMedia(feature.Circuit.circuitId);
+  const photo = useEraCircuitPhoto(feature.Circuit.circuitId, feature.season);
   const ics = (all: boolean) =>
     download(`f1-pulse-${year}-${all ? "all-sessions" : "races"}.ics`, buildCalendar(races, all), "text/calendar;charset=utf-8");
 
   return (
     <section className="cal-hero">
       <div className="cal-hero-media">
-        <Img src={media.hero} alt="" eager />
+        <Img src={photo?.src} alt="" eager />
         <span className="cal-hero-scrim" />
       </div>
+      {photo && !photo.credit.official && <PhotoCredit credit={photo.credit} overlay className="hero-photo-credit" />}
       <div className="cal-hero-inner">
         <div className="cal-hero-copy">
           <span className="eyebrow cal-hero-eyebrow rise"><span className={cx("dot", next && "live")} />Formula 1 World Championship</span>

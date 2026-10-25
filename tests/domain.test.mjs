@@ -155,3 +155,16 @@ test("calendar alarms skip date-only sessions whose start time is unknown", () =
   assert.ok(!ics.includes("VALARM"));
   assert.match(buildCalendar([race], false, undefined, { alarmMinutes: 60 }), /TRIGGER;RELATED=START:-PT60M/);
 });
+
+test("past seasons use the car number raced, not today's permanent number", async () => {
+  const { seasonalNumbers } = await import("../src/domain.mjs");
+  const results = { RaceTable: { season: "2021", Races: [{ season: "2021", Results: [{ number: "33", Driver: { driverId: "max_verstappen", permanentNumber: "3" } }] }] } };
+  const standings = { StandingsTable: { StandingsLists: [{ season: "2021", DriverStandings: [{ Driver: { driverId: "max_verstappen", permanentNumber: "3" } }] }] } };
+  const current = { RaceTable: { season: "2026", Races: [{ season: "2026", Results: [{ number: "3", Driver: { driverId: "max_verstappen", permanentNumber: "3" } }] }] } };
+  seasonalNumbers(results, undefined, 2026);
+  seasonalNumbers(standings, undefined, 2026);
+  seasonalNumbers(current, undefined, 2026);
+  assert.equal(results.RaceTable.Races[0].Results[0].Driver.permanentNumber, "33");
+  assert.equal(standings.StandingsTable.StandingsLists[0].DriverStandings[0].Driver.permanentNumber, undefined);
+  assert.equal(current.RaceTable.Races[0].Results[0].Driver.permanentNumber, "3");
+});

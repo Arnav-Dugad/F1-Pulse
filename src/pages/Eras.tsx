@@ -120,7 +120,7 @@ function RescoreSeason({ archive, history, route }: { archive: Archive; history:
           )}
           <div className="split er-rescore">
             <Glass className="card flush reveal">
-              <div className="table-wrap">
+              <div className="table-wrap" tabIndex={0}>
                 <table className="tbl er-table">
                   <caption className="sr-only">{season} drivers rescored with the modern points system</caption>
                   <thead>
@@ -143,8 +143,8 @@ function RescoreSeason({ archive, history, route }: { archive: Archive; history:
                           <td className="r"><b>{v.points}</b></td>
                           <td className="r">{o ? <>{pts(o.points)} <small className="faint">{o.pos ? ordinal(o.pos) : "—"}</small></> : <>{pts(v.actual)} <small className="faint">so far</small></>}</td>
                           <td className="r">
-                            {delta === null ? <span className="faint">—</span> : delta === 0 ? <span className="er-delta level" aria-label="No change"><Minus size={12} /></span> : (
-                              <span className={cx("er-delta", delta > 0 ? "up" : "down")} aria-label={`${delta > 0 ? "Up" : "Down"} ${Math.abs(delta)}`}>{delta > 0 ? <ArrowUp size={12} /> : <ArrowDown size={12} />}{Math.abs(delta)}</span>
+                            {delta === null ? <span className="faint">—</span> : delta === 0 ? <span role="img" className="er-delta level" aria-label="No change"><Minus size={12} /></span> : (
+                              <span role="img" className={cx("er-delta", delta > 0 ? "up" : "down")} aria-label={`${delta > 0 ? "Up" : "Down"} ${Math.abs(delta)}`}>{delta > 0 ? <ArrowUp size={12} /> : <ArrowDown size={12} />}{Math.abs(delta)}</span>
                             )}
                           </td>
                         </tr>
@@ -193,7 +193,7 @@ function ChampionsChart({ archive, norm, flips }: { archive: Archive; norm: Retu
           <button type="button" className="btn sm" aria-pressed={table} onClick={() => setTable(!table)}>{table ? "Show chart" : "Show table"}</button>
         </div>
         {table ? (
-          <div className="table-wrap er-hist-table">
+          <div className="table-wrap er-hist-table" tabIndex={0}>
             <table className="tbl">
               <thead><tr><th>Season</th><th>Champion</th><th className="r">2010+ pts</th><th className="r">Per start</th><th className="r">Margin</th><th className="r">Share of max</th></tr></thead>
               <tbody>

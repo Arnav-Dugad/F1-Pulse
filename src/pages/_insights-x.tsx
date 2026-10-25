@@ -220,7 +220,7 @@ function PaceChart({ rounds, teams, focus, year }: { rounds: { round: string; ra
 
 function PaceTable({ rounds, teams, year }: { rounds: { round: string; raceName: string }[]; teams: TeamPace[]; year: string }) {
   return (
-    <div className="table-wrap ins-up-table">
+    <div className="table-wrap ins-up-table" tabIndex={0}>
       <table className="tbl">
         <caption className="sr-only">Qualifying gap to the session-fastest time (%) by team and round</caption>
         <thead>
@@ -337,7 +337,7 @@ export function LaunchBoard({ season, year, races }: { season: string; year: str
               <Segmented label="Rank by" value={sort} onChange={setSort} options={[{ value: "total", label: "Season total" }, { value: "avg", label: "Per start" }]} />
               <button className="btn sm glass-btn" onClick={exportCSV}><Download />CSV</button>
             </div>
-            <div className="table-wrap">
+            <div className="table-wrap" tabIndex={0}>
               <table className="tbl ins-gain-tbl">
                 <caption className="sr-only">Lap-one launch leaderboard</caption>
                 <thead>

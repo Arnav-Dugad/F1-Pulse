@@ -31,7 +31,7 @@
 .er-hist-table th { background: var(--bg-elevated); }
 .er-inline { margin-left: 8px; }
 .er-flips { margin-top: 18px; }
-.er-flip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.er-flip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr)); gap: 12px; }
 .er-flip-card { position: relative; overflow: hidden; display: grid; gap: 8px; padding: 16px; border-radius: var(--r-lg); background: linear-gradient(160deg, color-mix(in srgb, var(--tint) 18%, var(--glass)), var(--glass)); }
 .er-flip-year { font-family: var(--font-display); font-size: 30px; font-weight: 850; letter-spacing: -0.05em; line-height: 1; }
 .er-flip-who { display: flex; align-items: center; gap: 10px; }

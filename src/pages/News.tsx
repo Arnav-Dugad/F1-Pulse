@@ -120,7 +120,7 @@ export default function News({ route }: { route: Route }) {
       <div className="nws-toolbar reveal">
         <label className="search-input nws-search">
           <Search />
-          <input className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search headlines — a driver, team or Grand Prix" aria-label="Search headlines" />
+          <input className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search headlines" aria-label="Search headlines" />
           {q && <button type="button" className="nws-clear" onClick={() => setQ("")} aria-label="Clear search"><X size={15} /></button>}
         </label>
         {searching && !n.loading && <span className="nws-found" aria-live="polite">{plural(filtered.length, "match", "matches")}</span>}

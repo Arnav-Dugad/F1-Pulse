@@ -69,7 +69,7 @@ export const signed = (s: number | null | undefined, digits = 3) => {
 };
 export const utcClock = (ms: number, decimals = 1) => {
   const iso = new Date(ms).toISOString();
-  return iso.slice(11, decimals ? 20 + decimals - 1 : 19);
+  return iso.slice(11, decimals ? 20 + decimals : 19); // "13:15:01" + "." + decimals
 };
 export const shortDate = (iso: string) =>
   new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });

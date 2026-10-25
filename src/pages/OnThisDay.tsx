@@ -178,7 +178,7 @@ function RaceItem({ archive, race, index }: { archive: Archive; race: ARace; ind
               <Link key={r.d} to={"driver/" + d.id} className={cx("otd-step", r.pos === 1 && "win")}>
                 <span className={cx("pos", "p" + r.pos)}>{r.pos}</span>
                 <Face archive={archive} idx={r.d} size={r.pos === 1 ? 44 : 34} year={race.season} team={r.c} />
-                <span className="otd-step-main"><strong>{d.name}</strong><small><TeamLogo id={archive.teams[r.c]?.id} name={archive.teams[r.c]?.name || ""} year={String(race.season)} size={16} />{archive.teams[r.c]?.name}</small></span>
+                <span className="otd-step-main"><strong>{d.name}</strong><small><TeamLogo id={archive.teams[r.c]?.id} name={archive.teams[r.c]?.name || ""} year={String(race.season)} size={20} />{archive.teams[r.c]?.name}</small></span>
               </Link>
             );
           })}

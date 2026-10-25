@@ -226,7 +226,7 @@ function OverlayBody({ data, colours }: { data: Loaded; colours: [string, string
           {model.corners.length > 0 && (
             <div className="rq-corners">
               <span className="eyebrow">Slowest corners · minimum speed</span>
-              <div className="table-wrap">
+              <div className="table-wrap" tabIndex={0}>
                 <table className="tbl rq-tbl">
                   <caption className="sr-only">Minimum speed of both drivers at the slowest automatically detected corners</caption>
                   <thead><tr><th scope="col">Corner</th><th scope="col" className="r">At (est.)</th><th scope="col" className="r" style={{ color: colours[0] }}>{names[0]}</th><th scope="col" className="r" style={{ color: colours[1] }}>{names[1]}</th><th scope="col" className="r">A − B</th></tr></thead>

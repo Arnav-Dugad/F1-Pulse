@@ -92,3 +92,5 @@
 .rt-method ol, .rt-method ul { margin: 0; padding-left: 20px; display: grid; gap: 10px; }
 .rt-method b { color: var(--label); }
 .rt-h3 { font-size: 16px; font-weight: 720; letter-spacing: -0.02em; color: var(--label); }
+/* Era cards are narrow at desktop widths: let surnames wrap rather than truncate. */
+.rt-era .rt-row-name b { white-space: normal; overflow-wrap: anywhere; line-height: 1.15; }

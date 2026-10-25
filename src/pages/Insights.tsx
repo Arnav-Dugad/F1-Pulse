@@ -269,7 +269,7 @@ function Reliability({ races, year }: { races: Race[]; year: string }) {
           <Segmented label="Group by" value={mode} onChange={setMode} options={[{ value: "teams", label: "Teams" }, { value: "drivers", label: "Drivers" }]} />
           <button className="btn sm glass-btn" onClick={exportCSV}><Download />CSV</button>
         </div>
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table className="tbl ins-matrix">
             <thead>
               <tr>
@@ -510,7 +510,7 @@ function Gained({ races, year }: { races: Race[]; year: string }) {
         </Glass>
       )}
       <Glass className="card flush reveal">
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table className="tbl ins-gain-tbl">
             <thead>
               <tr>

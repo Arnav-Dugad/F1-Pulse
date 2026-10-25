@@ -107,7 +107,9 @@ export function ChampionshipDecider({ list, calendar, standingsRound, year }: { 
                       ? <>Can't be eliminated at the {gp(next.raceName)}.</>
                       : <>{c.eliminatedIfOutscoredBy > 0
                           ? <>Out after the {gp(next.raceName)} if {L} outscores him by {pts(c.eliminatedIfOutscoredBy)}+.</>
-                          : <>Out after the {gp(next.raceName)} unless he outscores {L} by {pts(1 - c.eliminatedIfOutscoredBy)}+.</>} If {L} wins{next.sprint ? " both races" : ""}, {c.name} must score at least <b>{pts(c.mustScoreIfLeaderMax)}</b>{c.mustFinish?.pos ? <> — {ordinal(c.mustFinish.pos)} or better</> : !next.sprint && c.mustScoreIfLeaderMax > 0 ? <> — more than second place pays, so he needs {L} to slip</> : null}.</>}
+                          : <>Out after the {gp(next.raceName)} unless he outscores {L} by {pts(1 - c.eliminatedIfOutscoredBy)}+.</>} {!next.sprint && !c.mustFinish?.pos && c.mustScoreIfLeaderMax > 0
+                          ? <>If {L} wins{next.sprint ? " both races" : ""}, {c.name} is out — no finishing position makes up the gap.</>
+                          : <>If {L} wins{next.sprint ? " both races" : ""}, {c.name} must score at least <b>{pts(c.mustScoreIfLeaderMax)}</b>{c.mustFinish?.pos ? <> — {ordinal(c.mustFinish.pos)} or better</> : null}.</>}</>}
                   </li>
                   {c.canLeadThisWeekend && <li className="good"><Crown size={14} />Can take the championship lead this weekend.</li>}
                   {!c.canLeadThisWeekend && c.canTieThisWeekend && <li className="good"><Crown size={14} />Can draw level on points this weekend.</li>}

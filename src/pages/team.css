@@ -2,6 +2,7 @@
 .tm-root { --c0: var(--tint); --c1: color-mix(in oklab, var(--tint) 50%, var(--label)); --c2: color-mix(in oklab, var(--tint) 55%, #000); --c3: var(--label-3); }
 .tm-root.light { --c1: color-mix(in oklab, var(--tint) 50%, #000); --c2: color-mix(in oklab, var(--tint) 25%, #000); }
 :root[data-theme="light"] .tm-root.light { --c0: color-mix(in oklab, var(--tint) 55%, #000); --c1: color-mix(in oklab, var(--tint) 78%, #000); --c2: color-mix(in oklab, var(--tint) 35%, #000); }
+:root[data-theme="light"] .tm-root.grey.light, :root .tm-root.grey { --c0: #0a84ff; --c1: #ff9f0a; --c2: #30d158; --c3: #bf5af2; }
 .tm-root .tm-c0 { --c: var(--c0); background: var(--c0); }
 .tm-root .tm-c1 { --c: var(--c1); background: var(--c1); }
 .tm-root .tm-c2 { --c: var(--c2); background: var(--c2); }
@@ -219,7 +220,7 @@
 .tm-donut-legend small { font-size: 12.5px; color: var(--label-2); font-variant-numeric: tabular-nums; }
 
 /* ───────────────────────── Race record ───────────────────────── */
-.tm-rec-wrap { max-height: 580px; overflow: auto; }
+.tm-rec-wrap { overflow-x: auto; }
 .tm-rec, .tm-hist { width: 100%; border-collapse: collapse; }
 .tm-rec th, .tm-hist th { background: var(--glass-strong); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); z-index: 2; }
 .tm-rec-cell { display: inline-flex; align-items: center; gap: 6px; }
@@ -284,4 +285,10 @@
 @media (max-width: 520px) {
   .tm-duo-photo.archive { width: 100%; mask: linear-gradient(180deg, #000 45%, transparent 75%); }
   .tm-duo-credit { top: 54px; bottom: auto; right: 12px; max-width: 60%; }
+}
+@media (max-width: 480px) {
+  .tm-tape-driver { gap: 8px; }
+  .tm-tape-driver .avatar { --s: 30px !important; }
+  .tm-tape-driver small { display: none; }
+  .tm-tape-driver strong { font-size: 14px; white-space: normal; overflow-wrap: normal; }
 }

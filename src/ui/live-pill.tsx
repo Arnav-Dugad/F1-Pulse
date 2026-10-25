@@ -110,6 +110,7 @@ export function LivePill({ route }: { route: Route }) {
 
   return (
     <div className={cx("live-pill-wrap", phone ? "phone" : "desk")} ref={ref}>
+      <PillFlag phone={phone} />
       <motion.div
         layout
         className={cx("live-pill glass glass-strong", open && "open", live && "is-live")}
@@ -180,4 +181,17 @@ export function LivePill({ route }: { route: Route }) {
       </motion.div>
     </div>
   );
+}
+
+/**
+ * Tells the page the pill is floating above the phone tab bar (extra bottom runway), as a root data
+ * attribute — `body:has(.live-pill-wrap)` re-checked the whole document on every countdown tick.
+ */
+function PillFlag({ phone }: { phone: boolean }) {
+  useEffect(() => {
+    const root = document.documentElement;
+    if (phone) root.dataset.livePill = "phone";
+    return () => { delete root.dataset.livePill; };
+  }, [phone]);
+  return null;
 }

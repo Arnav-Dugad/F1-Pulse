@@ -10,7 +10,10 @@ import worker, {
   normalizeHitPath,
   refresh,
   WARM_PATHS,
+  memoryCache,
 } from "../worker/index.mjs";
+import { beforeEach } from "node:test";
+beforeEach(() => memoryCache.clear());
 test("legacy links keep driver, team and race destinations with safe seasons", async () => {
   assert.equal(
     legacyDestination(
@@ -131,6 +134,51 @@ test("inflight requests deduplicate, preserve independent response bodies and re
     assert.deepEqual(await a.json(), await b.json());
   } finally {
     globalThis.fetch = original;
+  }
+});
+
+test("a rate-limited OpenF1 archive check is reported as retryable, not as 'not in the archive'", async () => {
+  const original = globalThis.fetch;
+  globalThis.fetch = async () => new Response("slow down", { status: 429 });
+  try {
+    const r = await worker.fetch(new Request("https://pulse.test/api/openf1?path=laps&session_key=9999"), {}, { waitUntil() {} });
+    assert.equal(r.status, 429);
+    assert.match((await r.json()).error, /rate limit/);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
+test("a failing source is answered from the week-long backup copy, marked stale", async () => {
+  const original = globalThis.fetch, originalCaches = globalThis.caches;
+  const store = new Map();
+  globalThis.caches = {
+    default: {
+      async match(r) { return store.get(r.url)?.clone(); },
+      async put(r, res) { store.set(r.url, res); },
+    },
+  };
+  const pending = [];
+  const ctx = { waitUntil: (p) => pending.push(p) };
+  const req = () => worker.fetch(new Request("https://pulse.test/api/jolpica?path=1951.json"), {}, ctx);
+  try {
+    globalThis.fetch = async () => Response.json({ MRData: { total: "7" } });
+    assert.equal((await req()).status, 200);
+    await Promise.all(pending);
+    assert.ok([...store.keys()].some((k) => k.includes("__stale=1")), "backup copy stored");
+    for (const k of [...store.keys()]) if (!k.includes("__stale")) store.delete(k); // the fresh copy expires
+    memoryCache.expire();
+    globalThis.fetch = async () => new Response("down", { status: 503 });
+    const stale = await req();
+    assert.equal(stale.status, 200);
+    assert.equal(stale.headers.get("X-Pulse-Stale"), "1");
+    assert.equal((await stale.json()).data.MRData.total, "7");
+    store.clear();
+    memoryCache.clear();
+    assert.equal((await req()).status, 502, "no backup: the failure is reported honestly");
+  } finally {
+    globalThis.fetch = original;
+    globalThis.caches = originalCaches;
   }
 });
 
@@ -374,4 +422,38 @@ test("page-view beacon stores only the route path and country, honouring DNT/GPC
   // Without the binding the beacon is a harmless no-op.
   const bare = await worker.fetch(new Request("https://pulse.test/api/hit", { method: "POST", body: "calendar" }), {}, {});
   assert.equal(bare.status, 204);
+});
+
+test("without a usable Cache API (workers.dev), repeat requests are served from isolate memory", async () => {
+  const original = globalThis.fetch, originalCaches = globalThis.caches;
+  globalThis.caches = undefined;
+  let calls = 0;
+  globalThis.fetch = async () => { calls++; return Response.json({ MRData: { total: "1" } }); };
+  try {
+    const req = () => worker.fetch(new Request("https://pulse.test/api/jolpica?path=1960.json"), {}, { waitUntil() {} });
+    assert.equal((await req()).status, 200);
+    const again = await req();
+    assert.equal(again.status, 200);
+    assert.equal((await again.json()).data.MRData.total, "1");
+    assert.equal(calls, 1, "second request hit the upstream");
+  } finally {
+    globalThis.fetch = original;
+    globalThis.caches = originalCaches;
+  }
+});
+
+test("a recent saved current season is served without rebuilding it from Jolpica", async () => {
+  const original = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = async () => { calls++; return new Response("should not be called", { status: 500 }); };
+  const saved = { data: { calendar: [], results: [], sprints: [] }, meta: { fetchedAt: new Date(Date.now() - 5 * 60e3).toISOString() } };
+  const env = { PULSE_KV: { get: async (k) => (k === "season:current" ? saved : null), put: async () => {} } };
+  try {
+    const r = await worker.fetch(new Request("https://pulse.test/api/season?year=current"), env, { waitUntil() {} });
+    assert.equal(r.status, 200);
+    assert.equal((await r.json()).meta.fetchedAt, saved.meta.fetchedAt);
+    assert.equal(calls, 0);
+  } finally {
+    globalThis.fetch = original;
+  }
 });

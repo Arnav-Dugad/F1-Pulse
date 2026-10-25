@@ -168,6 +168,7 @@ export default function Strategy({ route }: { route: Route }) {
         <p><b>A simplified, deterministic model — not a race prediction.</b> Every number below comes from the assumptions you set. It ignores tyre compounds and warm-up, fuel burn, safety cars, weather, track position and overtaking difficulty. Defaults are <b>editable assumptions, not historical calibration</b> — you can optionally <button type="button" className="link" onClick={() => document.getElementById("empirical-fit")?.scrollIntoView({ behavior: "smooth" })}>fit them from a real race</button>.</p>
       </div>
 
+      <h2 className="sr-only">Strategy model</h2>
       <div className="sg-layout">
         <aside className="sg-side">
           <Glass className="card sg-assume reveal">
@@ -516,7 +517,7 @@ function Heatmap({ a, plans, color }: { a: Assumptions; plans: Plan[]; color: (i
   const maxMargin = Math.max(1, ...grid.flat().map((c) => c.margin ?? 0));
   return (
     <Glass className="card flush sg-heat reveal">
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="sg-heat-tbl">
           <caption className="sr-only">Quickest plan for each combination of degradation (rows) and pit-lane loss (columns)</caption>
           <thead>

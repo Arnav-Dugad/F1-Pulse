@@ -235,7 +235,7 @@ function DriverDetail({ archive, r, rank, byIdx }: { archive: Archive; r: Driver
       </Glass>
       {mates.length > 0 && (
         <Glass className="card flush reveal rt-mates">
-          <div className="table-wrap">
+          <div className="table-wrap" tabIndex={0}>
             <table className="tbl">
               <caption className="sr-only">Head-to-head record against each teammate</caption>
               <thead><tr><th scope="col">Teammate</th><th scope="col" className="r">Seasons</th><th scope="col" className="r">Ahead</th><th scope="col" className="r">Behind</th><th scope="col" className="r">Their rating</th></tr></thead>

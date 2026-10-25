@@ -374,7 +374,7 @@ function Simulator({ list, year, sc, rem, next }: { list: Standing[]; year: stri
                 <b><Tween value={afterAlive} duration={0.5} format={(n) => String(n)} /></b>
                 <small>{afterAlive < beforeAlive ? `${beforeAlive - afterAlive} eliminated by this result` : afterAlive === 1 && afterMax >= 0 ? "Title decided" : "No one eliminated"}</small>
               </div>
-              <ol className="sc-proj">
+              <ol className="sc-proj" tabIndex={0} aria-label="Projected table">
                 <AnimatePresence initial={false}>
                   {projected.map((s, i) => {
                     const team = teamOf(s, year);

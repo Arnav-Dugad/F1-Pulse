@@ -24,3 +24,5 @@ export function buildCalendar(
   now?: Date,
   options?: { alarmMinutes?: number },
 ): string;
+/** Past seasons: drivers in result rows take that row's car number; elsewhere the (present-day) permanent number is dropped. Mutates. */
+export function seasonalNumbers(node: unknown, season?: number, current?: number): void;

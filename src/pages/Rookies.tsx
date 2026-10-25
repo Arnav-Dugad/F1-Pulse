@@ -2,7 +2,7 @@ import { useMemo, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowDownUp, Info, Plus, Sparkles, Star, X } from "lucide-react";
 import { Link, setQuery, type Route } from "../lib/router";
-import { circuitMedia, teamColor } from "../lib/media";
+import { circuitMedia, teamColor, teamShortName } from "../lib/media";
 import { ordinal, plural, pts } from "../lib/format";
 import { eraById, firstRaces, isStart, modernPoints, rookieSeasons, useArchive, type Archive, type ArchiveBundle, type Rookie } from "../lib/archive";
 import { Counter, Glass, Page, Section, Segmented, Source, Toggle, cx, useAmbient, useTitle } from "../ui/core";
@@ -92,7 +92,7 @@ function RookiesView({ bundle, route }: { bundle: ArchiveBundle; route: Route })
 
       <Section id="every-rookie" title="Every rookie season" subtitle={`${plural(inEra.length, "driver")} · sort any column. “2010+ pts” rescoring is a what-if normalisation.`}>
         <Glass className="card flush reveal rk-table">
-          <div className="table-wrap">
+          <div className="table-wrap" tabIndex={0}>
             <table className="tbl">
               <caption className="sr-only">Rookie seasons with results and team-mate comparison</caption>
               <thead>
@@ -118,7 +118,7 @@ function RookiesView({ bundle, route }: { bundle: ArchiveBundle; route: Route })
                       <td>
                         <Link to={"driver/" + d.id} className="rk-driver" style={{ "--tint": teamColor(t?.id) } as CSSProperties}>
                           <Face archive={archive} idx={r.idx} size={32} year={r.season} team={r.team} />
-                          <span><strong>{d.name}{r.season === latestSeason && <span className="chip green rk-new">Current</span>}</strong><small><Flag nationality={d.nat} />{t?.name}{r.teams.length > 1 ? ` +${r.teams.length - 1}` : ""}</small></span>
+                          <span><strong>{d.name}{r.season === latestSeason && <span className="chip green rk-new">Current</span>}</strong><small><Flag nationality={d.nat} />{t && teamShortName(t.name, String(r.season))}{r.teams.length > 1 ? ` +${r.teams.length - 1}` : ""}</small></span>
                         </Link>
                       </td>
                       <td className="r">{r.season}</td>
@@ -163,7 +163,7 @@ function BestRookie({ archive, r }: { archive: Archive; r: Row }) {
       <span className="rk-best-label"><Star size={13} />Strongest rookie season · 2010+ scale</span>
       <Face archive={archive} idx={r.idx} size={128} year={r.season} team={r.team} className="rk-best-face" />
       <strong>{d.name}</strong>
-      <span className="rk-best-sub">{r.season} · {archive.teams[r.team]?.name}</span>
+      <span className="rk-best-sub">{r.season} · {archive.teams[r.team] && teamShortName(archive.teams[r.team].name, String(r.season))}</span>
       <span className="rk-best-stats"><span><b>{r.norm}</b><small>pts (2010+)</small></span><span><b>{r.wins}</b><small>wins</small></span><span><b>{r.podiums}</b><small>podiums</small></span></span>
     </Link>
   );
@@ -181,7 +181,7 @@ function RookieCard({ archive, r, index, current }: { archive: Archive; r: Row; 
         <Face archive={archive} idx={r.idx} size={64} year={r.season} team={r.team} />
         <span>
           <strong>{d.name}</strong>
-          <small><TeamLogo id={t?.id} name={t?.name || ""} year={String(r.season)} size={18} />{t?.name}</small>
+          <small><TeamLogo id={t?.id} name={t?.name || ""} year={String(r.season)} size={18} />{t && teamShortName(t.name, String(r.season))}</small>
         </span>
         {current && <span className="chip green">Rookie</span>}
       </div>

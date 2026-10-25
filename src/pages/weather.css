@@ -28,8 +28,8 @@
 .wi-range { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; max-width: 100%; }
 .wi-range .seg { max-width: 100%; overflow-x: auto; }
 .wi-season { min-width: 0; max-width: 220px; }
-.wi-label-note { display: flex; gap: 6px; align-items: flex-start; margin: 4px 0 0; line-height: 1.5; }
-.wi-label-note svg { flex: none; margin-top: 2px; }
+.wi-label-note { display: block; gap: 6px; align-items: flex-start; margin: 4px 0 0; line-height: 1.5; }
+.wi-label-note svg { display: inline; vertical-align: -2px; margin-right: 6px; }
 
 /* Shared */
 .wi-delta { font-weight: 750; font-variant-numeric: tabular-nums; }

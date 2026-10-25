@@ -350,7 +350,7 @@ function CircuitSection({ archive, range, cov }: { archive: Archive; range: Rang
             {chaos && <CircuitHighlight archive={archive} idx={chaos.idx} icon={<MapPin size={13} />} label="Least kind to pole" value={fmtPct(chaos.conversion, 0)} sub={`${chaos.poleWins} of ${chaos.poleRaces} poles converted`} i={2} />}
           </div>
           <Glass className="card flush reveal rb-circuits">
-            <div className="table-wrap">
+            <div className="table-wrap" tabIndex={0}>
               <table className="tbl">
                 <caption className="sr-only">Average places gained and pole-to-win conversion by circuit</caption>
                 <thead>
@@ -449,7 +449,7 @@ function DominanceSection({ archive, history, range }: { archive: Archive; histo
           <button type="button" className="btn sm" aria-pressed={table} onClick={() => setTable(!table)}>{table ? "Show chart" : "Show table"}</button>
         </div>
         {table ? (
-          <div className="table-wrap rb-dom-table">
+          <div className="table-wrap rb-dom-table" tabIndex={0}>
             <table className="tbl">
               <thead><tr><th>Season</th><th>Champion</th><th className="r">Wins</th><th className="r">Win share</th><th className="r">Points share</th><th className="r">Winners</th></tr></thead>
               <tbody>

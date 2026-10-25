@@ -69,10 +69,10 @@ const pages: Record<string, React.LazyExoticComponent<ComponentType<{ route: Rou
 
 function NotFound() {
   return (
-    <Page>
-      <div className="state glass" style={{ marginTop: 40 }}>
+    <Page className="nf-page">
+      <div className="state glass">
         <span className="display gradient-text">404</span>
-        <h3>This corner isn't on the map.</h3>
+        <h1 className="state-title">This corner isn't on the map.</h1>
         <p>The page you followed doesn't exist — it may have moved in the redesign.</p>
         <a className="btn primary" href="#/">Back to the grid</a>
       </div>
@@ -81,7 +81,7 @@ function NotFound() {
 }
 
 function RouteFallback() {
-  return <div className="route-loading" aria-busy="true" aria-label="Loading"><div className="spinner" /></div>;
+  return <div role="status" className="route-loading" aria-busy="true" aria-label="Loading"><div className="spinner" /></div>;
 }
 
 function App() {
@@ -117,7 +117,9 @@ function App() {
       <TopNav section={section} onSearch={() => setSearch(true)} />
       <Boundary key={route.path}>
         <Suspense fallback={<RouteFallback />}>
-          {Current ? <Current key={route.path + "|" + season + "|" + refreshKey} route={route} /> : <NotFound />}
+          {/* Keyed by the query too: a link to ?view=… on the page you're on starts it fresh. Pages
+              update their own query with replaceState (setQuery), which never remounts them. */}
+          {Current ? <Current key={route.path + "?" + route.query.toString() + "|" + season + "|" + refreshKey} route={route} /> : <NotFound />}
         </Suspense>
       </Boundary>
       <SectionNav path={route.path + "|" + season + "|" + refreshKey} />

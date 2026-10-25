@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { cx } from "./core";
 
 export type Series = { id: string; name: string; color: string; values: (number | null)[]; dashed?: boolean };
@@ -71,6 +71,8 @@ export function LineChart({
   const [ref, width] = useWidth<HTMLDivElement>();
   const [hover, setHover] = useState<number | null>(null);
   const [hot, setHot] = useState<string | null>(null);
+  // Gradient ids must be unique per chart: two charts of the same driver on one page would share them.
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const pad = { l: 44, r: 16, t: 14, b: 30 };
   const w = Math.max(0, width - pad.l - pad.r), h = height - pad.t - pad.b;
   const all = series.flatMap((s) => s.values.filter((v): v is number => v !== null && Number.isFinite(v)));
@@ -123,11 +125,13 @@ export function LineChart({
         <svg width={width} height={height} aria-hidden>
           <defs>
             {series.map((s) => (
-              <linearGradient key={s.id} id={`fill-${s.id}`} x1="0" x2="0" y1="0" y2="1">
+              <linearGradient key={s.id} id={`fill-${uid}-${s.id}`} x1="0" x2="0" y1="0" y2="1">
                 <stop offset="0" stopColor={s.color} stopOpacity="0.55" />
                 <stop offset="1" stopColor={s.color} stopOpacity="0" />
               </linearGradient>
             ))}
+            {/* Out-of-scale points (pit laps, outliers) stay inside the plot instead of spilling into the card. */}
+            <clipPath id={`clip-${uid}`}><rect x={pad.l - 6} y={pad.t - 6} width={w + 12} height={h + 12} /></clipPath>
           </defs>
           {ticks.map((t) => (
             <g key={t}>
@@ -146,12 +150,13 @@ export function LineChart({
               <g
                 key={s.id + drawKey}
                 className={cx("series-group", lifted && "lifted")}
+                clipPath={`url(#clip-${uid})`}
                 style={{ color: s.color } as CSSProperties}
                 onPointerEnter={() => { setHot(s.id); onFocus?.(s.id); }}
                 onPointerLeave={() => { setHot((h) => (h === s.id ? null : h)); onFocus?.(null); }}
               >
                 {area && segs.map((seg, k) => (
-                  <path key={"a" + k} className="area" fill={`url(#fill-${s.id})`} d={(curve ? smoothPath(seg) : "M" + seg.join("L")) + `L${seg.at(-1)![0]},${pad.t + h}L${seg[0][0]},${pad.t + h}Z`} style={{ opacity: dim ? 0.04 : undefined }} />
+                  <path key={"a" + k} className="area" fill={`url(#fill-${uid}-${s.id})`} d={(curve ? smoothPath(seg) : "M" + seg.join("L")) + `L${seg.at(-1)![0]},${pad.t + h}L${seg[0][0]},${pad.t + h}Z`} style={{ opacity: dim ? 0.04 : undefined }} />
                 ))}
                 {segs.map((seg, k) => (
                   <path

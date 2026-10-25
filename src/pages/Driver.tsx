@@ -20,6 +20,7 @@ import {
   type Mate,
 } from "./_drivers";
 import { Gallery } from "../ui/gallery";
+import { useArchive } from "../lib/archive";
 import type { Driver, Race, Result, Standing, Team } from "../types";
 import "./driver.css";
 
@@ -86,8 +87,8 @@ export default function DriverPage({ route }: { route: Route }) {
       )}
 
       <Career driver={driver} year={year} seasonRaces={res.value?.data} />
-      <Helmets driver={driver} tint={tint} />
-      <DriverGallery driver={driver} />
+      <Helmets driver={driver} tint={tint} year={year} />
+      <DriverGallery driver={driver} year={year} />
       <Biography driver={driver} />
       <Adjacent id={id} standings={ds.value?.data} year={year} />
 
@@ -107,9 +108,36 @@ function NotFound({ id }: { id: string }) {
         <span className="drv-notfound-mark" aria-hidden>?</span>
         <h1 className="title-2">We couldn't find that driver</h1>
         <p>No driver with the id “{id || "—"}” exists in the Formula 1 archive. The link may be mistyped or out of date.</p>
+        <DriverSuggestions term={id} />
         <Link to="drivers" className="btn primary"><ArrowLeft />Browse the grid</Link>
       </Glass>
     </Page>
+  );
+}
+
+/** "Did you mean…": archive drivers whose id or surname contains the mistyped id (e.g. lindblad). */
+function DriverSuggestions({ term }: { term: string }) {
+  const archive = useArchive();
+  const current = useData(() => standings("current"), []);
+  const fold = (x: string) => x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const needle = fold(term.replace(/[_-]+/g, " ").trim());
+  // The archive ends with the last completed season: add this season's drivers (rookies).
+  const pool = [
+    ...(current.value?.data || []).map((s) => ({ id: s.Driver.driverId, family: s.Driver.familyName, name: fullName(s.Driver) })),
+    ...(archive.value?.archive.drivers || []),
+  ];
+  const seen = new Set<string>();
+  const hits = needle.length < 3 ? [] : pool
+    .filter((d) => !seen.has(d.id) && (seen.add(d.id), fold(d.id.replace(/_/g, " ")).includes(needle) || fold(d.family).includes(needle) || needle.includes(fold(d.family))))
+    .slice(0, 6);
+  if (!hits.length) return null;
+  return (
+    <div className="drv-suggest">
+      <span className="eyebrow">Did you mean</span>
+      <div className="drv-suggest-list">
+        {hits.map((d) => <Link key={d.id} to={"driver/" + d.id} className="chip">{d.name}</Link>)}
+      </div>
+    </div>
   );
 }
 
@@ -164,7 +192,7 @@ function DriverHero({ driver, team, year, standing, stints, inSeason, loadingSea
         </span>
         <h1 className="drv-name rise" style={{ "--i": 1 } as CSSProperties}>
           <span className="drv-given">{driver.givenName}</span>
-          <span className="drv-family">{driver.familyName}</span>
+          <span className="drv-family" style={{ "--chars": driver.familyName.length } as CSSProperties}>{driver.familyName}</span>
         </h1>
         <div className="drv-team-line rise" style={{ "--i": 2 } as CSSProperties}>
           {team ? (
@@ -360,7 +388,7 @@ function TeammateDuel({ driver, mate, races, quali, mateQuali, qualiLoading, sta
             <DriverAvatar id={driver.driverId} name={fullName(driver)} year={year} team={team?.constructorId} size={52} />
             <span><small>{driver.givenName}</small><strong>{driver.familyName}</strong></span>
           </span>
-          <span className="drv-duel-score" aria-label={`Race finishes ahead: ${race.a} to ${race.b}`}>
+          <span role="img" className="drv-duel-score" aria-label={`Race finishes ahead: ${race.a} to ${race.b}`}>
             <b>{race.a}</b><i>–</i><b>{race.b}</b>
           </span>
           <Link to={"driver/" + mate.driverId} className="drv-duel-side b">
@@ -389,7 +417,7 @@ function RaceRecord({ entries, quali, sprints, driverId, multiTeam, year, source
   return (
     <Section title="The race record" subtitle="Grand Prix classification, round by round.">
       <Glass className="card flush reveal">
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table className="tbl drv-tbl">
             <thead>
               <tr>
@@ -477,7 +505,8 @@ function Career({ driver, year, seasonRaces }: { driver: Driver; year: string; s
   }, [career.value, history.value, currentYear]);
 
   const loading = career.loading || history.loading;
-  const error = career.error && history.error ? career.error : undefined;
+  // Both halves feed the totals: a partial load would show confident zeros, so either failure is an error.
+  const error = career.error || history.error || undefined;
   const tint = teamColor(data.rows.at(-1)?.teams.at(-1));
 
   return (
@@ -520,7 +549,7 @@ function Career({ driver, year, seasonRaces }: { driver: Driver; year: string; s
           {data.rows.some((r) => r.position) && <ChampionshipChart rows={data.rows} tint={tint} />}
 
           <Glass className="card flush reveal drv-seasons">
-            <div className="table-wrap">
+            <div className="table-wrap" tabIndex={0}>
               <table className="tbl">
                 <thead><tr><th>Season</th><th>Team</th><th className="c">Pos</th><th className="r">Points</th><th className="r">Wins</th><th className="r">Podiums</th><th className="r">Entries</th></tr></thead>
                 <tbody>
@@ -677,8 +706,8 @@ function FormCurve({ entries, sprints, driverId, tint, source }: {
         <Glass className={cx("card drv-form-kpi reveal", trend)} style={{ "--tint": tint } as CSSProperties}>
           <span className="drv-kpi-label"><TrendingUp size={14} />Last {plural(span, "race")}</span>
           <span className="drv-form-value"><Counter value={lastAvg} decimals={1} /><small>pts / race</small></span>
-          <span className={cx("drv-form-trend", trend)} aria-label={`Trend ${trend === "flat" ? "level" : trend}: ${delta >= 0 ? "+" : "−"}${Math.abs(delta).toFixed(1)} points per race`}>
-            <Arrow size={18} />{trend === "flat" ? "Holding steady" : `${delta > 0 ? "+" : "−"}${Math.abs(delta).toFixed(1)} vs ${prevIdx >= 0 ? `the ${WINDOW} races before` : "the opening race"}`}
+          <span role="img" className={cx("drv-form-trend", trend)} aria-label={`Trend ${trend === "flat" ? "level" : trend}: ${delta >= 0 ? "+" : "−"}${Math.abs(delta).toFixed(1)} points per race`}>
+            <Arrow size={18} />{trend === "flat" ? "Holding steady" : `${delta > 0 ? "+" : "−"}${Math.abs(delta).toFixed(1)} vs ${prevIdx >= 0 ? `the ${plural(Math.min(WINDOW, prevIdx + 1), "race")} before` : "the opening race"}`}
           </span>
           <span className="drv-kpi-detail">Season average {seasonAvg.toFixed(1)} pts per race · {plural(perRound.length, "start")}</span>
         </Glass>
@@ -760,9 +789,10 @@ function CareerRibbon({ driverId, rows, mates, year, seasonRaces }: {
 
 /* ───────────────────────── Helmets ───────────────────────── */
 /** Official helmet artwork by season: a 3D coverflow carousel (arrow keys, swipe) with a lightbox. */
-function Helmets({ driver, tint }: { driver: Driver; tint: string }) {
+function Helmets({ driver, tint, year }: { driver: Driver; tint: string; year: string }) {
   const helmets = useMemo(() => driverHelmets(driver.driverId), [driver.driverId]);
-  const [index, setIndex] = useState(0);
+  // Open on the helmet of the season being viewed, when there is one.
+  const [index, setIndex] = useState(() => Math.max(0, helmets.findIndex((h) => h.year === year)));
   const [open, setOpen] = useState<number | null>(null);
   const tilt = useTilt<HTMLButtonElement>(10);
   const swipe = useRef<{ x: number; y: number } | null>(null);
@@ -802,7 +832,7 @@ function Helmets({ driver, tint }: { driver: Driver; tint: string }) {
               const d = i - index;
               const active = d === 0;
               return (
-                <li key={h.year + h.src} className={cx("drv-helm-item", active && "active", Math.abs(d) > 3 && "far")} style={{ "--d": d, "--ad": Math.abs(d) } as CSSProperties}
+                <li key={h.year + h.src} className={cx("drv-helm-item", active && "active", Math.abs(d) > 2 && "far")} style={{ "--d": d, "--ad": Math.abs(d) } as CSSProperties}
                   aria-hidden={Math.abs(d) > 3 || undefined}>
                   <button type="button" className="drv-helm-btn" tabIndex={active ? 0 : -1} {...(active ? tilt : {})}
                     onClick={() => (active ? setOpen(i) : setIndex(i))}
@@ -824,7 +854,7 @@ function Helmets({ driver, tint }: { driver: Driver; tint: string }) {
           )}
         </div>
         {n > 1 && (
-          <div className="drv-helm-years" aria-label="Helmet seasons">
+          <div role="group" className="drv-helm-years" aria-label="Helmet seasons">
             {helmets.map((h, i) => (
               <button key={h.year + h.src} type="button" aria-pressed={i === index} className={cx("drv-helm-chip", i === index && "on")} onClick={() => setIndex(i)}>{h.year}</button>
             ))}
@@ -898,11 +928,13 @@ function HelmetViewer({ helmets, index, onIndex, onClose, name }: {
 }
 
 /* ───────────────────────── Gallery ───────────────────────── */
-function DriverGallery({ driver }: { driver: Driver }) {
+function DriverGallery({ driver, year }: { driver: Driver; year: string }) {
   const images = driverGallery(driver.driverId);
   if (!images.length) return null;
+  const latest = year !== MEDIA_SEASON;
   return (
-    <Section id="gallery" title="Trackside gallery" subtitle={`${fullName(driver)} on track · ${MEDIA_SEASON} season photography`}>
+    <Section id="gallery" title={latest ? `Latest photography · ${MEDIA_SEASON}` : "Trackside gallery"}
+      subtitle={latest ? `${fullName(driver)} on track in the ${MEDIA_SEASON} season — not the ${year} season shown above.` : `${fullName(driver)} on track · ${MEDIA_SEASON} season photography`}>
       <Gallery images={images} label={`${fullName(driver)} trackside photos`} />
     </Section>
   );

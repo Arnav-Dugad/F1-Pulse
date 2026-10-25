@@ -84,7 +84,7 @@ export function TeamEvolution({ id, year, name }: { id: string; year: string; na
         ))}
       </ol>
       {cars.length > 1 && <CompareSlider cars={cars} />}
-      <p className="source">Official season car imagery {cars[0].year}–{cars.at(-1)!.year}{older.length ? "; earlier seasons use freely licensed archive photos where one exists" : ""}. Names follow the constructor entered that season.</p>
+      <p className="source">Official season car imagery {cars[0].year === cars.at(-1)!.year ? cars[0].year : `${cars[0].year}–${cars.at(-1)!.year}`}{older.length ? "; earlier seasons use freely licensed archive photos where one exists" : ""}. Names follow the constructor entered that season.</p>
     </div>
   );
 }
@@ -92,7 +92,10 @@ export function TeamEvolution({ id, year, name }: { id: string; year: string; na
 /** Archive photo for a season before official imagery — renders nothing until one exists. */
 function HeritageCard({ constructorId, year, span }: { constructorId: string; year: string; span: string }) {
   const photo = useTeamPhoto(constructorId, year);
-  if (!photo) return null;
+  // The card stands for a span of seasons: only a photo taken within it (a 2025 car is not 2010–18).
+  const [from, to = from] = (span.match(/\d{4}/g) || [year]).map(Number);
+  const taken = Number(photo?.credit.date);
+  if (!photo || (!photo.credit.official && !(taken >= from - 1 && taken <= to + 1))) return null;
   const name = evoName(constructorId, year);
   return (
     <li className="evo-card heritage" style={{ "--tint": teamColor(constructorId) } as CSSProperties}>

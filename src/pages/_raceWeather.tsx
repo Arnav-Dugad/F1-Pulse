@@ -73,7 +73,7 @@ export function RaceDayWeather({ race, results }: { race: RaceData; results: Res
               <Mini key={m.key} metric={m} values={series[m.key]} startHour={startHour} endHour={endHour} hover={hover} onHover={setHover} times={idx.map((i) => h!.time[i].slice(11, 16))} />
             ))}
           </div>
-          <p className="source"><Info /> Modelled historical weather (ERA5 reanalysis via Open-Meteo) at the circuit coordinates, not trackside measurements. Hourly values; the shaded band is the race from lights out to the winner's finishing time.</p>
+          <p className="source"><Info /> Modelled historical weather (ERA5 reanalysis via Open-Meteo) at the circuit coordinates, not trackside measurements. Hourly values{startHour !== null ? "; the shaded band is the race from lights out to the winner's finishing time" : ""}.</p>
           <Source value={wx.value} label="Reanalysis" />
         </Glass>
       )}
@@ -134,7 +134,7 @@ function Mini({ metric, values, startHour, endHour, hover, onHover, times }: {
                 <text className="axis" x={pad.l - 6} y={y(t) + 4} textAnchor="end">{metric.bars ? t.toFixed(t < 2 ? 1 : 0) : Math.round(t)}</text>
               </g>
             ))}
-            {[0, 6, 12, 18, 23].filter((i) => i < n).map((i) => <text key={i} className="axis" x={x(i)} y={H - 4} textAnchor="middle">{times[i]}</text>)}
+            {[0, 6, 12, 18, 23].filter((i) => i < n).map((i, k, all) => <text key={i} className="axis" x={x(i)} y={H - 4} textAnchor={k === 0 ? "start" : k === all.length - 1 ? "end" : "middle"}>{times[i]}</text>)}
             {metric.bars
               ? values.map((v, i) => (v !== null && v > 0 ? <rect key={i} x={x(i) - Math.max(2, w / n / 2 - 1.5)} y={y(v)} width={Math.max(3, w / n - 3)} height={Math.max(1, pad.t + h - y(v))} rx={2} className="rw-mini-bar" /> : null))
               : <path d={"M" + pts} className="rw-mini-line" />}

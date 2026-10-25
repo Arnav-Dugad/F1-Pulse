@@ -78,8 +78,11 @@ npm test               # unit tests: data rules, maths, Worker, points progressi
 npm run build          # strict TypeScript + production bundle
 npm run verify:accuracy
 npx playwright install chromium
-npm run preview &      # then:
+npm run preview &      # then (for long sweeps: PULSE_API_PROXY=<deployed origin> node scripts/serve.mjs):
 npm run test:e2e       # every route × desktop/tablet/phone × dark/light: errors, CSP, overflow, headings, images
+npm run test:qa        # deep sweep: 56 routes × 7 viewports/themes — console errors, failed requests, clipped
+                       # text, tap targets, stretched images, heading order, duplicate ids, axe WCAG A/AA
+npm run test:interact  # real interactions: palette, season switch, favourites, lightbox, What If, keyboard focus
 npm run test:visual    # pixel comparison against tests/visual baselines (recorded API fixtures)
 npm run lighthouse     # Lighthouse CI budgets (desktop)
 node scripts/verify-media.mjs  # every season's photo maps to the driver's latest team; every Commons file is free, credited and recorded
@@ -97,7 +100,7 @@ Uses your authenticated Cloudflare account (`npx wrangler login`, or `CLOUDFLARE
 
 - React 19, strict TypeScript, Vite; pages are lazy-loaded chunks; `motion` and React are split into vendor chunks.
 - `src/app` — preferences and shell (nav, tab bar, sheet, command palette, footer). `src/ui` — design-system components, media, charts, cards. `src/lib` — router, media lookup, formatting, season maths. `src/pages` — one file (and stylesheet) per page.
-- `worker/index.mjs` — read-only API proxy with source allowlists, validation, bounded telemetry windows, request de-duplication, timeouts and edge caching. Legacy `.html` URLs redirect to their new destinations.
+- `worker/index.mjs` — read-only API proxy with source allowlists, validation, bounded telemetry windows, request de-duplication, timeouts and caching. The Cache API is a no-op on `*.workers.dev`, so each isolate also keeps a small in-memory LRU, and every good response doubles as a week-long stale-if-error copy for when a source is rate-limited. A 15-minute cron saves the current season to KV, which readers get instantly while it is under 20 minutes old. Legacy `.html` URLs redirect to their new destinations.
 - Browser request queue (rate-limit aware), memory/session caching, dated offline snapshot for core current-season data.
 
 F1 Pulse is unofficial and is not associated in any way with the Formula 1 companies. F1, FORMULA ONE, FORMULA 1 and related marks are trade marks of Formula One Licensing B.V.

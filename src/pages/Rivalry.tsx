@@ -138,7 +138,7 @@ function VersusFigure({ archive, ai, bi, ca, cb, data }: { archive: Archive; ai:
       </div>
       {t && t.races > 0 && (
         <>
-          <div className="rv-vs-score" aria-label={`${archive.drivers[ai].family} finished ahead ${t.a} times, ${archive.drivers[bi].family} ${t.b} times`}>
+          <div role="img" className="rv-vs-score" aria-label={`${archive.drivers[ai].family} finished ahead ${t.a} times, ${archive.drivers[bi].family} ${t.b} times`}>
             <span>{t.a}</span><small>–</small><span>{t.b}</span>
           </div>
           <div className="rv-vs-bar" aria-hidden><span style={{ width: `${share * 100}%` }} /></div>

@@ -157,3 +157,4 @@
   .tl-ro-grid b { text-align: right; }
   .tl-ro-driver { justify-content: flex-end; }
 }
+.tl-legend-item { white-space: nowrap; }

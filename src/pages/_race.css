@@ -122,7 +122,7 @@
 .rw-qd-cell small { font-size: 10.5px; font-weight: 700; }
 .rw-qd-cell small.better { color: var(--green); }
 .rw-qd-cell small.worse { color: var(--orange); }
-.rw-qd-prog .table-wrap { max-height: 560px; overflow: auto; }
+.rw-qd-prog .table-wrap { overflow-x: auto; }
 
 /* ───────── Gaps & worm ───────── */
 .rw-gaps { display: grid; gap: 20px; }
@@ -367,3 +367,7 @@ a.rw-radio-name:hover { color: color-mix(in srgb, var(--label) 70%, var(--blue))
 .rw-ty-who { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .rw-ty-who span { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px 0 4px; border-radius: 999px; font-size: 11.5px; font-weight: 750; background: color-mix(in srgb, var(--tint) 16%, var(--fill-4)); box-shadow: inset 3px 0 0 var(--tint); }
 .rw-ty-who b { font-size: 10.5px; color: var(--label-3); font-variant-numeric: tabular-nums; padding-left: 5px; }
+/* An odd number of report tiles: the last one spans the row instead of leaving a hole. */
+@media (min-width: 981px) { .rw-rep-stats > :last-child:nth-child(odd) { grid-column: 1 / -1; } }
+/* Side cards next to a tall grid stay in view while it scrolls. */
+@media (min-width: 981px) { .rw-grid-side { position: sticky; top: 96px; align-self: start; } }

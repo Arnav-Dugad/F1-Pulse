@@ -264,7 +264,7 @@ function RoundEditor({ archive, input, season, roundId, edits, scenario, onRound
         <button type="button" className="btn sm plain" disabled={!edited} onClick={() => onChange(roundId, null)}><Undo2 />Reset round</button>
       </div>
       {edits.size > 0 && (
-        <div className="wi-edited" aria-label="Edited rounds">
+        <div role="group" className="wi-edited" aria-label="Edited rounds">
           {[...edits.keys()].map((r) => <button key={r} type="button" className={cx("chip", r === roundId && "wi-chip-o")} onClick={() => onRound(r)}>R{r} edited</button>)}
         </div>
       )}
@@ -396,7 +396,7 @@ function Standings({ archive, season, scenario, base, diff, modified, live }: {
 
 function RankChip({ delta }: { delta: number | null }) {
   if (!delta) return <span className="wi-rank-chip level" aria-hidden />;
-  return <span className={cx("wi-rank-chip", delta > 0 ? "up" : "down")} aria-label={`${delta > 0 ? "Up" : "Down"} ${Math.abs(delta)} vs real`}>{delta > 0 ? <ArrowUp size={11} /> : <ArrowDown size={11} />}{Math.abs(delta)}</span>;
+  return <span role="img" className={cx("wi-rank-chip", delta > 0 ? "up" : "down")} aria-label={`${delta > 0 ? "Up" : "Down"} ${Math.abs(delta)} vs real`}>{delta > 0 ? <ArrowUp size={11} /> : <ArrowDown size={11} />}{Math.abs(delta)}</span>;
 }
 function PointsChip({ delta }: { delta: number }) {
   if (!delta) return <span className="wi-pts-chip level" aria-hidden>—</span>;
@@ -439,7 +439,7 @@ function Progression({ archive, season, scenario, base }: { archive: Archive; se
         height={340}
         yFormat={(v) => pts(Math.round(v * 10) / 10)}
       />
-      <div className="wi-prog-marks" aria-label="Edited rounds">
+      <div role="group" className="wi-prog-marks" aria-label="Edited rounds">
         {scenario.rounds.map((r, i) => r.edited ? <span key={r.round} className="chip wi-chip-o" style={{ "--x": scenario.rounds.length > 1 ? i / (scenario.rounds.length - 1) : 0.5 } as CSSProperties}>R{r.round} edited</span> : null)}
       </div>
     </Glass>

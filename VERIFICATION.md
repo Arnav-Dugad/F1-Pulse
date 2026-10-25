@@ -1,6 +1,61 @@
-# Verification — F1 Pulse 3.2
+# Verification — F1 Pulse 3.3
 
-Checked on 24 October 2026, after round 17 (Singapore) of the 2026 season. Notes from earlier versions (3.1 on 15 October, 3.0 on 13 October) follow the 3.2 section.
+Checked on 25 October 2026, after round 17 (Singapore) of the 2026 season. 3.3 is a testing and polish release; notes from earlier versions (3.2 on 24 October, 3.1 on 15 October, 3.0 on 13 October) follow.
+
+## 3.3 testing and polish
+
+**New test tooling**
+
+- `npm run test:qa`: a deep sweep of 56 routes × 7 viewports and themes (385 page checks). It checks console errors, failed requests, element-level overflow, clipped and truncated text, text under 10 px, phone tap targets, stretched images, missing alt text, heading order, duplicate ids, and axe-core WCAG 2.1 A/AA violations in both themes.
+- `npm run test:interact`: 20 real-interaction checks — command palette, season switching, standings views, theme persistence, favourites, gallery lightbox and keyboard, What If editing, compare, section chips, back/forward, 404 recovery, focus management, the skip link, telemetry/replay defaults, settings, and the phone tab bar, sheet, reminders and swipe.
+- Visual review of every route at 1440 px and 390 px, both themes, with skims at 1024, 820 and 320 px.
+
+**Results**
+
+| Check | Before | After |
+| --- | --- | --- |
+| axe colour-contrast failures (page checks) | 140 | 0 |
+| ARIA misuse (`aria-label` on generic elements) | 68 | 0 |
+| Keyboard-unreachable scroll regions | 12 | 0 |
+| Heading-order skips | 28 | 0 |
+| Duplicate ids (SVG gradients) | 28 | 0 |
+| Element overflow | 1 | 0 |
+| Interaction checks | 17/19 | 20/20 |
+| Browser checks (`test:e2e`) | 152/152 | 152/152 |
+| Unit tests | 111 | 116 |
+
+**Defects found and fixed**
+
+- **Reliability.**
+  - The Cache API is a no-op on `*.workers.dev`, so production had no edge cache: every reader rebuilt the season (about 5 s) and proxied straight to Jolpica, which caused rate-limit errors. Fixes:
+    - an isolate memory cache with stale-if-error;
+    - the current season served from KV (saved every 15 minutes) — about 5 s → 0.9 s;
+    - client pacing only for upstream-bound requests.
+  - A rate-limited OpenF1 session check was reported as "not in the free archive". It is now a retryable 429, and confirmed sessions are remembered.
+  - Non-JSON error pages no longer surface as "Unexpected token '<'".
+- **Correctness.**
+  - Historical seasons showed today's car numbers (Verstappen "#3" in 2021). Past seasons now use the number raced.
+  - Partial failures showed confident zeros (career totals, team season figures). They now show a retryable error.
+  - URL `?season=` was applied after the page mounted, which fetched the wrong season first. Links to another view of the current page (`?view=constructors`) were ignored.
+  - "−0" gaps now read "Level". Rank changes for unclassified drivers are hidden. The σ/Σ mix-up and the "12–12 Jun" dates are fixed.
+  - Historical pages showed modern photos: 2026 grandstands on 1950 pages, a 60-year-old Prost on a 1988 line-up, a 2025 Sauber on a 2010–18 card. Photos are now era-checked.
+- **Accessibility.**
+  - Secondary text contrast was raised in both themes.
+  - Focus moves to the new page after navigation.
+  - The 404 page and not-found states have an `<h1>`.
+  - Labelled graphics have roles. Scroll regions are focusable. Touch targets are enlarged.
+  - Reduced motion no longer leaves staggered elements invisible for their delay.
+- **Layout.**
+  - Phone tables keep points and gaps visible. Long surnames scale instead of breaking.
+  - Fixed: the invisible gold "World titles" number, the empty typical-conditions chart, clipped legends and intros, orphaned grid cells, and footnotes split into columns.
+- **Performance.**
+  - Layout thrash from the parallax and section-nav code was removed (about 1.7 s → 0.2 s of forced layout during load on a throttled phone).
+  - Below-the-fold sections render in a time-sliced transition.
+  - Inter was subset (352 → 126 KB). Track outlines load per circuit (about 5 KB instead of 100 KB).
+  - Mobile Lighthouse (production, simulated slow 4G):
+    - blocking time on the race page: 1.5 s → 0.7 s;
+    - home LCP: 5.1 s → 3.7–4.6 s;
+    - accessibility, best practices and SEO: 96–100.
 
 ## 3.2 additions
 

@@ -11,6 +11,7 @@ export function formatDateRange(start: string, end: string) {
   const a = new Date(start + "T12:00:00Z"), b = new Date(end + "T12:00:00Z");
   const sameMonth = a.getUTCMonth() === b.getUTCMonth();
   const month = (d: Date) => d.toLocaleDateString(undefined, { month: "short", timeZone: "UTC" });
+  if (start === end) return `${b.getUTCDate()} ${month(b)}`; // one-day events (historical seasons)
   return sameMonth
     ? `${a.getUTCDate()}–${b.getUTCDate()} ${month(b)}`
     : `${a.getUTCDate()} ${month(a)} – ${b.getUTCDate()} ${month(b)}`;

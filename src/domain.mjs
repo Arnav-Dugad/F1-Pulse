@@ -177,3 +177,22 @@ export function buildCalendar(races, allSessions = false, now = new Date(), opti
   lines.push("END:VCALENDAR");
   return lines.map(foldICS).join("\r\n") + "\r\n";
 }
+
+/**
+ * Jolpica's `permanentNumber` is a driver's number today (Verstappen: 3), which is wrong for past
+ * seasons (#33 in 2021, #1 in 2022–25). For past seasons, a driver inside a result row gets the car
+ * number from that row; elsewhere (standings, driver lists) the number is dropped.
+ */
+export function seasonalNumbers(node, season, current = new Date().getFullYear()) {
+  if (Array.isArray(node)) { for (const n of node) seasonalNumbers(n, season, current); return; }
+  if (!node || typeof node !== "object") return;
+  const o = node;
+  const s = typeof o.season === "string" && /^\d{4}$/.test(o.season) ? +o.season : season;
+  const driver = o.Driver;
+  if (driver && typeof driver === "object" && s && s < current) {
+    if (typeof o.number === "string" && o.number) driver.permanentNumber = o.number;
+    else delete driver.permanentNumber;
+  }
+  if (Array.isArray(o.Drivers) && s && s < current) for (const d of o.Drivers) delete d.permanentNumber;
+  for (const [k, v] of Object.entries(o)) if (k !== "Driver" && v && typeof v === "object") seasonalNumbers(v, s, current);
+}

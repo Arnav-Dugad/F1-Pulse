@@ -144,7 +144,7 @@ function Timeline({ sessions, states, now, results }: { sessions: SessionWindow[
                   : st === "next" ? <em className="next">{relativeTime(new Date(s.start).toISOString(), now)}</em>
                   : <em className="later">{relativeTime(new Date(s.start).toISOString(), now)}</em>}
               </span>
-              {st === "live" && <span className="fw-tl-bar" aria-label={`About ${Math.round(progress * 100)}% through the session's usual length`}><i /></span>}
+              {st === "live" && <span role="img" className="fw-tl-bar" aria-label={`About ${Math.round(progress * 100)}% through the session's usual length`}><i /></span>}
             </li>
           );
         })}

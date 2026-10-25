@@ -191,7 +191,7 @@ export function QualifyingDeepDive({ rows, year, env, race }: { rows: Result[]; 
                       </span>
                     )}
                     {s.entries.map((e) => (
-                      <span
+                      <span role="img"
                         key={e.r.Driver.driverId}
                         className={cx("rw-ko-dot", s.out.has(e.r.Driver.driverId) && "out")}
                         style={{ left: at(e.t), "--tint": teamColor(e.r.Constructor) } as CSSProperties}
@@ -260,7 +260,7 @@ export function QualifyingDeepDive({ rows, year, env, race }: { rows: Result[]; 
         {multi && (
           <Glass className="card rw-qd-prog reveal" style={{ "--i": 1 } as CSSProperties}>
             <div className="card-title"><h3><TrendingDown size={16} />Session progression</h3><Gauge size={16} /></div>
-            <div className="table-wrap">
+            <div className="table-wrap" tabIndex={0}>
               <table className="tbl rw-qd-tbl">
                 <caption className="sr-only">Qualifying times per session with improvement between sessions</caption>
                 <thead><tr><th scope="col">Pos</th><th scope="col">Driver</th>{model.present.map((k) => <th key={k} scope="col" className="r">{k}</th>)}</tr></thead>

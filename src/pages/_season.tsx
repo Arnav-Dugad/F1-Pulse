@@ -55,7 +55,7 @@ export const pct = (p: number) => (p <= 0 ? "0%" : p >= 1 ? ">99.9%" : p < 0.001
 export function Trend({ dir, delta, unit = "pts" }: { dir: "up" | "down" | "flat"; delta: number; unit?: string }) {
   const label = dir === "flat" ? "Steady form" : `${dir === "up" ? "Up" : "Down"} ${Math.abs(delta).toFixed(1)} ${unit} per race`;
   return (
-    <span className={cx("sa-trend", dir)} title={label} aria-label={label}>
+    <span role="img" className={cx("sa-trend", dir)} title={label} aria-label={label}>
       {dir === "up" ? <ArrowUpRight size={14} /> : dir === "down" ? <ArrowDownRight size={14} /> : <Minus size={14} />}
     </span>
   );
@@ -274,16 +274,16 @@ export function ConsistencyBoard({ races, year }: { races: Race[]; year: string 
     <div className="sa-cons">
       <ConsistentHero row={best} year={year} />
       <Glass className="card flush reveal">
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table className="tbl sa-cons-tbl">
             <thead>
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">Driver</th>
                 <th scope="col" className="r">Index</th>
-                <th scope="col" className="r" title="Standard deviation of classified finishing positions">σ finish</th>
+                <th scope="col" className="r" title="Standard deviation of classified finishing positions"><span className="sa-sigma">σ</span> finish</th>
                 <th scope="col" className="r sa-hide-sm">Avg finish</th>
-                <th scope="col" className="r sa-hide-sm" title="Standard deviation of Grand Prix points">σ points</th>
+                <th scope="col" className="r sa-hide-sm" title="Standard deviation of Grand Prix points"><span className="sa-sigma">σ</span> points</th>
                 <th scope="col" className="r">Non-finish</th>
                 <th scope="col" className="r sa-hide-sm">Starts</th>
               </tr>

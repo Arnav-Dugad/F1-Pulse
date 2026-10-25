@@ -271,7 +271,7 @@ function DriverTable({ rows, edges, archive, minWet, minDry, onMinWet, env, wetE
       action={<Segmented label="Minimum wet starts" value={String(minWet)} onChange={onMinWet} options={["1", "3", "5", "10"].map((v) => ({ value: v, label: `${v}+ wet` }))} />}>
       {rows.length ? (
         <Glass className="card flush wi-table reveal">
-          <div className="table-wrap">
+          <div className="table-wrap" tabIndex={0}>
             <table className="tbl">
               <caption className="sr-only">Driver performance in modelled wet and dry races</caption>
               <thead>

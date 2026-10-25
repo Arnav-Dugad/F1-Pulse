@@ -12,13 +12,13 @@ import { Link, type Route } from "../lib/router";
 import { buildCalendar, weekendSessions } from "../domain.mjs";
 import { timeSeconds } from "../math.mjs";
 import { shortRace, useCalendar } from "../lib/season";
-import { circuitMedia, driverMedia, fullName, raceGallery, teamColor, teamShortName, useTrackOutline } from "../lib/media";
+import { circuitMedia, driverMedia, fullName, raceGallery, teamColor, teamShortName, useEraCircuitPhoto, useTrackOutline } from "../lib/media";
 import {
   countdown, download, formatClock, formatDateRange, formatSession, formatWeekday, hasStarted, plural, pts, relativeTime,
   sessionDate, timezoneLabel, toCSV,
 } from "../lib/format";
 import { Glass, Img, Page, Section, Segmented, Skeleton, Source, StateView, Toggle, cx, useAmbient, useNow, useTitle } from "../ui/core";
-import { DriverAvatar, DriverPortrait, Flag, NumberArt, TeamLogo, TrackMap } from "../ui/media";
+import { DriverAvatar, DriverPortrait, Flag, NumberArt, PhotoCredit, TeamLogo, TrackMap } from "../ui/media";
 import { LineChart, type Series } from "../ui/charts";
 import type { Driver, Envelope, Race as RaceData, Result } from "../types";
 import { neutralWindows, useAnalysis, useLapData, type AnalysisState, type LapData } from "./_raceData";
@@ -142,6 +142,7 @@ function RaceWeekend({ race, prev, next, total, schedule }: { race: RaceData; pr
               <span>The Grand Prix has started{hasStarted(race.date, race.time, now - 3 * 3600e3) ? " and should be over" : ""}. The classification appears here as soon as the timing archive publishes it — usually within a few hours.</span>
             </div>
           )}
+          <h2 className="sr-only">Race weekend</h2>
           <div className={cx("rw-pre", phase === "upcoming" && "rw-after-hero")}>
             <Timetable race={race} schedule={schedule} />
             <WeatherCard race={race} />
@@ -165,21 +166,22 @@ function RaceHero({ race, prev, next, total, phase, results, cars }: {
   race: RaceData; prev?: RaceData; next?: RaceData; total: number; phase: Phase; results: Result[]; cars: string[];
 }) {
   const { year } = usePrefs();
-  const media = circuitMedia(race.Circuit.circuitId);
+  const photo = useEraCircuitPhoto(race.Circuit.circuitId, race.season);
   const outline = useTrackOutline(race.Circuit.circuitId);
   const gp = / Grand Prix$/.test(race.raceName);
   const winner = results[0];
   const fastest = results.find((r) => r.FastestLap?.rank === "1");
   const tint = winner ? teamColor(winner.Constructor) : undefined;
   const ics = () => download(`f1-pulse-${race.season}-r${race.round}-weekend.ics`, buildCalendar([race], true), "text/calendar;charset=utf-8");
-  const status = phase === "completed" ? "Completed" : phase === "upcoming" ? (hasStarted(weekendSessions(race)[0]?.date || race.date, weekendSessions(race)[0]?.time) ? "Race weekend live" : "Upcoming") : phase === "pending" ? "Awaiting results" : "";
+  const status = phase === "completed" ? "Completed" : phase === "upcoming" ? (hasStarted(weekendSessions(race)[0]?.date || race.date, weekendSessions(race)[0]?.time) ? "Race weekend live" : "Upcoming") : phase === "pending" ? "Awaiting results" : hasStarted(race.date, race.time, Date.now() - 86400e3) ? "Completed" : "";
 
   return (
     <section className={cx("rw-hero", phase === "completed" && "done")} style={{ "--tint": tint } as CSSProperties}>
       <div className="rw-hero-media">
-        <Img src={media.hero} alt="" eager />
+        <Img src={photo?.src} alt="" eager />
         <span className="rw-hero-scrim" />
       </div>
+      {photo && !photo.credit.official && <PhotoCredit credit={photo.credit} overlay className="hero-photo-credit" />}
 
       <nav className="rw-hero-nav" aria-label="Rounds">
         {prev ? (
@@ -233,11 +235,11 @@ function RaceHero({ race, prev, next, total, phase, results, cars }: {
           </div>
 
           <div className="rw-hero-actions rise" style={{ "--i": 4 } as CSSProperties}>
-            {phase === "completed" ? (
-              <button className="btn lg primary" onClick={() => scrollToId("rw-classification")}>Full classification<ChevronDown /></button>
-            ) : (
+            {phase === "completed" || phase === "loading" ? (
+              <button className="btn lg primary" disabled={phase === "loading"} onClick={() => scrollToId("rw-classification")}>Full classification<ChevronDown /></button>
+            ) : phase === "upcoming" || phase === "pending" ? (
               <button className="btn lg primary" onClick={ics}><CalendarPlus />Add weekend to calendar</button>
-            )}
+            ) : null}
             <Link className="btn lg glass-btn" to={"circuit/" + race.Circuit.circuitId}><MapPin />Circuit guide</Link>
           </div>
         </div>
@@ -373,7 +375,7 @@ function SortTable<T>({ rows, cols, rowKey, initial, caption, rowClass }: {
   const toggle = (c: Col<T>) =>
     setSort((s) => (s.key === c.key ? { key: c.key, dir: s.dir === 1 ? -1 : 1 } : { key: c.key, dir: c.desc ? -1 : 1 }));
   return (
-    <div className="table-wrap rw-table-wrap">
+    <div className="table-wrap rw-table-wrap" tabIndex={0}>
       <table className="tbl rw-tbl">
         <caption className="sr-only">{caption}</caption>
         <thead>
@@ -426,11 +428,11 @@ function TeamCell({ r, year }: { r: Result; year: string }) {
 }
 function Gain({ r }: { r: Result }) {
   const g = gainOf(r);
-  if (g === null) return <span className="rw-gain none" aria-label="Not applicable">—</span>;
-  if (g === 0) return <span className="rw-gain flat" aria-label="No change"><Minus size={13} /></span>;
+  if (g === null) return <span role="img" className="rw-gain none" aria-label="Not applicable">—</span>;
+  if (g === 0) return <span role="img" className="rw-gain flat" aria-label="No change"><Minus size={13} /></span>;
   return g > 0
-    ? <span className="rw-gain up" aria-label={`Gained ${g}`}><ArrowUp size={13} />{g}</span>
-    : <span className="rw-gain down" aria-label={`Lost ${-g}`}><ArrowDown size={13} />{-g}</span>;
+    ? <span role="img" className="rw-gain up" aria-label={`Gained ${g}`}><ArrowUp size={13} />{g}</span>
+    : <span role="img" className="rw-gain down" aria-label={`Lost ${-g}`}><ArrowDown size={13} />{-g}</span>;
 }
 function PosCell({ r }: { r: Result }) {
   const ok = classified(r);
@@ -445,14 +447,14 @@ function resultCols(rows: Result[], year: string): Col<Result>[] {
     { key: "pos", label: "Pos", sort: (r) => +r.position, render: (r) => <PosCell r={r} /> },
     { key: "driver", label: "Driver", sort: (r) => r.Driver.familyName, render: (r) => <DriverCell r={r} year={year} /> },
     { key: "team", label: "Team", className: "rw-col-team", sort: (r) => r.Constructor.name, render: (r) => <TeamCell r={r} year={year} /> },
-    { key: "grid", label: "Grid", align: "r", sort: (r) => (+r.grid > 0 ? +r.grid : 99), render: (r) => (+r.grid > 0 ? r.grid : <span className="faint">Pit</span>) },
-    { key: "gain", label: "+/−", title: "Places gained or lost from the starting grid", align: "c", desc: true, sort: gainOf, render: (r) => <Gain r={r} /> },
-    { key: "laps", label: "Laps", align: "r", desc: true, sort: (r) => +r.laps, render: (r) => r.laps },
+    { key: "grid", label: "Grid", align: "r", className: "rw-hide-xs", sort: (r) => (+r.grid > 0 ? +r.grid : 99), render: (r) => (+r.grid > 0 ? r.grid : <span className="faint">Pit</span>) },
+    { key: "gain", label: "+/−", className: "rw-hide-xs", title: "Places gained or lost from the starting grid", align: "c", desc: true, sort: gainOf, render: (r) => <Gain r={r} /> },
+    { key: "laps", label: "Laps", align: "r", className: "rw-hide-xs", desc: true, sort: (r) => +r.laps, render: (r) => r.laps },
     { key: "time", label: "Time / status", sort: (r) => +r.position, render: (r) => <span className={cx("rw-time", !r.Time && !/^\+/.test(r.status) && r.status !== "Finished" && "out")}>{r.Time?.time || r.status}</span> },
   ];
   if (hasFL)
     cols.push({
-      key: "fl", label: "Fastest lap", align: "r", sort: (r) => secs(r.FastestLap?.Time.time),
+      key: "fl", label: "Fastest lap", align: "r", className: "rw-hide-xs", sort: (r) => secs(r.FastestLap?.Time.time),
       render: (r) => {
         const t = secs(r.FastestLap?.Time.time);
         if (t === null) return <span className="faint">—</span>;

@@ -43,7 +43,7 @@
 .rb-circuit-name { display: flex; align-items: center; gap: 10px; }
 .rb-circuit-name strong { display: block; font-weight: 650; font-size: 14px; }
 .rb-circuit-name small { display: block; font-size: 11.5px; color: var(--label-3); }
-.rb-circuits .table-wrap { max-height: 560px; }
+.rb-circuits .table-wrap { max-height: 560px; overflow-y: auto; -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 36px), transparent); padding-bottom: 24px; }
 .rb-circuits th { background: var(--bg-elevated); z-index: 1; }
 .rb-gain { display: inline-flex; align-items: center; gap: 10px; justify-content: flex-end; min-width: 120px; }
 .rb-gain-bar { display: inline-block; width: 64px; height: 6px; border-radius: 99px; background: var(--fill-3); position: relative; overflow: hidden; }
@@ -64,3 +64,4 @@
   .rb-controls .seg.lg button { flex: 1; }
   .rb-ch-value { font-size: 36px; }
 }
+.rb-age-main strong { white-space: normal; overflow-wrap: anywhere; }

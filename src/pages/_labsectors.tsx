@@ -61,7 +61,7 @@ export function MiniSectorBoard({ rows, year }: {
                 </span>
               </span>
             ))}
-            <span className="lab-board-sum" aria-label={`${sum.purple} purple, ${sum.green} green, ${sum.yellow} yellow of ${sum.total} segments`}>
+            <span role="img" className="lab-board-sum" aria-label={`${sum.purple} purple, ${sum.green} green, ${sum.yellow} yellow of ${sum.total} segments`}>
               <span style={{ "--c": SEG_COLOUR.purple } as CSSProperties}>{sum.purple}</span>
               <span style={{ "--c": SEG_COLOUR.green } as CSSProperties}>{sum.green}</span>
               <span style={{ "--c": SEG_COLOUR.yellow } as CSSProperties}>{sum.yellow}</span>

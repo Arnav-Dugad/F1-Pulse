@@ -1,6 +1,11 @@
 /* ───────────────────────── F1 Pulse · Design tokens ───────────────────────── */
 /* Inter 4 variable (rsms/inter v4.1, SIL OFL 1.1 — see /assets/Inter-OFL.txt): one file covers weights
-   100–900 and the optical-size axis (opsz 14–32), so display type tightens automatically. */
+   100–900 and the optical-size axis (opsz 14–32), so display type tightens automatically.
+   Subset to the characters the site uses (352 → 126 KB; anything else falls back to system fonts):
+   pyftsubset InterVariable.woff2 --layout-features='*' --flavor=woff2 --unicodes="U+0000-017F,U+0218-021B,
+   U+02C6,U+02DA,U+02DC,U+0300-0308,U+0394,U+03A3,U+03BB,U+03BC,U+03C3,U+2009,U+200A,U+2010-2027,U+2030-2044,
+   U+2070-208F,U+20AC,U+2122,U+2190-2199,U+21B5,U+2212,U+221A,U+2248,U+2260,U+2264,U+2265,U+2318,U+2500,U+2502,
+   U+25B2,U+25BC,U+25C9,U+25CB,U+2605,U+2713,U+2715" */
 @font-face {
   font-family: "Inter";
   font-style: normal;
@@ -24,7 +29,7 @@
   --bg-elevated: #0d0d11;
   --label: rgba(255, 255, 255, 0.96);
   --label-2: rgba(235, 235, 245, 0.66);
-  --label-3: rgba(235, 235, 245, 0.42);
+  --label-3: rgba(235, 235, 245, 0.56);
   --label-4: rgba(235, 235, 245, 0.2);
   --separator: rgba(255, 255, 255, 0.09);
   --fill-1: rgba(120, 120, 128, 0.32);
@@ -86,7 +91,7 @@
   --label: rgba(0, 0, 0, 0.9);
   /* Stronger secondary/tertiary labels so 11–13px text keeps ≥4.5:1 / ≥3.5:1 on glass. */
   --label-2: rgba(50, 50, 58, 0.8);
-  --label-3: rgba(50, 50, 58, 0.64);
+  --label-3: rgba(50, 50, 58, 0.76);
   --label-4: rgba(60, 60, 67, 0.28);
   --separator: rgba(0, 0, 0, 0.085);
   --fill-1: rgba(120, 120, 128, 0.2);
@@ -221,9 +226,9 @@ table { border-collapse: collapse; width: 100%; }
 
 /* ───────────────────────── Motion preferences ───────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  :root:not([data-motion="full"]) *, :root:not([data-motion="full"]) *::before, :root:not([data-motion="full"]) *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  :root:not([data-motion="full"]) *, :root:not([data-motion="full"]) *::before, :root:not([data-motion="full"]) *::after { animation-duration: 0.001ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }
-:root[data-motion="reduced"] *, :root[data-motion="reduced"] *::before, :root[data-motion="reduced"] *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+:root[data-motion="reduced"] *, :root[data-motion="reduced"] *::before, :root[data-motion="reduced"] *::after { animation-duration: 0.001ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 
 /* View transitions between routes */
 ::view-transition-old(root) { animation: vt-out 0.28s var(--ease) both; }
@@ -243,3 +248,4 @@ table { border-collapse: collapse; width: 100%; }
 @keyframes vt-shared-out { to { opacity: 0; filter: blur(4px); } }
 @keyframes vt-shared-in { from { opacity: 0; filter: blur(6px); } }
 :root[data-motion="reduced"]::view-transition-group(*), :root[data-motion="reduced"]::view-transition-old(*), :root[data-motion="reduced"]::view-transition-new(*) { animation: none !important; }
+main#main:focus, main#main:focus-visible { outline: none; }

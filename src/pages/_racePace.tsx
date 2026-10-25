@@ -132,7 +132,7 @@ export function RacePace({ race, results, laps, analysis, pits, year }: {
             {ticks.map((t) => <span key={t} style={{ left: x(t) }}>{Number.isInteger(t) ? `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}` : lapTime(t)}</span>)}
           </div>
           {rows.map((b) => (
-            <div
+            <div role="img"
               key={b.r.Driver.driverId}
               className={cx("rw-pace-row", hover && hover !== b.r.Driver.driverId && "dim", hover === b.r.Driver.driverId && "on")}
               style={{ "--tint": teamColor(b.r.Constructor) } as CSSProperties}

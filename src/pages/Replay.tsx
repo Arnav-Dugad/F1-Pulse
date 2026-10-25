@@ -10,6 +10,7 @@ import { plural } from "../lib/format";
 import { sampleAt } from "../math.mjs";
 import { Glass, Page, Section, Segmented, Skeleton, Source, StateView, Toggle, cx, useAmbient, useTitle } from "../ui/core";
 import { TrackMap } from "../ui/media";
+import { teamShortName } from "../lib/media";
 import { LineChart } from "../ui/charts";
 import type { ArchiveDriver, CarSample, Envelope, Lap, LocationSample } from "../types";
 import {
@@ -344,7 +345,7 @@ function ReplayLab({ st, lap, driverA, driverB, drivers, colours, year, sessionK
               <p className="muted small rp-empty">No position reported yet at this moment of the session.</p>
             ) : (
               <LayoutGroup>
-                <ol className="rp-tower-list">
+                <ol className="rp-tower-list" tabIndex={0} aria-label="Running order">
                   {tower.rows.map((r) => {
                     const sel: number = r.d.driver_number === driverA.driver_number ? 0 : r.d.driver_number === driverB.driver_number ? 1 : -1;
                     const change = r.startPos !== undefined ? r.startPos - r.pos : 0;
@@ -353,9 +354,9 @@ function ReplayLab({ st, lap, driverA, driverB, drivers, colours, year, sessionK
                         className={cx("rp-tower-row", sel >= 0 && "sel")} style={{ "--tint": sel >= 0 ? colours[sel] : teamHex(r.d) } as CSSProperties}>
                         <span className={cx("rp-tpos", r.pos <= 3 && "p" + r.pos)}>{r.pos}</span>
                         <i className="rp-tbar" />
-                        <span className="rp-tname"><b>{r.d.name_acronym}</b><small>{r.d.team_name}</small></span>
+                        <span className="rp-tname"><b>{r.d.name_acronym}</b><small>{teamShortName(r.d.team_name || "")}</small></span>
                         {change !== 0 && (
-                          <span className={cx("rp-tchange", change > 0 ? "up" : "down")} aria-label={`${change > 0 ? "Gained" : "Lost"} ${Math.abs(change)} since window start`}>
+                          <span role="img" className={cx("rp-tchange", change > 0 ? "up" : "down")} aria-label={`${change > 0 ? "Gained" : "Lost"} ${Math.abs(change)} since window start`}>
                             {change > 0 ? <ArrowUp size={11} /> : <ArrowDown size={11} />}{Math.abs(change)}
                           </span>
                         )}
@@ -473,7 +474,9 @@ function Stage({ a, b, abs, colours, names }: { a: LocationSample[]; b: Location
     { pts: geo.pa, raw: a, colour: colours[0], name: names[0] },
     { pts: geo.pb, raw: b, colour: colours[1], name: names[1] },
   ].map((c) => {
-    const head = sampleAt(c.raw, abs);
+    // At the very start of the window the first sample is often a moment away: snap to it.
+    const first = c.raw.length ? Date.parse(c.raw[0].date) : NaN;
+    const head = sampleAt(c.raw, abs) || (abs < first && first - abs < 3000 ? c.raw[0] : null);
     if (!head) return { ...c, head: null, trail: [] as Pt[] };
     const hi = lastLE(c.pts, abs, (p) => p.t);
     const trail: Pt[] = [];
@@ -761,7 +764,7 @@ function Pits({ list, ax }: { list: Pit[]; ax: Archive }) {
         <span className="small muted">{plural(list.length, "pit visit")} recorded</span>
         <OnlySelected value={only} onChange={setOnly} />
       </div>
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="tbl">
           <thead><tr><th>Driver</th><th className="r">Lap</th><th>UTC time</th><th className="r">Pit lane (s)</th><th className="r">Stationary (s)</th></tr></thead>
           <tbody>

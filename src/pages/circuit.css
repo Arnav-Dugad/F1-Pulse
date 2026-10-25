@@ -198,7 +198,7 @@
 .ckt-typical-kpis b { font-family: var(--font-display); font-size: clamp(24px, 2.6vw, 32px); font-weight: 800; letter-spacing: -0.045em; line-height: 1.05; font-variant-numeric: tabular-nums; }
 .ckt-typical-kpis em { font-style: normal; font-size: 11.5px; color: var(--label-3); }
 .ckt-typical-years { list-style: none; margin: 0; padding: 4px 0 0; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; height: 150px; }
-.ckt-typical-years li { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; justify-items: center; gap: 6px; min-width: 0; }
+.ckt-typical-years li { display: grid; grid-template-rows: minmax(0, 1fr) auto auto; justify-items: center; gap: 6px; min-width: 0; }
 .ckt-ty-year { order: 3; font-size: 10.5px; font-weight: 700; color: var(--label-3); font-variant-numeric: tabular-nums; }
 .ckt-ty-range { order: 1; position: relative; width: 10px; height: 100%; border-radius: 99px; background: var(--fill-3); }
 .ckt-ty-range i { position: absolute; left: 0; right: 0; border-radius: inherit; background: linear-gradient(0deg, #5ac8fa, #ffd60a 60%, #ff9f0a); transform-origin: bottom; animation: ckt-grow-y 1s var(--spring) both; animation-delay: calc(var(--i) * 60ms); }
@@ -212,7 +212,7 @@
 .ckt-orient-list div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; padding: 10px 2px; border-bottom: 1px solid var(--separator); font-size: 14px; }
 .ckt-orient-list div:last-child { border-bottom: 0; }
 .ckt-orient-list dt { color: var(--label-3); font-weight: 600; font-size: 13px; }
-.ckt-orient-list dd { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-weight: 650; min-width: 0; overflow-wrap: anywhere; }
+.ckt-orient-list dd { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-weight: 650; min-width: 0; overflow-wrap: break-word; }
 .ckt-orient-list dd small { flex-basis: 100%; font-size: 12px; font-weight: 500; color: var(--label-3); }
 .ckt-orient-links { display: flex; flex-wrap: wrap; gap: 8px; }
 .ckt-orient-links .btn svg:last-child { width: 12px; opacity: 0.6; }
@@ -241,5 +241,12 @@
 @media (max-width: 560px) {
   .ckt-hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .ckt-hero-stat { min-width: 0; padding: 10px 11px; }
-  .ckt-hero-stat small { font-size: 9.5px; letter-spacing: 0.05em; line-height: 1.25; }
+  .ckt-hero-stat small { font-size: 10px; letter-spacing: 0.04em; line-height: 1.25; }
 }
+/* Phones: the card grows with its content so the S1/S2/S3 legend is never clipped. */
+@media (max-width: 900px) {
+  .ckt-hero-track { aspect-ratio: auto; overflow: visible; }
+  .ckt-hero-track .t3d-viewport { aspect-ratio: 1.5; }
+}
+/* Names wrap to a second line rather than truncating (winner card, most-successful lists). */
+.ckt-race-wtext b, .ckt-leader-main strong { white-space: normal; overflow-wrap: break-word; line-height: 1.15; }

@@ -95,7 +95,7 @@ export function NumberArt({ id, number, year, className, style, eager }: {
   const m = driverMedia(id, year);
   if (m?.number) return <Img src={m.number} alt={number ? `Number ${number}` : ""} className={cx("number-art", className)} style={style} eager={eager} />;
   if (!number) return null;
-  return <span className={cx("number-art number-text", className)} style={style} aria-label={`Number ${number}`}>{number}</span>;
+  return <span role="img" className={cx("number-art number-text", className)} style={style} aria-label={`Number ${number}`}>{number}</span>;
 }
 
 /* ─────────── Team logo ─────────── */

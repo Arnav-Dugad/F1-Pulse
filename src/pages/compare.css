@@ -173,3 +173,4 @@
 .cmp-toast { position: fixed; left: 50%; bottom: 28px; z-index: 120; display: inline-flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px); padding: 10px 18px 10px 10px; border-radius: 99px; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
 .cmp-toast-icon { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--green); color: #fff; }
 @media (max-width: 900px) { .cmp-toast { bottom: calc(96px + env(safe-area-inset-bottom)); font-size: 13px; } }
+@media (max-width: 360px) { .cmp-tape-mid { display: none; } }

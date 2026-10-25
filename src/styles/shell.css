@@ -2,7 +2,7 @@
 .topnav { position: fixed; z-index: 50; top: 12px; left: 0; right: 0; display: flex; justify-content: center; padding: 0 var(--gutter); pointer-events: none; }
 .nav-capsule { view-transition-name: site-nav; pointer-events: auto; display: flex; align-items: center; gap: 6px; height: var(--nav-h); width: min(100%, calc(var(--page-max) - 2 * var(--gutter))); padding: 0 8px 0 18px; border-radius: 999px; transition: width 0.6s var(--spring), height 0.5s var(--spring), padding 0.5s var(--spring), background-color 0.3s; }
 .topnav.scrolled .nav-capsule { height: 52px; }
-.brand { display: flex; align-items: center; gap: 8px; padding-right: 10px; flex: none; transition: transform 0.4s var(--spring); }
+.brand { display: flex; align-items: center; min-height: 40px; gap: 8px; padding-right: 10px; flex: none; transition: transform 0.4s var(--spring); }
 .brand:active { transform: scale(0.95); }
 .f1-mark { display: block; width: 54px; height: 13.5px; background: #e10600; -webkit-mask: url(/media/brand/f1-logo.svg) no-repeat center / contain; mask: url(/media/brand/f1-logo.svg) no-repeat center / contain; }
 .f1-mark.lg { width: 68px; height: 17px; }
@@ -276,8 +276,7 @@ main.swipe-release { transition: translate 0.5s var(--spring); }
 :root[data-section-nav="on"] .live-pill-wrap.desk .live-pill.open { max-height: calc(100dvh - var(--nav-h) - 112px); }
 @media (max-width: 1023px) {
   /* With the live pill floating above the tab bar, the end of the page needs a little more runway. */
-  body:has(.live-pill-wrap.phone) .page { padding-bottom: 150px; }
-  body:has(.live-pill-wrap.phone) .site-footer { padding-bottom: 150px !important; }
+  :root[data-live-pill="phone"] .site-footer { padding-bottom: 150px !important; }
 }
 .lp-row-label { white-space: nowrap; }
 /* More sheet: five tiles fill two full rows (3 + 2) instead of leaving a hole. */
@@ -288,3 +287,8 @@ main.swipe-release { transition: translate 0.5s var(--spring); }
 }
 /* Palette group labels: a soft fade instead of a hard opaque band over the glass. */
 .hit-group-head { background: linear-gradient(180deg, color-mix(in srgb, var(--glass-strong) 70%, transparent) 55%, transparent); }
+/* Comfortable touch targets for footer links on touch screens (WCAG 2.5.8). */
+@media (pointer: coarse), (max-width: 760px) {
+  .footer-links div { gap: 0; }
+  .footer-links a { padding-block: 6px; min-height: 32px; display: flex; align-items: center; }
+}

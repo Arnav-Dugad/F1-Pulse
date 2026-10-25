@@ -167,8 +167,9 @@ function setupParallax() {
     frame = 0;
     if (reduced()) { visible.forEach((el) => el.style.removeProperty("translate")); return; }
     const vh = innerHeight;
-    visible.forEach((el) => {
-      const box = frameOf(el).getBoundingClientRect();
+    // Measure everything first, then write: interleaving reads and writes forces a layout per photo.
+    const boxes = [...visible].map((el) => [el, frameOf(el).getBoundingClientRect()] as const);
+    for (const [el, box] of boxes) {
       if (el.closest(".rc-media") || el.hasAttribute("data-parallax")) {
         const strength = Number(el.dataset.parallax) || 0.045;
         // -1 (entering at the bottom) … 1 (leaving at the top)
@@ -178,7 +179,7 @@ function setupParallax() {
         const off = Math.max(0, -box.top);
         el.style.translate = `0 ${Math.min(off * 0.28, box.height * 0.3).toFixed(1)}px`;
       }
-    });
+    }
   };
   const queue = () => { frame ||= requestAnimationFrame(update); };
   const io = new IntersectionObserver((entries) => {

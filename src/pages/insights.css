@@ -191,3 +191,4 @@ a.ins-form-name:hover { text-decoration: none; }
 .ins-launch-sum small { font-size: 12px; color: var(--label-3); line-height: 1.4; }
 @media (max-width: 900px) { .ins-launch-cards { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } }
 .ins-pair, .ins-pair > *, .ins-h2h, .ins-h2h > * { min-width: 0; }
+@media (max-width: 420px) { .ins-hero-stats span { white-space: normal; line-height: 1.25; letter-spacing: 0.04em; } }

@@ -297,7 +297,7 @@ function PredictHero({ race, total, year, timezone, pick, byId }: {
           )}
         </div>
         {race && (
-          <div className="pr-hero-podium rise" style={{ "--i": 2 } as CSSProperties} aria-label={`Your podium: ${filled} of 3 picked`}>
+          <div role="group" className="pr-hero-podium rise" style={{ "--i": 2 } as CSSProperties} aria-label={`Your podium: ${filled} of 3 picked`}>
             {(["p2", "p1", "p3"] as Slot[]).map((s) => {
               const d = pick?.[s] ? byId.get(pick[s]!) : undefined;
               return (
@@ -480,7 +480,7 @@ function History({ scored, byId, year, loadingQuali }: { scored: Scored[]; byId:
   const name = (id?: string) => (id ? byId.get(id)?.driver.familyName || id : "—");
   return (
     <Glass className="card flush reveal pr-history">
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="tbl pr-tbl">
           <thead>
             <tr><th>Round</th>{SLOTS.map((s) => <th key={s} className="c">{SLOT_SHORT[s]}</th>)}<th className="r">Points</th></tr>

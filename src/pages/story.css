@@ -18,14 +18,14 @@
 .sy-round-chip small { opacity: 0.6; font-size: 0.9em; }
 
 /* Intro */
-.sy-intro-inner { position: relative; flex: 1; display: grid; gap: 18px; align-content: end; padding: clamp(96px, 12vh, 140px) clamp(22px, 4.5vw, 64px) clamp(28px, 4vw, 52px); }
+.sy-intro-inner { position: relative; flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-content: end; padding: clamp(96px, 12vh, 140px) clamp(22px, 4.5vw, 64px) clamp(28px, 4vw, 52px); }
 .sy-year { font-family: var(--font-display); font-size: clamp(110px, 21vw, 300px); font-weight: 900; letter-spacing: -0.075em; line-height: 0.82; margin-left: -0.04em;
   background: linear-gradient(180deg, #fff 30%, rgba(255, 255, 255, 0.35)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.4)); }
 .sy-intro-lede { max-width: 58ch; font-size: clamp(15px, 1.5vw, 19px); line-height: 1.5; color: rgba(255, 255, 255, 0.78); }
 .sy-intro-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; max-width: 720px; }
 .sy-intro-stats > div { display: grid; gap: 4px; padding: 14px 16px 12px; border-radius: 20px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.14);
   -webkit-backdrop-filter: blur(22px) saturate(160%); backdrop-filter: blur(22px) saturate(160%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2); min-width: 0; }
-.sy-intro-stats b { font-family: var(--font-display); font-size: clamp(26px, 3vw, 38px); font-weight: 780; letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sy-intro-stats b { font-family: var(--font-display); font-size: clamp(26px, 3vw, 38px); font-weight: 780; letter-spacing: -0.045em; line-height: 1.12; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sy-intro-stats b.sy-small-b { font-size: clamp(18px, 2vw, 24px); letter-spacing: -0.03em; line-height: 1.25; }
 .sy-intro-stats span { font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
 .sy-start { justify-self: start; background: #fff; color: #000; }
@@ -152,3 +152,4 @@ a.sy-winner-name:hover { text-decoration: none; opacity: 0.85; }
   .sy-count, .sy-hint { display: none; }
   .sy-table li { grid-template-columns: 28px 40px minmax(0, 1fr) auto auto; }
 }
+@media (max-width: 600px) { .sy-intro-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

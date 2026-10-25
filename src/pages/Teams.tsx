@@ -266,7 +266,7 @@ function CompareTable({ rows, season, year }: { rows: Row[]; season: string; yea
   if (data.error) return <StateView error={data.error} onRetry={data.reload} />;
   return (
     <Glass className="card flush tms-compare reveal">
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="tbl tms-tbl">
           <thead>
             <tr>

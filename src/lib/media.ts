@@ -52,18 +52,34 @@ export function circuitMedia(circuitId?: string): { hero?: string; map?: string 
 type Outline = { viewBox: string; paths: string[] };
 let tracks: Record<string, Outline> | null = null;
 let loading: Promise<Record<string, Outline>> | null = null;
-/** Circuit outlines (~100 KB gzipped) load once, on first use. */
+/** Every circuit outline at once (pages that draw many); loads once, on first use. */
 export const loadTracks = () =>
   (loading ??= fetch("/data/tracks.json")
     .then((r) => (r.ok ? r.json() : {}))
     .then((d) => (tracks = d))
     .catch(() => (tracks = {})));
+const single = new Map<string, Promise<Outline | null>>();
+const outlines = new Map<string, Outline | null>();
+/** One circuit's outline (~4 KB, public/data/tracks/<id>.json — see scripts/tracks.mjs); null if none. */
+export const loadOutline = (id: string): Promise<Outline | null> => {
+  if (tracks) return Promise.resolve(tracks[id] || null);
+  if (!single.has(id))
+    single.set(id, fetch(`/data/tracks/${encodeURIComponent(id)}.json`)
+      .then((r) => (r.ok ? (r.json() as Promise<Outline>) : null))
+      .catch(() => null)
+      .then((o) => { outlines.set(id, o); return o; }));
+  return single.get(id)!;
+};
 export function useTrackOutline(circuitId?: string): Outline | null {
   const [, ready] = useState(0);
+  const known = circuitId ? (tracks ? tracks[circuitId] || null : outlines.get(circuitId)) : null;
   useEffect(() => {
-    if (!tracks) loadTracks().then(() => ready((x) => x + 1));
-  }, []);
-  return (circuitId && tracks?.[circuitId]) || null;
+    if (!circuitId || known !== undefined) return;
+    let live = true;
+    loadOutline(circuitId).then(() => live && ready((x) => x + 1));
+    return () => { live = false; };
+  }, [circuitId, known]);
+  return known || null;
 }
 
 /** Brand colours: official 2026 values, then well-known historical liveries. */
@@ -86,6 +102,12 @@ export function teamColor(team?: Pick<Team, "constructorId"> | string): string {
   return official[key] || historical[key] || "#8E8E99";
 }
 /** Light liveries need dark ink on solid team-colour surfaces. */
+/** Near-grey colours (unknown or monochrome liveries): tint-derived shades can't tell series apart. */
+export function isGreyColor(hex: string) {
+  const v = parseInt(hex.replace("#", ""), 16);
+  const r = (v >> 16) & 255, g = (v >> 8) & 255, b = v & 255;
+  return Math.max(r, g, b) - Math.min(r, g, b) < 40;
+}
 export function isLightColor(hex: string) {
   const v = parseInt(hex.replace("#", ""), 16);
   const r = (v >> 16) & 255, g = (v >> 8) & 255, b = v & 255;
@@ -202,7 +224,11 @@ export function commonsTeamPhoto(w: WikiFile | null, constructorId?: string, yea
 export function useDriverPhoto(driverId: string | undefined, year?: string): Photo | null {
   const official = officialDriverPhoto(driverId, year);
   const w = useWikimedia(!!driverId && !official);
-  return official || commonsDriverPhoto(w, driverId);
+  if (official) return official;
+  // Large photos for a past season: not one taken decades later (Prost in 2015 on a 1988 line-up).
+  const commons = commonsDriverPhoto(w, driverId);
+  const taken = Number(commons?.credit.date);
+  return commons && year && taken > Number(year) + 20 ? null : commons;
 }
 /** Best available photo for any constructor: official car / logo for that season first, then Commons. */
 export function useTeamPhoto(constructorId: string | undefined, year?: string): Photo | null {
@@ -222,6 +248,30 @@ export function useCircuitPhotos(circuitId: string | undefined): Photo[] {
   if (m.hero) out.push({ src: m.hero, kind: "photo", credit: OFFICIAL(MEDIA_SEASON) });
   if (m.map) out.push({ src: m.map, kind: "map", credit: OFFICIAL(MEDIA_SEASON) });
   return out.concat(w?.circuits[circuitId] || []);
+}
+/** The official circuit photographs are modern (sponsor boards, today's grandstands). */
+export const MODERN_PHOTO_FROM = 2010;
+/**
+ * A circuit photo that fits the season being viewed: the official photo from 2010 onward; before
+ * that, a freely licensed Commons photo taken within about a decade of the season (credited), or
+ * null — a 1950 page shouldn't show 2025 grandstands. `commons: false` skips the Commons lookup
+ * (cards with no room for a credit line).
+ */
+export function useEraCircuitPhoto(circuitId: string | undefined, season: string | undefined, { commons = true } = {}): Photo | null {
+  const year = Number(season) || 0;
+  const historic = !!year && year < MODERN_PHOTO_FROM;
+  const w = useWikimedia(!!circuitId && historic && commons);
+  if (!circuitId) return null;
+  if (!historic) {
+    const hero = circuitMedia(circuitId).hero;
+    return hero ? { src: hero, kind: "photo", credit: OFFICIAL(MEDIA_SEASON) } : null;
+  }
+  if (!commons) return null;
+  const near = (w?.circuits[circuitId] || [])
+    .map((p) => ({ p, d: Math.abs(Number(p.credit.date) - year) }))
+    .filter((x) => Number.isFinite(x.d) && x.d <= 10)
+    .sort((a, b) => a.d - b.d)[0];
+  return near?.p || null;
 }
 /** Trackside photography for one race weekend (official F1 media), e.g. ("2026", "17"). */
 export function raceGallery(season: string, round: string): GalleryImage[] {

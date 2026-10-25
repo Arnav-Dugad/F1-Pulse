@@ -175,7 +175,7 @@ a.list-row:active { transform: scale(0.99); }
 .avatar.sq { border-radius: 30%; }
 .logo-badge { --s: 40px; width: var(--s); height: var(--s); border-radius: 30%; display: grid; place-items: center; flex: none; background: color-mix(in srgb, var(--tint, #666) 92%, #000); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 6px 18px -8px var(--tint); overflow: hidden; }
 .logo-badge img { width: 66%; height: 66%; object-fit: contain; }
-.logo-badge .initials { font-weight: 800; font-size: calc(var(--s) * 0.38); color: #fff; }
+.logo-badge .initials { font-weight: 800; font-size: max(8px, calc(var(--s) * 0.38)); color: #fff; }
 .logo-badge.light-tint .initials { color: #111; }
 .flag { display: inline-block; width: 22px; height: 15px; border-radius: 3.5px; object-fit: cover; box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.18), 0 1px 3px rgba(0, 0, 0, 0.3); flex: none; vertical-align: -2px; }
 .flag.lg { width: 34px; height: 23px; border-radius: 5px; }
@@ -189,7 +189,7 @@ a.list-row:active { transform: scale(0.99); }
 @keyframes shimmer { to { transform: translateX(100%); } }
 .state { display: grid; place-items: center; text-align: center; gap: 12px; padding: 44px 20px 40px; color: var(--label-2); border-radius: var(--r-xl); }
 .state > svg:not(.state-art) { width: 34px; height: 34px; color: var(--label-3); }
-.state h3 { color: var(--label); font-size: 19px; font-weight: 750; letter-spacing: -0.025em; }
+.state h3, .state h1.state-title { color: var(--label); font-size: 19px; font-weight: 750; letter-spacing: -0.025em; }
 .state p { max-width: 46ch; font-size: 14px; }
 .state .state-hint { font-size: 12.5px; color: var(--label-3); margin-top: -4px; }
 .state .state-kicker { font-size: 11px; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: -6px; }
@@ -277,7 +277,7 @@ a.list-row:active { transform: scale(0.99); }
 .legend .swatch { width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
 .legend .off { opacity: 0.35; }
 .bar-track { height: 8px; border-radius: 99px; background: var(--fill-3); overflow: hidden; }
-.bar-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, color-mix(in srgb, var(--tint, var(--accent)) 60%, transparent), var(--tint, var(--accent))); transform-origin: left; animation: grow-x 1.3s var(--ease) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.bar-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, color-mix(in srgb, var(--tint, var(--accent)) 60%, transparent), var(--tint, var(--accent))); transform-origin: left; animation: grow-x 1.3s var(--ease) both; animation-delay: min(calc(var(--i, 0) * 40ms), 600ms); }
 @keyframes grow-x { from { transform: scaleX(0); } }
 
 /* ───────────────────────── Dialog / sheet ───────────────────────── */
@@ -350,7 +350,7 @@ img.parallax { will-change: translate; }
 :where(:root[data-theme="light"]) .btn.glass-btn { background: rgba(255, 255, 255, 0.72); box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 4px 14px -8px rgba(20, 24, 40, 0.25), inset 0 1px 0 #fff; }
 :where(:root[data-theme="light"]) .btn.plain { background: none; }
 :where(:root[data-theme="light"]) .btn.plain:hover { background: var(--fill-3); }
-:where(:root[data-theme="light"]) .input, :where(:root[data-theme="light"]) .select { background: rgba(255, 255, 255, 0.72); border-color: rgba(0, 0, 0, 0.08); }
+:where(:root[data-theme="light"]) .input, :where(:root[data-theme="light"]) .select { background-color: rgba(255, 255, 255, 0.72); border-color: rgba(0, 0, 0, 0.08); }
 :where(:root[data-theme="light"]) .avatar { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06); }
 :where(:root[data-theme="light"]) .flag { box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.14), 0 1px 2px rgba(0, 0, 0, 0.12); }
 :where(:root[data-theme="light"]) .skeleton { background: rgba(118, 118, 128, 0.1); }
@@ -401,3 +401,22 @@ span.odometer.odometer { display: inline-block; }
 }
 /* Card titles wrap their trailing chips/actions instead of pushing the card wider on phones. */
 .card-title { flex-wrap: wrap; row-gap: 8px; min-width: 0; }
+/* Touch screens: bigger hit areas for links and sort buttons inside tables (WCAG 2.5.8). */
+@media (pointer: coarse) {
+  td > a, td a.st-ident-name, .st-ident-name { display: inline-block; padding-block: 4px; }
+  th > button { min-height: 28px; }
+}
+.hero-photo-credit.photo-credit.overlay { z-index: 4; right: 14px; bottom: 12px; }
+.section-placeholder { min-height: 280px; }
+/* Scrollable rails fade at the trailing edge until the end is reached (scroll-driven, where supported). */
+@property --rail-fade { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@supports (animation-timeline: scroll()) {
+  .rail, .table-wrap, .seg { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - var(--rail-fade)), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - var(--rail-fade)), transparent); animation: rail-fade linear both; animation-timeline: scroll(self inline); }
+  @keyframes rail-fade { 0%, 96% { --rail-fade: 48px; } 100% { --rail-fade: 0px; } }
+}
+/* Prose footnotes (inline <code>, <strong>…) flow as text instead of splitting into flex items. */
+.source:has(> code, > strong, > b, > em), .ins-foot:has(> code, > strong, > b, > em) { display: block; }
+.source:has(> code, > strong, > b, > em) > svg, .ins-foot:has(> code, > strong, > b, > em) > svg { display: inline; vertical-align: -2px; margin-right: 6px; }
+.nf-page { display: grid; align-content: center; min-height: min(70vh, 640px); }
+:where(:root[data-theme="light"]) .source .snapshot { color: color-mix(in srgb, var(--orange) 55%, #000); }
+.logo-badge:not(.light-tint):has(> .initials) { background: color-mix(in srgb, var(--tint, #666) 70%, #000); }

@@ -116,7 +116,7 @@ export default function Drivers({ route }: { route: Route }) {
         <Glass className="drs-toolbar" role="search">
           <label className="search-input drs-search">
             <Search />
-            <input className="input" type="search" value={q} onChange={(e) => search(e.target.value)} placeholder="Search name, team, number…" aria-label="Search drivers" />
+            <input className="input" type="search" value={q} onChange={(e) => search(e.target.value)} placeholder="Name, team or number" aria-label="Search drivers" />
             {q && <button type="button" className="drs-clear" onClick={() => search("")} aria-label="Clear search"><X size={15} /></button>}
           </label>
           <Segmented label="Sort drivers by" options={SORTS} value={sort} onChange={setSort} />

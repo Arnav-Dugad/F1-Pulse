@@ -379,6 +379,21 @@ def is_mono(im):
     return sat < 28 or (abs(r - g) < 6 and abs(g - b) < 6)
 
 
+def tidy_artist(artist):
+    """Commons 'Artist' fields carry file names, archive catalogue numbers and wiki markup: keep the people."""
+    a = artist.split(".mw-parser-output")[0]
+    a = re.sub(r"^(File:)?[^:/]+\.(jpe?g|png|tiff?|svg|gif):\s*", "", a, flags=re.I)  # "Foo.jpg: Author ..."
+    a = re.sub(r"\s*/?\s*derivative work:\s*", " / ", a, flags=re.I)
+    a = re.sub(r"\bUser:", "", a)
+    a = re.sub(r"\s*\(talk\)", "", a)
+    a = re.sub(r"\s*,?\s*https?://\S+", "", a)
+    a = re.sub(r"\s*(,\s*NL-HaNA.*|/\s*neg\. stroken.*)$", "", a)  # Nationaal Archief / Anefo catalogue text
+    a = re.sub(r"\s*Minor restoration by .*$", "", a)
+    a = re.sub(r"^This photo was taken by\s+", "", a, flags=re.I)
+    a = re.sub(r"\s{2,}", " ", a).strip(" ,;/")
+    return a or artist
+
+
 def credit(info, im=None, min_year=1900):
     meta = info["meta"]
     artist = meta_value(meta, "Artist") or meta_value(meta, "Credit") or "Unknown author"
@@ -393,6 +408,7 @@ def credit(info, im=None, min_year=1900):
     elif re.match(r"^(https?:)?//", artist) or artist.lower() in ("unknown", "unknown author", "anonymous", "unknown photographer"):
         artist = "Unknown author"
     artist = re.sub(r",?\s*(eigenes Werk|own work|trabajo propio|travail personnel)\s*$", "", artist, flags=re.I).strip(" ,")
+    artist = tidy_artist(artist)
     if len(artist) > 90:
         artist = artist[:87].rsplit(" ", 1)[0] + "…"
     desc = meta_value(meta, "ImageDescription") or meta_value(meta, "ObjectName")

@@ -65,6 +65,8 @@ const CHANNELS: { key: Field; label: string; unit: string; h: number; step?: boo
   { key: "rpm", label: "Engine", unit: "rpm", h: 82 },
   { key: "drs", label: "DRS", unit: "raw code", h: 50, step: true },
 ];
+/** DRS has no data from 2026 (active aero replaced it): drop the empty lane instead of a flat line. */
+const activeChannels = (rows: { drs: number }[]) => CHANNELS.filter((c) => c.key !== "drs" || rows.some((r) => r.drs > 0));
 const HEAD = 20, GAP = 12, PAD_L = 46, PAD_R = 12, AXIS = 26;
 
 function formatValue(field: Field, v: number | null) {
@@ -342,7 +344,8 @@ function LapSummary({ ax }: { ax: Archive }) {
         </Glass>
       </div>
       <p className="tl-legend-line xsmall faint">
-        <span className="tl-key purple" />Best of both drivers' valid laps <span className="tl-key green" />Personal best in this session · Sector bars point toward the driver who gained.
+        <span className="tl-legend-item"><span className="tl-key purple" />Best of both drivers' valid laps</span>{" "}
+        <span className="tl-legend-item"><span className="tl-key green" />Personal best in this session</span> · Sector bars point toward the driver who gained.
       </p>
     </>
   );
@@ -588,7 +591,7 @@ function TraceStack({ rowsA, rowsB, xKey, win, colours, cursor, onCursor, onWin,
     const mx = (f: Field) => Math.max(...all.map((r) => r[f]));
     const mn = (f: Field) => Math.min(...all.map((r) => r[f]));
     let top = 0;
-    return CHANNELS.map((c) => {
+    return activeChannels(all).map((c) => {
       let lo = 0, hi = 100;
       if (c.key === "speed") hi = Math.ceil((mx("speed") + 5) / 50) * 50;
       else if (c.key === "throttle") hi = Math.max(100, mx("throttle"));
@@ -805,7 +808,7 @@ function Readout({ rowsA, rowsB, xKey, cursor, colours, driverA, driverB, year, 
             <span className="tl-ro-label">On brake</span>{stats.map((s, k) => <b key={k}>{s.brake.toFixed(0)}<small>%</small></b>)}
           </>
         ) : (
-          CHANNELS.map((c) => (
+          activeChannels([...rowsA, ...rowsB]).map((c) => (
             <ReadoutRow key={c.key} label={c.label} unit={c.key === "speed" ? "km/h" : ""}
               values={[valueAt(rowsA, xKey, c.key, cursor, c.step), valueAt(rowsB, xKey, c.key, cursor, c.step)].map((v) => formatValue(c.key, v))} />
           ))

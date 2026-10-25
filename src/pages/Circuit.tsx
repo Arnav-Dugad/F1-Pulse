@@ -9,7 +9,7 @@ import { circuitRaces, circuitWinners, climate, useData, weather, type Climate, 
 import { usePrefs } from "../app/prefs";
 import { Link, type Route } from "../lib/router";
 import { useCalendar } from "../lib/season";
-import { circuitMedia, fullName, loadTracks, teamColor, teamShortName, useCircuitPhotos, type Photo } from "../lib/media";
+import { circuitMedia, fullName, loadOutline, teamColor, teamShortName, useCircuitPhotos, type Photo } from "../lib/media";
 import { formatClock, formatDateRange, formatSession, formatWeekday, hasStarted, plural, relativeTime, sessionDate, timezoneLabel } from "../lib/format";
 import { Counter, Glass, Img, Page, Section, Skeleton, Source, StateView, cx, useAmbient, useNow, useTitle } from "../ui/core";
 import { DriverAvatar, Flag, PhotoCredit, TeamLogo } from "../ui/media";
@@ -32,7 +32,7 @@ function useHasOutline(id: string) {
   const [has, setHas] = useState<boolean | null>(null);
   useEffect(() => {
     let live = true;
-    loadTracks().then((t) => live && setHas(!!(t as Record<string, unknown>)[id]));
+    loadOutline(id).then((o) => live && setHas(!!o));
     return () => { live = false; };
   }, [id]);
   return has;
@@ -136,7 +136,7 @@ function NotFound() {
     <Page className="ckt">
       <Glass className="state ckt-missing">
         <MapPin />
-        <h3>This circuit isn't on the map</h3>
+        <h1 className="state-title">This circuit isn't on the map</h1>
         <p>We couldn't find a championship venue with that identifier in the results archive.</p>
         <Link className="btn primary" to="circuits"><ArrowLeft />All circuits</Link>
       </Glass>
@@ -320,7 +320,7 @@ function WeatherCard({ circuit }: { circuit: CircuitT }) {
                   <span className="ckt-wx-dname">{d.label}</span>
                   <span className={cx("ckt-wx-rain", (d.rain ?? 0) >= 40 && "wet")}>{d.rain !== null ? <><Droplets size={12} />{Math.round(d.rain)}%</> : "—"}</span>
                   <span className="ckt-wx-min">{Math.round(d.min)}°</span>
-                  <span className="ckt-wx-range" aria-label={`Low ${Math.round(d.min)}°, high ${Math.round(d.max)}°`}>
+                  <span role="img" className="ckt-wx-range" aria-label={`Low ${Math.round(d.min)}°, high ${Math.round(d.max)}°`}>
                     <i style={{ left: `${((d.min - lo) / span) * 100}%`, width: `${Math.max(4, ((d.max - d.min) / span) * 100)}%` }} />
                     {i === 0 && cur && d.label === "Today" && <b style={{ left: `${Math.min(100, Math.max(0, ((cur.temperature_2m - lo) / span) * 100))}%` }} />}
                   </span>
@@ -677,7 +677,7 @@ function WinnersTable({ list }: { list: Win[] }) {
           </div>
         )}
       </div>
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="tbl ckt-tbl">
           <thead>
             <tr><th>Season</th><th>Driver</th><th>Constructor</th><th>Grand Prix</th><th className="r">Time / status</th></tr>
@@ -757,7 +757,7 @@ function ClocksCard({ circuit, race, tz, loading, error, onRetry }: { circuit: C
               <b>{clock(tz)}</b>
               <span>{day(tz)} · {offsetLabel(zoneOffset(tz, now))}</span>
             </div>
-            <span className="ckt-clock-diff" aria-label={diffText}><ArrowLeftRight size={14} />{diffText}</span>
+            <span role="img" className="ckt-clock-diff" aria-label={diffText}><ArrowLeftRight size={14} />{diffText}</span>
             <div className="ckt-clock you">
               <small><Globe size={12} />You · {timezoneLabel(timezone)}</small>
               <b>{clock(mine)}</b>

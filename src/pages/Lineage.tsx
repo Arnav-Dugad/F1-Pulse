@@ -132,7 +132,7 @@ function LineageView({ bundle, lines, current, onSelect, team, matched }: { bund
 
 function HeroChain({ line }: { line: Line }) {
   return (
-    <div className="ln-chain" aria-label={`${line.def.name} lineage: ${line.steps.map((s) => s.name).join(", then ")}`}>
+    <div role="group" className="ln-chain" aria-label={`${line.def.name} lineage: ${line.steps.map((s) => s.name).join(", then ")}`}>
       {line.steps.map((s, i) => (
         <div key={s.constructorId + s.from} className="ln-chain-step" style={{ "--tint": s.color, "--i": i } as CSSProperties}>
           <TeamLogo id={s.constructorId} name={s.name} year={String(s.to)} size={44} />
